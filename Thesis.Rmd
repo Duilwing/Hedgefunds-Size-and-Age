@@ -15,14 +15,6 @@ place2: "Hannover"
 matriculation_number2: "7654321"
 semester2: "2"
 course_of_study2: "Wirtschaftswissenschaft"
-# if you write in a team, put the data of the third author here. If you write in a team of two, just remove the next 7 lines:
-author3: "Maxi Musterperson"
-adress_street_and_no3: "Königsworther Platz 3"
-postcode3: "30167"
-place3: "Hannover"
-matriculation_number3: "1235813"
-semester3: "3"
-course_of_study3: "Wirtschaftswissenschaft"
 date: "31.03.2022"
 university: "Leibniz University Hannover"
 faculty: "School of Economics and Management" 
@@ -32,7 +24,7 @@ altadvisor: "M.Sc. Sebastian Schrön"
 module: "Hedge Funds: Trading Strategies and Performance Evaluation"
 # Belegnummer:
 module_number: "374040"
-lang: "en-us"
+lang: "de"
 output: 
   pdf_document:
     template: ibf_template.tex
