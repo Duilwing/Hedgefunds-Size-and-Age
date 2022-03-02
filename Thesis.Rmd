@@ -1,6 +1,6 @@
 ---
 title: "Thesis Title"
-author1: "Luca"
+author1: "Luca Heisenberg"
 adress_street_and_no1: "Königsworther Platz 1"
 postcode1: "30167"
 place1: "Hannover"
