@@ -8,3 +8,6 @@ Trading & Regulation 12(4), 342–350.
   Journal of Derivatives & Hedge Funds.
 - Article: Stafylas, D, Anderson, K and Uddin, M (2016) Recent advances in hedge funds' performance attribution: Performance persistence and fundamental factors. International
   Review of Financial Analysis, 43. 48 - 61  
+
+# Test:
+Dies ist ein Test zum Testen von RStudio
