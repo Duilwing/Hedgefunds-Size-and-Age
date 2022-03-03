@@ -1,6 +1,6 @@
 ---
-title: "Thesis Title"
-author1: "Luca Heisenberg"
+title: "Jung gegen Alt: Einfluss von Alter und Größe auf die Performance von Hedgefunds"
+author1: "Luca "
 adress_street_and_no1: "Königsworther Platz 1"
 postcode1: "30167"
 place1: "Hannover"
@@ -60,63 +60,29 @@ library(tidyverse)
 
 ```
 
-# Introduction
+# Einleitung
 
-```{r child='01_Introduction.Rmd'}
+```{r child='01_Einleitung.Rmd'}
 ```
 
-# Language
+# Hauptteil
 
-```{r child='02_Language.Rmd'}
+```{r child='02_Hauptteil.Rmd'}
 ```
 
-# Equations
+# Fazit
 
-```{r child='03_Equations.Rmd'}
+```{r child='03_Fazit.Rmd'}
 ```
 
-# Figures and Tables
+# Tabellenverzeichnis
 
-```{r child='04_Figures_and_Tables.Rmd'}
+```{r child='04_Tabellenverzeichnis.Rmd'}
 ```
-
-
-# Citations
-
-```{r child='05_Citations.Rmd'}
-```
-
-# Debugging
-
-```{r child='06_Debugging.Rmd'}
-```
-
-
-# Additional Features 
-
-```{r child='07_Additional_Features.Rmd'}
-```
-
-
-# How to get started
-
-Now to get started and put this template to use, just save it in your working directory, get rid of all the stuff above and start with your thesis.
-This document is work in progress, so if you encounter any unsolvable issues, write an e-mail to [Sebastian Schrön](mailto:sebastian.schroen@finance.uni-hannover.de)
-
-
-<!-- this command \appendix changes the numbering of sections to alphabetical -->
-
-\appendix
-
-# Contributions
-
-```{r child='A1_Contributions.Rmd'}
-```
-
-
-
-<!-- Makes sure to have a new page for your literature -->
 
 \newpage
 
-# Literature
+# Literaturverzeichnis
+
+```{r child='05_Literaturverzeichnis.Rmd'}
+```
