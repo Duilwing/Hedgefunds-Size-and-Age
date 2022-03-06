@@ -8,6 +8,10 @@ Jones (2007) unterteilt in ihrem Paper "Examination of fund age and size and its
 
 Jones (2007) untersucht im Anschluss Performance-Unterschiede für Hedgefunds unterschiedlichen Alters. Auch hier werden drei Kategorien je nach Alter der Funds definiert, jünger als zwei Jahre, zwei bis vier Jahre und älter als vier Jahre. Bei der Analyse der returns stellt Jones (2007) einen Vorteil von jungen gegenüber etablierten, älteren Funds fest.  
  
+Frumkin (2009):
+- Alter spielt eine Rolle, Größe nicht
+- Gleicher Zshg. von Alter/performance wie bei Jones (2007)
+ 
 ### Einfluss von Alter und Größe auf Performance 
  
 ### Motivation hinter Forschungsfrage
