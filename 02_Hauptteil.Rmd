@@ -4,6 +4,10 @@
  - Darstellung der FF
  - Überblick über Literatur, vor allem Jones als Ausgangspaper
  
+Jones (2007) unterteilt in ihrem Paper "Examination of fund age and size and its impact on hedge fund performance" die untersuchten Hedgefunds in drei Größenkategorien auf. Jones unterscheidet zwischen Funds kleiner 100 Millionen USD, 100 bis 500M USD und Funds größer als 500M USD. Im Anschluss wird eine Performance-Analyse mittels des mon. returns der letzen zehn Jahre durchgeführt. Hierbei stellt Jones (2007) zwar höhere returns für kleine Funds fest, diese gehen aber auch mit einer höheren Volatilität einher. So ergibt als ..., während die Volatilität....
+
+Jones (2007) untersucht im Anschluss Performance-Unterschiede für Hedgefunds unterschiedlichen Alters. Auch hier werden drei Kategorien je nach Alter der Funds definiert, jünger als zwei Jahre, zwei bis vier Jahre und älter als vier Jahre. Bei der Analyse der returns stellt Jones (2007) einen Vorteil von jungen gegenüber etablierten, älteren Funds fest.  
+ 
 ### Einfluss von Alter und Größe auf Performance 
  
 ### Motivation hinter Forschungsfrage
@@ -15,8 +19,12 @@
  - Wie haben wir die Hedgefunds ausgewählt?
 
 ### Darstellung der verwendeten Daten
+
+Die für diese Arbeit verwendeten Daten bestehen aus drei Datensätzen.
+
  
 ### Auswahlkriterien für die untersuchten Funds
+
  
 \newpage
  
