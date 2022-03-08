@@ -39,6 +39,66 @@ Die für diese Arbeit verwendeten Daten bestehen aus drei Datensätzen.
    
 ### Erster Überblick
  
+Zuerst müssen die Daten aus dem datensatz "Basedata" geladen und die benötigten Variablen ausgesucht werden.
+
+```{r, echo=FALSE}
+#laden der basedata
+basedata <- read_csv("DATA/basedata.csv")
+```
+```{r, echo=FALSE}
+#Auswahl der verwendeten Variablen
+attach(basedata)
+basedata_clean <- select(basedata, name, secid, `Inception Date`,`Obsolete Date`, `Fund Size Date`, `Fund Size USD`)
+
+```
+
+Im Anschluss wird ein Zeitintervall für die Analyse bestimmt. In der vorliegenden Analyse werden nur Funds, die ab 2000 gegründet werden untersucht.
+
+```{r, echo=FALSE}
+#Auswahl der Funds jünger als 2000-01-01
+
+clean2000 <-  filter(basedata_clean, `Inception Date`>"2000-01-01")
+```
+
+Um Altersvergleiche zu bestimmen, müssen das Alter bzw. die Lebensspanne der funds bestimmt werden. Für einige Funds ergeben sich NAs bei den Werten für Obsolete. Diese werden nicht berücksichtigt
+
+```{r, echo=FALSE}
+#Löschen der funds mit NAs in Obsolete
+clean <- clean2000 %>% 
+  filter(!is.na(`Obsolete Date`))
+#Alter als Differenz, Umwandlung in Jahre gerundet als neue Spalte
+clean_final <- clean %>%
+  mutate(clean, Age= (`Obsolete Date`- `Inception Date`))%>%
+  mutate((Month = round((Age/30.417)/12, digit=1)))%>%
+  mutate(Age_Years=as.numeric(`(Month = round((Age/30.417)/12, digit = 1))`))%>%
+  select(name, secid,`Inception Date`,`Obsolete Date`,Age_Years)
+```
+Oder:
+, da aber häufig Werte für die size aufgeführt werden, wird für alle NAs ein Obsolete von 2020-08-31, also dem höchsten verwendeten Datum eingetragen. Es wird also angenommen, dass diese funds zum Erstellugsdatum des Datensatzes noch existierten
+
+```{r, echo=FALSE}
+### Tausche NAs gegen datum aus, Dann prozess wie vorher
+
+clean2000$`Obsolete Date`[is.na(clean2000$`Obsolete Date`)] <- "2020-08-31"
+clean_final_NA <- clean2000 %>%
+  mutate(Age= (`Obsolete Date`- `Inception Date`))%>%
+  mutate((Month = round((Age/30.417)/12, digit=1)))%>%
+  mutate(Age_Years=as.numeric(`(Month = round((Age/30.417)/12, digit = 1))`))%>%
+  select(name, secid,`Inception Date`,`Obsolete Date`,Age_Years)
+```
+
+
+
+Um Größenvergleiche durchzuführen,werden aus dem Set der funds aus der Periodde 2000-Gegenwart alle Funds ohne einen Wert für size gelöscht
+```{r, echo=FALSE}
+#Für Größenvergleich Löschen aller Funds ohne Fund Size value
+
+basedata_size <- filter(basedata_clean2000, `Fund Size USD`>0)
+```
+ 
+ 
+ 
+ 
 ### Und mehr
 
 \newpage 
