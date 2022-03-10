@@ -42,49 +42,47 @@ Die für diese Arbeit verwendeten Daten bestehen aus drei Datensätzen.
 Zuerst müssen die Daten aus dem datensatz "Basedata" geladen und die benötigten Variablen ausgesucht werden.
 
 ```{r, echo=FALSE}
-#laden der basedata
+#laden der benötigten packages und von basedata
+library(tidyverse)
 basedata <- read_csv("DATA/basedata.csv")
 ```
 ```{r, echo=FALSE}
 #Auswahl der verwendeten Variablen
-attach(basedata)
 basedata_clean <- select(basedata, name, secid, `Inception Date`,`Obsolete Date`, `Fund Size Date`, `Fund Size USD`)
 
 ```
 
-Im Anschluss wird ein Zeitintervall für die Analyse bestimmt. In der vorliegenden Analyse werden nur Funds, die ab 2000 gegründet werden untersucht.
+Im Anschluss wird ein Zeitintervall für die Analyse bestimmt. In der vorliegenden Analyse werden nur Funds, die vor 20.. gegründet und bis einschließlich 20.. aktiv waren, untersucht. Für einige Funds wird kein Obsolete Date aufgeführt. Da aber häufig Ablesedaten für die size aufgeführt werden, wird für alle NAs das Ablesedatum der Größe eingefügt. Liegt dieses ebenfalls nicht vor, werden diese Funds nicht berücksichtigt.
 
 ```{r, echo=FALSE}
-#Auswahl der Funds jünger als 2000-01-01
+#Ersetzen der NAs für spätestes Ablesedatum und Auswahl der Funds jünger als 2005-01-01 und aktiv bis 2015
 
-clean2000 <-  filter(basedata_clean, `Inception Date`>"2000-01-01")
+clean2005_2015 <- basedata_clean %>% 
+    mutate(`Obsolete Date` = coalesce(`Obsolete Date`,`Fund Size Date`))%>%
+  filter(`Inception Date`< "2005-01-01")%>%
+  filter(`Obsolete Date`> "2015-01-01")
+
+
 ```
 
-Um Altersvergleiche zu bestimmen, müssen das Alter bzw. die Lebensspanne der funds bestimmt werden. Für einige Funds ergeben sich NAs bei den Werten für Obsolete. Diese werden nicht berücksichtigt
+Um Altersvergleiche zu bestimmen, müssen das Alter bzw. die Lebensspanne der funds bestimmt werden.Als Alter wird das Alter zum Beginn des Intervalls verwendet.
 
 ```{r, echo=FALSE}
-#Löschen der funds mit NAs in Obsolete
-clean <- clean2000 %>% 
-  filter(!is.na(`Obsolete Date`))
-#Alter als Differenz, Umwandlung in Jahre gerundet als neue Spalte
-clean_final <- clean %>%
-  mutate(clean, Age= (`Obsolete Date`- `Inception Date`))%>%
+
+#Alter als Differenz von der unteren Grenze 2015-01-01, Umwandlung in Jahre gerundet als neue Spalte
+
+clean_final <- clean2005_2015 %>%
+  mutate(Age_Int=as.Date("2005-01-01"))%>%
+  mutate(Age= (`Age_Int` - `Inception Date`))%>%
   mutate((Month = round((Age/30.417)/12, digit=1)))%>%
   mutate(Age_Years=as.numeric(`(Month = round((Age/30.417)/12, digit = 1))`))%>%
   select(name, secid,`Inception Date`,`Obsolete Date`,Age_Years)
 ```
-Oder:
-, da aber häufig Werte für die size aufgeführt werden, wird für alle NAs ein Obsolete von 2020-08-31, also dem höchsten verwendeten Datum eingetragen. Es wird also angenommen, dass diese funds zum Erstellugsdatum des Datensatzes noch existierten
+
 
 ```{r, echo=FALSE}
-### Tausche NAs gegen datum aus, Dann prozess wie vorher
+# Bildung der Klassen
 
-clean2000$`Obsolete Date`[is.na(clean2000$`Obsolete Date`)] <- "2020-08-31"
-clean_final_NA <- clean2000 %>%
-  mutate(Age= (`Obsolete Date`- `Inception Date`))%>%
-  mutate((Month = round((Age/30.417)/12, digit=1)))%>%
-  mutate(Age_Years=as.numeric(`(Month = round((Age/30.417)/12, digit = 1))`))%>%
-  select(name, secid,`Inception Date`,`Obsolete Date`,Age_Years)
 ```
 
 
