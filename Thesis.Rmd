@@ -54,9 +54,12 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 
 sharkdata <- "https://raw.githubusercontent.com/allisonhorst/stats-illustrations/master/other-stats-artwork/shark_raw.csv"
 
+#Pi: das kann raus - hatte er nur für den Graphen in Hai-Form drin
+
 
 library(knitr)
 library(tidyverse)
+library(tinytex) #Pi: sonst funktioniert das knitten nicht
 
 ```
 

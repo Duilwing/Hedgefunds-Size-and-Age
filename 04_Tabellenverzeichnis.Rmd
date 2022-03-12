@@ -15,7 +15,7 @@ plot(data$x, data$y, xlab = "", ylab = "")
 
 
 ```{r example_table}
-example_data <- read.csv("DATA/example_data.csv")
+example_data <- read.csv("DATA/Example_DATA/example_data.csv") #Pi: Pfad angepasst
 kable(example_data,
       booktabs = TRUE,
       digits = 2,

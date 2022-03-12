@@ -1,44 +1,40 @@
-
 ## Die Forschungsfrage
 
- - Darstellung der FF
- - Überblick über Literatur, vor allem Jones als Ausgangspaper
- 
-Jones (2007) unterteilt in ihrem Paper "Examination of fund age and size and its impact on hedge fund performance" die untersuchten Hedgefunds in drei Größenkategorien auf. Größe, englisch "size" definiert sich nach Stafylas (2016) als Assets under Management (AUM).
-Jones unterscheidet zwischen Funds kleiner 100 Millionen USD, 100 bis 500M USD und Funds größer als 500M USD. Im Anschluss wird eine Performance-Analyse mittels des mon. returns der letzen zehn Jahre durchgeführt. Hierbei stellt Jones (2007) zwar höhere returns für kleine Funds fest, diese gehen aber auch mit einer höheren Volatilität einher. So ergibt als ..., während die Volatilität....
+-   Darstellung der FF
+-   Überblick über Literatur, vor allem Jones als Ausgangspaper
 
-Jones (2007) untersucht im Anschluss Performance-Unterschiede für Hedgefunds unterschiedlichen Alters. Auch hier werden drei Kategorien je nach Alter der Funds definiert, jünger als zwei Jahre, zwei bis vier Jahre und älter als vier Jahre. Bei der Analyse der returns stellt Jones (2007) einen Vorteil von jungen gegenüber etablierten, älteren Funds fest.  
- 
-Frumkin (2009):
-- Alter spielt eine Rolle, Größe nicht
-- Gleicher Zshg. von Alter/performance wie bei Jones (2007)
- 
-### Einfluss von Alter und Größe auf Performance 
- 
+Jones (2007) unterteilt in ihrem Paper "Examination of fund age and size and its impact on hedge fund performance" die untersuchten Hedgefunds in drei Größenkategorien auf. Größe, englisch "size" definiert sich nach Stafylas (2016) als Assets under Management (AUM). Jones unterscheidet zwischen Funds kleiner 100 Millionen USD, 100 bis 500M USD und Funds größer als 500M USD. Im Anschluss wird eine Performance-Analyse mittels des mon. returns der letzen zehn Jahre durchgeführt. Hierbei stellt Jones (2007) zwar höhere returns für kleine Funds fest, diese gehen aber auch mit einer höheren Volatilität einher. So ergibt als ..., während die Volatilität....
+
+Jones (2007) untersucht im Anschluss Performance-Unterschiede für Hedgefunds unterschiedlichen Alters. Auch hier werden drei Kategorien je nach Alter der Funds definiert, jünger als zwei Jahre, zwei bis vier Jahre und älter als vier Jahre. Bei der Analyse der returns stellt Jones (2007) einen Vorteil von jungen gegenüber etablierten, älteren Funds fest.
+
+Frumkin (2009): - Alter spielt eine Rolle, Größe nicht - Gleicher Zshg. von Alter/performance wie bei Jones (2007)
+
+### Einfluss von Alter und Größe auf Performance
+
 ### Motivation hinter Forschungsfrage
 
-\newpage 
- 
+\newpage
+
 ## Datensatz
- - Darstellung des Datensatzes, hier mit ersten einfachen R-Operationen (summary und so)
- - Wie haben wir die Hedgefunds ausgewählt?
+
+-   Darstellung des Datensatzes, hier mit ersten einfachen R-Operationen (summary und so)
+-   Wie haben wir die Hedgefunds ausgewählt?
 
 ### Darstellung der verwendeten Daten
 
 Die für diese Arbeit verwendeten Daten bestehen aus drei Datensätzen.
 
- 
 ### Auswahlkriterien für die untersuchten Funds
 
- 
 \newpage
- 
+
 ## Beschreibende Statistiken
- - Lagemaße, Streuung etc.
- - Erstes vorsichtiges Fazit
-   
+
+-   Lagemaße, Streuung etc.
+-   Erstes vorsichtiges Fazit
+
 ### Erster Überblick
- 
+
 Zuerst müssen die Daten aus dem datensatz "Basedata" geladen und die benötigten Variablen ausgesucht werden.
 
 ```{r, echo=FALSE}
@@ -46,6 +42,7 @@ Zuerst müssen die Daten aus dem datensatz "Basedata" geladen und die benötigte
 library(tidyverse)
 basedata <- read_csv("DATA/basedata.csv")
 ```
+
 ```{r, echo=FALSE}
 #Auswahl der verwendeten Variablen
 basedata_clean <- select(basedata, name, secid, `Inception Date`,`Obsolete Date`, `Fund Size Date`, `Fund Size USD`)
@@ -79,38 +76,48 @@ clean_final <- clean2005_2015 %>%
   select(name, secid,`Inception Date`,`Obsolete Date`,Age_Years)
 ```
 
-
 ```{r, echo=FALSE}
 # Bildung der Klassen
 
 ```
 
-
-
 Um Größenvergleiche durchzuführen,werden aus dem Set der funds aus der Periodde 2000-Gegenwart alle Funds ohne einen Wert für size gelöscht
+
 ```{r, echo=FALSE}
 #Für Größenvergleich Löschen aller Funds ohne Fund Size value
 
-basedata_size <- filter(basedata_clean2000, `Fund Size USD`>0)
+#basedata_size <- filter(basedata_clean2000, `Fund Size USD`>0)
+
+#Pi: bekomme hier eine Fehlermeldung beim Knitten, dass das Objekt 'basedata_clean2000' nicht gefunden wurde. Habe es daher erstmal rausgenommen.
+
 ```
- 
- 
- 
- 
+
 ### Und mehr
 
-\newpage 
- 
+\newpage
+
 ## Weitere Analysen
- - Hier dann der ganze Kram aus der Vorlesung mit R
- - Sollte der größte Teil werden
- 
+
+-   Hier dann der ganze Kram aus der Vorlesung mit R
+-   Sollte der größte Teil werden
+
 ### SR,Alphas, und ähnliches
- 
+
+1.  Sharpe Ratio:
+
+-   Die erwartete Überschussredite in Relation zur Volatilität
+-   Weniger anfällig für Leverage
+
+```{=tex}
+\begin{equation} 
+  \label{Sharpe_Ratio}
+  SR = \frac{E(r - r_f)}{\sigma(r - r_f)} := \frac{\overline{r}^e}{\sigma(r^e)}
+\end{equation}
+```
 ### Performance Measures
- 
+
 ### Regressionsmodell
- 
+
 ### Tests
 
 \newpage
