@@ -20,7 +20,7 @@ university: "Leibniz University Hannover"
 faculty: "School of Economics and Management" 
 institute: "Institute of Banking and Finance"
 advisor: "Prof. Dr. Maik Dierkes"
-altadvisor: "M.Sc. Sebastian Schrön"            
+altadvisor: "Dr. Sebastian Schrön"            #Pi: Ist ja mittlerweile Dr. der Gute
 module: "Hedge Funds: Trading Strategies and Performance Evaluation"
 # Belegnummer:
 module_number: "374040"
