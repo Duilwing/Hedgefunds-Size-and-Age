@@ -101,20 +101,180 @@ Um Größenvergleiche durchzuführen,werden aus dem Set der funds aus der Period
 -   Hier dann der ganze Kram aus der Vorlesung mit R
 -   Sollte der größte Teil werden
 
+
+### Performance Measures
+
+1.  Bruttorendite (gross return):
+
+\begin{equation} 
+  \label{Gross_Return}
+  R_t = 1 + r_t = \frac{P_t}{P_{t-1}}
+\end{equation}
+
+
+2. Nettorendite (net return):
+
+\begin{equation} 
+  \label{Net_Return}
+  r_t = \frac{P_t - P_{t-1}}{P_{t-1}} = \frac{P_t}{P_{t-1}}-1
+\end{equation}
+
+
+3. Überschussrendite:
+
+- Nettorendite abzgl. der Referenzrendite, bspw. der risk-free interest rate
+- Notwendig um $\alpha$ in Faktor-Modellen zu berechnen
+
+\begin{equation} 
+  \label{Excess_Return}
+  r_t^e = r_t - r_{f,t}
+\end{equation}
+
+
+4. Arithmetische Rendite (arithmetic return):
+
+- Bekanntester Schätzer für erwartete Renditen
+- Entspricht der durchschnittlichen Rendite pro Intervall (Monate, Jahre)
+
+\begin{equation} 
+  \label{Arithmetic_Return}
+  \overline{r} = \frac{1}{T} \sum_{t = 1}^{T}r_t
+\end{equation}
+
+
+5. Volatilität (volatility):
+
+- Meist genutztes Maß für idiosyncratisches Risiko
+
+\begin{equation} 
+  \label{Volatility}
+  \sigma = \sqrt{\frac{1}{T - 1} \sum_{t = 1}^{T}(r_t - \overline{r}_t)^2}
+\end{equation}
+
+
+6. Das CAPM-$\beta$:
+
+- Maß für das systematische Risiko
+
+\begin{equation} 
+  \label{CAPM_Beta}
+  \beta_i = \frac{Cov(r_i, r_M)}{\sigma(r_M)^2}
+\end{equation}
+
+
 ### SR,Alphas, und ähnliches
 
-1.  Sharpe Ratio:
+Pi: gehört eigtl auch zu Performance Measures
 
--   Die erwartete Überschussredite in Relation zur Volatilität
+1. Jensen's alpha
+- Entspricht der marktneutralen Komponente der Rendite
+- CAPM-Regression:
+
+\begin{equation} 
+  \label{CAPM_Regression}
+  r_t^e = \alpha + \beta r_{M,t}^e + \epsilon_t
+\end{equation}
+
+- Durch Umstellung ergibt sich:
+
+\begin{equation} 
+  \label{Jensen's_Alpha}
+  E(r_t^e - \beta r_{M,t}^e) = \alpha
+\end{equation}
+
+2. Carhart's alpha
+
+- Die Regressionsgleichung wird um bekannte Faktoren ergänzt
+- Die Faktoren sind:
+  - Size factor: Small-minus-Big (SMB)
+  - Value factor: High-minus-Low (HML)
+  - Momentum factor: Up-minus-down (UMD)
+  
+\begin{equation} 
+  \label{Carhart's_Alpha}
+  r_t^e = \alpha + \beta * r_{M,t}^e + s * r_{SMB,t} + h * r_{HML,t} + m * r_{UMD,t} + \epsilon_t
+\end{equation}
+
+
+3.  Sharpe Ratio:
+
+-   Die erwartete Überschussrendite in Relation zur Volatilität
 -   Weniger anfällig für Leverage
 
-```{=tex}
 \begin{equation} 
   \label{Sharpe_Ratio}
   SR = \frac{E(r - r_f)}{\sigma(r - r_f)} := \frac{\overline{r}^e}{\sigma(r^e)}
 \end{equation}
-```
-### Performance Measures
+
+
+4. Information Ratio:
+
+- Das $\alpha$ in Relation zum idiosyncratischen Risiko des Hedge Funds
+
+\begin{equation}
+  \label{Information_Ratio_1}
+  IR = \frac{\alpha}{\sigma(\epsilon)}
+\end{equation}
+
+- Sofern der Hedge Fund eine bestimmte Benchmark schlagen soll, kann die IR auch folgendermaßen beschrieben werden:
+
+\begin{equation}
+  \label{Information_Ratio_2}
+  IR = \frac{E(r - r_b)}{\sigma(r - r_b)}
+\end{equation}
+
+
+### Risiko-Management
+
+1. Value-at-Risk (VaR):
+
+- Entspricht dem Verlust, der mit einer bestimmten WSK nicht überschritten wird
+
+\begin{equation}
+  \label{Value_at_Risk}
+  VaR_\alpha(X) = -inf\{X \in \mathbb{R} : F_x(x) \geq \alpha\}
+\end{equation}
+
+
+2. Expected Shortfall (ES):
+
+- Entspricht dem arithmetischen Mittel derjenigen Returns, welche unter die VaR-Schwelle fallen
+
+\begin{equation}
+  \label{Expected_Shortfall}
+  ES = E(X|X < VaR)
+\end{equation}
+
+
+3. High Water Mark (HWM):
+
+- Entspricht der Spitze der Historie der kumulierten Renditen
+
+\begin{equation}
+  \label{High_Water_Mark}
+  HWM_t = max_{s \leq t}P_s
+\end{equation}
+
+
+4. Drawdown (DD):
+
+- Entspricht dem kumulierten Verlust, seitdem die Verlust-Phase begonnen hat
+
+\begin{equation}
+  \label{Drawdown}
+  DD_t = \frac{HWM_t - P_t}{HWM_t}
+\end{equation}
+
+
+5. Maximum Drawdown (MDD):
+
+- Wird genutzt, wenn ein bestimmter Zeit-Intervall untersucht wird
+
+\begin{equation}
+  \label{Maximum_Drawdown}
+  MDD_T = max_{t \leq T}DD_t
+\end{equation}
+
 
 ### Regressionsmodell
 
