@@ -38,17 +38,18 @@ Die für diese Arbeit verwendeten Daten bestehen aus drei Datensätzen.
 Zuerst müssen die Daten aus dem datensatz "Basedata" geladen und die benötigten Variablen ausgesucht werden.
 
 ```{r, echo=FALSE}
-#laden der benötigten packages und von basedata
+#laden der benötigten packages
 library(tidyverse)
 library(scales)
 library(lubridate)
 library(RColorBrewer)
-basedata <- read_csv("DATA/basedata.csv")
 ```
 
 ```{r, echo=FALSE}
-#Auswahl der verwendeten Variablen
-basedata_clean <- select(basedata, name, secid, `Inception Date`,`Obsolete Date`, `Fund Size Date`, `Fund Size USD`)
+#Laden von Basedata, Auswahl der verwendeten Variablen
+basedata <- read_csv("DATA/basedata.csv")
+
+basedata <- select(basedata, name, secid, `Inception Date`,`Obsolete Date`, `Fund Size Date`, `Fund Size USD`)
 
 ```
 
@@ -57,7 +58,7 @@ Im Anschluss wird ein Zeitintervall für die Analyse bestimmt. In der vorliegend
 ```{r, echo=FALSE}
 #Ersetzen der NAs für spätestes Ablesedatum und Auswahl der Funds jünger als 2005-01-01 und aktiv bis 2015
 
-clean2005_2015 <- basedata_clean %>% 
+clean2005_2015 <- basedata %>% 
     mutate(`Obsolete Date` = coalesce(`Obsolete Date`,`Fund Size Date`))%>%
   filter(`Inception Date`< "2005-01-01")%>%
   filter(`Obsolete Date`> "2015-01-01")
@@ -80,8 +81,14 @@ age_final <- clean2005_2015 %>%
 ```
 
 ```{r, echo=FALSE}
-# Bildung der Klassen
+# Bildung der Klassen für das Alter
 
+age_final <- age_final%>%
+  mutate(Class = case_when(
+Age_Years < 4  ~ "young", Age_Years >= 4 & Age_Years < 10 ~ "medium", Age_Years >= 10 ~ "old"))%>%
+  arrange(secid, .by_group = FALSE)
+
+ggplot(age_final)+ geom_bar(aes(Class))+ theme_minimal()
 ```
 
 Um Größenvergleiche durchzuführen,werden aus dem Set alle Funds ohne einen Wert für size gelöscht. [Im Anschluss wird ebenfalls das Interval 2005 bis 2015 gebildet. Als Stichprobe ergeben sich 89 aktive Funds]
@@ -136,49 +143,46 @@ mri05_15$FHUSA04GGS <- as.character(mri05_15$FHUSA04GGS)
 mri05_15$FHUSA04B6U <- as.character(mri05_15$FHUSA04B6U)
 mri05_15$F00000GUU3 <- as.character(mri05_15$F00000GUU3)
 
-tidy_data <- pivot_longer(mri05_15, cols = 2:231, names_to ="fund", values_to = "mri")
+tidy_data <- pivot_longer(mri05_15, cols = 2:231, names_to ="secid", values_to = "mri")
 
 #mri von character in numeric
 tidy_data$mri <- as.numeric(tidy_data$mri)
 
 
-#return,HWM und DD für mri
+#return,HWM und DD für mri für die einzelnen funds
 
 tidy_data <- tidy_data %>% 
-  group_by(fund) %>% 
+  group_by(secid) %>% 
   mutate(lag_mri = lag(mri, n = 1), return = mri-lag_mri, hwm = cummax(mri), dd = (hwm - mri)/hwm)%>%
   ungroup() %>% 
-  arrange(fund, date) %>%
+  arrange(secid, date) %>%
   select(!lag_mri)
 
 #zum Spass: kleine darstellung für alle Funds, white noise
-attach(tidy_data)
+
 ggplot(data=tidy_data) + aes(x=date, y = return) +
 geom_line()
 
-#mean return und volatility für gesamte Stichprobe
+#mean return, volatility,VaR, maxDD für gesamte Stichprobe
 
-tidy_data %>% summarise(Mean = mean(return, na.rm = TRUE),
-Volatility = sd(return, na.rm = TRUE))
-
-#mean return und volatility für die funds
-
-tidy_data %>% group_by(fund) %>% 
-  summarise(Mean= 12*mean(return, na.rm = TRUE), Volatility=sqrt(12)*sd(return, na.rm = TRUE))
-
-
-#VaR für einzelne funds noch dazu
-tidy_data %>% 
-  group_by(fund) %>% 
-  summarise(Mean = 12*mean(return, na.rm = TRUE), Volatility = sqrt(12)*sd(return, na.rm = TRUE),
-VaR = quantile(return, probs = 0.05,
-na.rm = TRUE))
-
-#Maximum DD noch dazu, abspeichern als summary
-summary <- tidy_data %>% 
-  group_by(fund) %>% 
+summary_ann <- tidy_data %>% 
   summarise(Mean = 12*mean(return, na.rm = TRUE), Volatility = sqrt(12)*sd(return, na.rm = TRUE), VaR = quantile(return, probs = 0.05, na.rm = TRUE),
 MDD = max(dd, na.rm = TRUE))
+
+#mean return, volatility,VaR, maxDD für die funds
+
+summary <- tidy_data %>% 
+  group_by(secid) %>% 
+  summarise(Mean = 12*mean(return, na.rm = TRUE), Volatility = sqrt(12)*sd(return, na.rm = TRUE), VaR = quantile(return, probs = 0.05, na.rm = TRUE),
+MDD = max(dd, na.rm = TRUE))%>%
+  arrange(secid, .by_group = FALSE)
+
+#erstellen eines großen Datensets mit Klassen von klein,mittel, groß
+age_final_summary <- merge(age_final, summary, by = "secid")%>%
+  arrange(secid, .by_group = FALSE)%>%
+  select(secid, Class, Mean, Volatility, VaR, MDD )
+
+
 
 ```
 
