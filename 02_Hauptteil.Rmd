@@ -40,6 +40,9 @@ Zuerst müssen die Daten aus dem datensatz "Basedata" geladen und die benötigte
 ```{r, echo=FALSE}
 #laden der benötigten packages und von basedata
 library(tidyverse)
+library(scales)
+library(lubridate)
+library(RColorBrewer)
 basedata <- read_csv("DATA/basedata.csv")
 ```
 
@@ -68,7 +71,7 @@ Um Altersvergleiche zu bestimmen, müssen das Alter bzw. die Lebensspanne der fu
 
 #Alter als Differenz von der unteren Grenze 2015-01-01, Umwandlung in Jahre gerundet als neue Spalte
 
-clean_final <- clean2005_2015 %>%
+age_final <- clean2005_2015 %>%
   mutate(Age_Int=as.Date("2005-01-01"))%>%
   mutate(Age= (`Age_Int` - `Inception Date`))%>%
   mutate((Month = round((Age/30.417)/12, digit=1)))%>%
@@ -81,16 +84,123 @@ clean_final <- clean2005_2015 %>%
 
 ```
 
-Um Größenvergleiche durchzuführen,werden aus dem Set der funds aus der Periodde 2000-Gegenwart alle Funds ohne einen Wert für size gelöscht
+Um Größenvergleiche durchzuführen,werden aus dem Set alle Funds ohne einen Wert für size gelöscht. [Im Anschluss wird ebenfalls das Interval 2005 bis 2015 gebildet. Als Stichprobe ergeben sich 89 aktive Funds]
 
 ```{r, echo=FALSE}
 #Für Größenvergleich Löschen aller Funds ohne Fund Size value
 
-#basedata_size <- filter(basedata_clean2000, `Fund Size USD`>0)
+basedata_size <- filter(basedata_clean, `Fund Size USD`>0)
+
+#auch hier anlegen der Daten, filtern nach Zeitinterval
+
+size2005_2015 <- basedata_size %>% 
+    mutate(`Obsolete Date` = coalesce(`Obsolete Date`,`Fund Size Date`))%>%
+  filter(`Inception Date`< "2005-01-01")%>%
+  filter(`Obsolete Date`> "2015-01-01")%>%
+  filter(`Fund Size Date`> "2005-01-01")%>%
+  filter(`Fund Size Date`> "2015-01-01")
+
+#oder nur filtern nach ablesedatum der size
+size2005_2015 <- basedata_size %>% 
+    mutate(`Obsolete Date` = coalesce(`Obsolete Date`,`Fund Size Date`))%>%
+  filter(`Fund Size Date`> "2015-01-01")
 
 #Pi: bekomme hier eine Fehlermeldung beim Knitten, dass das Objekt 'basedata_clean2000' nicht gefunden wurde. Habe es daher erstmal rausgenommen.
+#LS: ist behoben
 
 ```
+
+Im Anschluss wurden die weiteren Datensätze eingearbeitet und benannt. Zuerst der mri
+
+```{r}
+#laden des Datensatzes "mri"
+mri <- read_csv("DATA/mri.csv")
+
+# date-variable als date bezeichnen, format dem in clean_final angleichen
+mri$date <- as.Date(mri$date, format="%d.%m.%Y")
+
+#filtern nach Zeitinterval
+mri05_15 <- mri%>%
+  filter(date>= "2005-01-01")%>%
+  filter(date< "2015-01-01")
+
+#Löschen aller Funds mit NAs, also keinen Werten für mri
+
+mri05_15[, 2:980][mri05_15[, 2:980] == "-NA"] <- NA
+
+mri05_15 <- mri05_15 %>%
+    select_if(~ !any(is.na(.)))
+
+#umwandeln aller funds in character, dann pivot_longer um daten zu reorganisieren
+mri05_15$FHUSA04GGS <- as.character(mri05_15$FHUSA04GGS)
+mri05_15$FHUSA04B6U <- as.character(mri05_15$FHUSA04B6U)
+mri05_15$F00000GUU3 <- as.character(mri05_15$F00000GUU3)
+
+tidy_data <- pivot_longer(mri05_15, cols = 2:231, names_to ="fund", values_to = "mri")
+
+#mri von character in numeric
+tidy_data$mri <- as.numeric(tidy_data$mri)
+
+
+#return,HWM und DD für mri
+
+tidy_data <- tidy_data %>% 
+  group_by(fund) %>% 
+  mutate(lag_mri = lag(mri, n = 1), return = mri/lag_mri-1, hwm = cummax(mri), dd = (hwm - mri)/hwm)%>%
+  ungroup() %>% 
+  arrange(fund, date) %>%
+  select(!lag_mri)
+
+#zum Spass: kleine darstellung für alle Funds, white noise
+attach(tidy_data)
+ggplot(data=tidy_data) + aes(x=date, y = return) +
+geom_line()
+
+#mean return und volatility für gesamte Stichprobe
+
+tidy_data %>% summarise(Mean = mean(return, na.rm = TRUE),
+Volatility = sd(return, na.rm = TRUE))
+
+#mean return und volatility für die funds
+
+tidy_data %>% group_by(fund) %>% 
+  summarise(Mean= 12*mean(return, na.rm = TRUE), Volatility=sqrt(12)*sd(return, na.rm = TRUE))
+
+
+#VaR für einzelne funds noch dazu
+tidy_data %>% 
+  group_by(fund) %>% 
+  summarise(Mean = 12*mean(return, na.rm = TRUE), Volatility = sqrt(12)*sd(return, na.rm = TRUE),
+VaR = quantile(return, probs = 0.05,
+na.rm = TRUE))
+
+#Maximum DD noch dazu, abspeichern als summary
+summary <- tidy_data %>% 
+  group_by(fund) %>% 
+  summarise(Mean = 12*mean(return, na.rm = TRUE), Volatility = sqrt(12)*sd(return, na.rm = TRUE), VaR = quantile(return, probs = 0.05, na.rm = TRUE),
+MDD = max(dd, na.rm = TRUE))
+
+```
+
+Als nächstes werden die factordata bearbeitet
+
+```{r}
+
+#einlesen der daten
+factordata <- read_csv("~/GitHub/Hedgefunds-Size-and-Age/DATA/factordata.csv")
+
+# date-variable als date bezeichnen, format dem in clean_final angleichen
+factordata$date <- as.Date(factordata$date, format="%d.%m.%Y")
+
+#filtern nach Zeitinterval
+factordata05_15 <- factordata%>%
+  filter(date>= "2005-01-01")%>%
+  filter(date< "2015-01-01")
+
+ggplot(factordata05_15)+ geom_line(aes(x=date, y=mktrf), color="steelblue", size=1)+ theme_minimal()
+```
+
+
 
 ### Und mehr
 
