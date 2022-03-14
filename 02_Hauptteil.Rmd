@@ -146,7 +146,7 @@ tidy_data$mri <- as.numeric(tidy_data$mri)
 
 tidy_data <- tidy_data %>% 
   group_by(fund) %>% 
-  mutate(lag_mri = lag(mri, n = 1), return = mri/lag_mri-1, hwm = cummax(mri), dd = (hwm - mri)/hwm)%>%
+  mutate(lag_mri = lag(mri, n = 1), return = mri-lag_mri, hwm = cummax(mri), dd = (hwm - mri)/hwm)%>%
   ungroup() %>% 
   arrange(fund, date) %>%
   select(!lag_mri)
