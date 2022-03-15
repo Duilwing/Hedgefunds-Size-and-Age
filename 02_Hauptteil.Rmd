@@ -165,7 +165,7 @@ geom_line()
 
 #mean return, volatility,VaR, maxDD für gesamte Stichprobe
 
-summary_ann <- tidy_data %>% 
+summary_all <- tidy_data %>% 
   summarise(Mean = 12*mean(return, na.rm = TRUE), Volatility = sqrt(12)*sd(return, na.rm = TRUE), VaR = quantile(return, probs = 0.05, na.rm = TRUE),
 MDD = max(dd, na.rm = TRUE))
 
@@ -182,6 +182,24 @@ age_final_summary <- merge(age_final, summary, by = "secid")%>%
   arrange(secid, .by_group = FALSE)%>%
   select(secid, Class, Mean, Volatility, VaR, MDD )
 
+ggplot(age_final_summary)+geom_bar(aes(x=Class), fill="steelblue")+theme_minimal()
+
+#Erstellen der einzelnen Zusammenfassungen für die Klassen
+summary_young <- age_final_summary%>%
+  filter(Class=="young")%>%
+  summarise(Mean_young = mean(Mean), Volatility_young = mean(Volatility), VaR_young = mean(VaR),
+MDD_young = mean(MDD))
+
+summary_medium <- age_final_summary%>%
+  filter(Class=="medium")%>%
+  summarise(Mean_medium = mean(Mean), Volatility_medium = mean(Volatility), VaR_medium = mean(VaR),
+MDD_medium = mean(MDD))
+
+
+summary_old <- age_final_summary%>%
+  filter(Class=="old")%>%
+  summarise(Mean_old = mean(Mean), Volatility_old = mean(Volatility), VaR_old = mean(VaR),
+MDD_old = mean(MDD))
 
 
 ```
@@ -201,7 +219,9 @@ factordata05_15 <- factordata%>%
   filter(date>= "2005-01-01")%>%
   filter(date< "2015-01-01")
 
-ggplot(factordata05_15)+ geom_line(aes(x=date, y=mktrf), color="steelblue", size=1)+ theme_minimal()
+
+
+
 ```
 
 
