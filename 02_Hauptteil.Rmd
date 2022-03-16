@@ -58,7 +58,7 @@ Im Anschluss wird ein Zeitintervall für die Analyse bestimmt. In der vorliegend
 ```{r, echo=FALSE}
 #Ersetzen der NAs für spätestes Ablesedatum und Auswahl der Funds jünger als 2005-01-01 und aktiv bis 2015
 
-clean2005_2015 <- basedata %>% 
+age_final <- basedata %>% 
     mutate(`Obsolete Date` = coalesce(`Obsolete Date`,`Fund Size Date`))%>%
   filter(`Inception Date`< "2005-01-01")%>%
   filter(`Obsolete Date`> "2015-01-01")
@@ -72,7 +72,7 @@ Um Altersvergleiche zu bestimmen, müssen das Alter bzw. die Lebensspanne der fu
 
 #Alter als Differenz von der unteren Grenze 2015-01-01, Umwandlung in Jahre gerundet als neue Spalte
 
-age_final <- clean2005_2015 %>%
+age_final <- age_final %>%
   mutate(Age_Int=as.Date("2005-01-01"))%>%
   mutate(Age= (`Age_Int` - `Inception Date`))%>%
   mutate((Month = round((Age/30.417)/12, digit=1)))%>%
@@ -100,7 +100,7 @@ basedata_size <- filter(basedata_clean, `Fund Size USD`>0)
 
 #auch hier anlegen der Daten, filtern nach Zeitinterval
 
-size2005_2015 <- basedata_size %>% 
+size_final <- basedata_size %>% 
     mutate(`Obsolete Date` = coalesce(`Obsolete Date`,`Fund Size Date`))%>%
   filter(`Inception Date`< "2005-01-01")%>%
   filter(`Obsolete Date`> "2015-01-01")%>%
@@ -108,7 +108,7 @@ size2005_2015 <- basedata_size %>%
   filter(`Fund Size Date`> "2015-01-01")
 
 #oder nur filtern nach ablesedatum der size
-size2005_2015 <- basedata_size %>% 
+size_final <- basedata_size %>% 
     mutate(`Obsolete Date` = coalesce(`Obsolete Date`,`Fund Size Date`))%>%
   filter(`Fund Size Date`> "2015-01-01")
 
@@ -187,22 +187,33 @@ ggplot(age_final_summary)+geom_bar(aes(x=Class), fill="steelblue")+theme_minimal
 #Erstellen der einzelnen Zusammenfassungen für die Klassen
 summary_young <- age_final_summary%>%
   filter(Class=="young")%>%
-  summarise(Mean_young = mean(Mean), Volatility_young = mean(Volatility), VaR_young = mean(VaR),
-MDD_young = mean(MDD))
+  summarise(Mean = mean(Mean), Volatility = mean(Volatility), VaR = mean(VaR),
+MDD = mean(MDD))%>%
+  mutate(Class="young")%>%
+  relocate(Class, .before = Mean)
 
 summary_medium <- age_final_summary%>%
   filter(Class=="medium")%>%
-  summarise(Mean_medium = mean(Mean), Volatility_medium = mean(Volatility), VaR_medium = mean(VaR),
-MDD_medium = mean(MDD))
+  summarise(Mean = mean(Mean), Volatility = mean(Volatility), VaR = mean(VaR),
+MDD = mean(MDD))%>%
+  mutate(Class="medium")%>%
+  relocate(Class, .before = Mean)
 
 
 summary_old <- age_final_summary%>%
   filter(Class=="old")%>%
-  summarise(Mean_old = mean(Mean), Volatility_old = mean(Volatility), VaR_old = mean(VaR),
-MDD_old = mean(MDD))
+  summarise(Mean = mean(Mean), Volatility = mean(Volatility), VaR = mean(VaR),
+MDD = mean(MDD))%>%
+  mutate(Class="old")%>%
+  relocate(Class, .before = Mean)
+
+#Umstellen und Zusammenfassen in einer summary
 
 
+summary_final <- bind_rows(summary_young,summary_medium,summary_old, .id = "Class")%>%
+  mutate(Class= c("young","medium","old"))
 ```
+
 
 Als nächstes werden die factordata bearbeitet
 
@@ -215,7 +226,7 @@ factordata <- read_csv("~/GitHub/Hedgefunds-Size-and-Age/DATA/factordata.csv")
 factordata$date <- as.Date(factordata$date, format="%d.%m.%Y")
 
 #filtern nach Zeitinterval
-factordata05_15 <- factordata%>%
+factordata_final <- factordata%>%
   filter(date>= "2005-01-01")%>%
   filter(date< "2015-01-01")
 
@@ -224,6 +235,10 @@ factordata05_15 <- factordata%>%
 
 ```
 
+```{r}
+#Darstellung Zshg Volatility/Mean für Alter
+ggplot(data=summary_final) + geom_point(aes(x=Volatility, y = Mean, color = Class)) + theme_minimal()
+```
 
 
 ### Und mehr
