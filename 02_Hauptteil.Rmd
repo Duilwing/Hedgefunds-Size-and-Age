@@ -22,19 +22,6 @@ Frumkin (2009): - Alter spielt eine Rolle, Größe nicht - Gleicher Zshg. von Al
 
 ### Darstellung der verwendeten Daten
 
-Die für diese Arbeit verwendeten Daten bestehen aus drei Datensätzen.
-
-### Auswahlkriterien für die untersuchten Funds
-
-\newpage
-
-## Beschreibende Statistiken
-
--   Lagemaße, Streuung etc.
--   Erstes vorsichtiges Fazit
-
-### Erster Überblick
-
 Zuerst müssen die Daten aus dem datensatz "Basedata" geladen und die benötigten Variablen ausgesucht werden.
 
 ```{r, echo=FALSE}
@@ -119,7 +106,7 @@ size_final <- basedata_size %>%
 
 Im Anschluss wurden die weiteren Datensätze eingearbeitet und benannt. Zuerst der mri
 
-```{r}
+```{r,echo=FALSE}
 #laden des Datensatzes "mri"
 mri <- read_csv("DATA/mri.csv")
 
@@ -147,8 +134,102 @@ tidy_data <- pivot_longer(mri05_15, cols = 2:231, names_to ="secid", values_to =
 
 #mri von character in numeric
 tidy_data$mri <- as.numeric(tidy_data$mri)
+```
 
 
+Als nächstes werden die factordata bearbeitet
+
+```{r,echo=FALSE}
+
+#einlesen der daten
+factordata <- read_csv("~/GitHub/Hedgefunds-Size-and-Age/DATA/factordata.csv")
+
+# date-variable als date bezeichnen, format dem in clean_final angleichen
+factordata$date <- as.Date(factordata$date, format="%d.%m.%Y")
+
+#filtern nach Zeitinterval
+factordata_final <- factordata%>%
+  filter(date>= "2005-01-01")%>%
+  filter(date< "2015-01-01")
+
+
+
+
+```
+\newpage
+
+## Beschreibende Statistiken
+
+-   Lagemaße, Streuung etc.
+-   Erstes vorsichtiges Fazit
+
+## Performance Measures
+
+Nun können Verschiedene Kennziffern erstellt werden. 
+
+
+1. Arithmetische Rendite (arithmetic return):
+
+- Bekanntester Schätzer für erwartete Renditen
+- Entspricht der durchschnittlichen Rendite pro Intervall (Monate, Jahre)
+
+\begin{equation} 
+  \label{Arithmetic_Return}
+  \overline{r} = \frac{1}{T} \sum_{t = 1}^{T}r_t
+\end{equation}
+
+
+2. Volatilität (volatility):
+
+- Meist genutztes Maß für idiosyncratisches Risiko
+
+\begin{equation} 
+  \label{Volatility}
+  \sigma = \sqrt{\frac{1}{T - 1} \sum_{t = 1}^{T}(r_t - \overline{r}_t)^2}
+\end{equation}
+
+3. High Water Mark (HWM):
+
+- Entspricht der Spitze der Historie der kumulierten Renditen
+
+\begin{equation}
+  \label{High_Water_Mark}
+  HWM_t = max_{s \leq t}P_s
+\end{equation}
+
+4. Value-at-Risk (VaR):
+
+- Entspricht dem Verlust, der mit einer bestimmten WSK nicht überschritten wird
+
+\begin{equation}
+  \label{Value_at_Risk}
+  VaR_\alpha(X) = -inf\{X \in \mathbb{R} : F_x(x) \geq \alpha\}
+\end{equation}
+
+5. Drawdown (DD):
+
+- Entspricht dem kumulierten Verlust, seitdem die Verlust-Phase begonnen hat
+
+\begin{equation}
+  \label{Drawdown}
+  DD_t = \frac{HWM_t - P_t}{HWM_t}
+\end{equation}
+
+
+6. Maximum Drawdown (MDD):
+
+- Wird genutzt, wenn ein bestimmter Zeit-Intervall untersucht wird
+
+\begin{equation}
+  \label{Maximum_Drawdown}
+  MDD_T = max_{t \leq T}DD_t
+\end{equation}
+
+
+\\
+Dies wird erst für die Grundgesamtheit der Funds durchgeführt.
+
+```{r,echo=FALSE}
 #return,HWM und DD für mri für die einzelnen funds
 
 tidy_data <- tidy_data %>% 
@@ -158,10 +239,6 @@ tidy_data <- tidy_data %>%
   arrange(secid, date) %>%
   select(!lag_mri)
 
-#zum Spass: kleine darstellung für alle Funds, white noise
-
-ggplot(data=tidy_data) + aes(x=date, y = return) +
-geom_line()
 
 #mean return, volatility,VaR, maxDD für gesamte Stichprobe
 
@@ -169,6 +246,15 @@ summary_all <- tidy_data %>%
   summarise(Mean = 12*mean(return, na.rm = TRUE), Volatility = sqrt(12)*sd(return, na.rm = TRUE), VaR = quantile(return, probs = 0.05, na.rm = TRUE),
 MDD = max(dd, na.rm = TRUE))
 
+```
+
+Hier erste Interpretation \\
+
+
+Im Anschluss werden die gleichen Kennziffern für die drei Klassen für Alter bestimmt.
+
+
+```{r,echo=FALSE}
 #mean return, volatility,VaR, maxDD für die funds
 
 summary <- tidy_data %>% 
@@ -207,51 +293,36 @@ MDD = mean(MDD))%>%
   mutate(Class="old")%>%
   relocate(Class, .before = Mean)
 
-#Umstellen und Zusammenfassen in einer summary
-
+#Zusammenfassen in einer summary
 
 summary_final <- bind_rows(summary_young,summary_medium,summary_old, .id = "Class")%>%
   mutate(Class= c("young","medium","old"))
 ```
 
+\newpage
 
-Als nächstes werden die factordata bearbeitet
+### Visualisierungen
 
-```{r}
+Nach der Erstelllung der einzelnen beschreibenden Performance-Measures können diese Zusammenhänge auch visuell dargestellt werden.
+Eine einfache Darstellung der returns ist nicht hilfreich, erst nach Klassifizierung und Bearbeitung der Daten ergeben sich die Zusammenhänge.
 
-#einlesen der daten
-factordata <- read_csv("~/GitHub/Hedgefunds-Size-and-Age/DATA/factordata.csv")
+```{r,echo=FALSE}
+#zum Spass: kleine darstellung für alle Funds, white noise
 
-# date-variable als date bezeichnen, format dem in clean_final angleichen
-factordata$date <- as.Date(factordata$date, format="%d.%m.%Y")
-
-#filtern nach Zeitinterval
-factordata_final <- factordata%>%
-  filter(date>= "2005-01-01")%>%
-  filter(date< "2015-01-01")
-
-
-
-
+ggplot(data=tidy_data) + aes(x=date, y = return) +
+geom_line()
 ```
 
-```{r}
-#Darstellung Zshg Volatility/Mean für Alter
+
+
+```{r,echo=FALSE}
+#Darstellung Zshg. Volatility/Mean für Alter
 ggplot(data=summary_final) + geom_point(aes(x=Volatility, y = Mean, color = Class)) + theme_minimal()
 ```
 
-
-### Und mehr
-
 \newpage
 
-## Weitere Analysen
-
--   Hier dann der ganze Kram aus der Vorlesung mit R
--   Sollte der größte Teil werden
-
-
-### Performance Measures
+### Weitere Performance Maße
 
 1.  Bruttorendite (gross return):
 
@@ -279,39 +350,24 @@ ggplot(data=summary_final) + geom_point(aes(x=Volatility, y = Mean, color = Clas
   r_t^e = r_t - r_{f,t}
 \end{equation}
 
+4. Expected Shortfall (ES):
 
-4. Arithmetische Rendite (arithmetic return):
+- Entspricht dem arithmetischen Mittel derjenigen Returns, welche unter die VaR-Schwelle fallen
 
-- Bekanntester Schätzer für erwartete Renditen
-- Entspricht der durchschnittlichen Rendite pro Intervall (Monate, Jahre)
-
-\begin{equation} 
-  \label{Arithmetic_Return}
-  \overline{r} = \frac{1}{T} \sum_{t = 1}^{T}r_t
+\begin{equation}
+  \label{Expected_Shortfall}
+  ES = E(X|X < VaR)
 \end{equation}
 
 
-5. Volatilität (volatility):
-
-- Meist genutztes Maß für idiosyncratisches Risiko
-
-\begin{equation} 
-  \label{Volatility}
-  \sigma = \sqrt{\frac{1}{T - 1} \sum_{t = 1}^{T}(r_t - \overline{r}_t)^2}
-\end{equation}
+\newpage
 
 
-6. Das CAPM-$\beta$:
+### Risiko-Management
 
-- Maß für das systematische Risiko
+LucaS: Wirklich nötig? Nicht VaR einfach oben drin?
 
-\begin{equation} 
-  \label{CAPM_Beta}
-  \beta_i = \frac{Cov(r_i, r_M)}{\sigma(r_M)^2}
-\end{equation}
-
-
-### SR,Alphas, und ähnliches
+### Alpha und Sharp-Ratio
 
 Pi: gehört eigtl auch zu Performance Measures
 
@@ -373,57 +429,17 @@ Pi: gehört eigtl auch zu Performance Measures
 \end{equation}
 
 
-### Risiko-Management
 
-1. Value-at-Risk (VaR):
+### CAPM
 
-- Entspricht dem Verlust, der mit einer bestimmten WSK nicht überschritten wird
+1. Das CAPM-$\beta$:
 
-\begin{equation}
-  \label{Value_at_Risk}
-  VaR_\alpha(X) = -inf\{X \in \mathbb{R} : F_x(x) \geq \alpha\}
+- Maß für das systematische Risiko
+
+\begin{equation} 
+  \label{CAPM_Beta}
+  \beta_i = \frac{Cov(r_i, r_M)}{\sigma(r_M)^2}
 \end{equation}
-
-
-2. Expected Shortfall (ES):
-
-- Entspricht dem arithmetischen Mittel derjenigen Returns, welche unter die VaR-Schwelle fallen
-
-\begin{equation}
-  \label{Expected_Shortfall}
-  ES = E(X|X < VaR)
-\end{equation}
-
-
-3. High Water Mark (HWM):
-
-- Entspricht der Spitze der Historie der kumulierten Renditen
-
-\begin{equation}
-  \label{High_Water_Mark}
-  HWM_t = max_{s \leq t}P_s
-\end{equation}
-
-
-4. Drawdown (DD):
-
-- Entspricht dem kumulierten Verlust, seitdem die Verlust-Phase begonnen hat
-
-\begin{equation}
-  \label{Drawdown}
-  DD_t = \frac{HWM_t - P_t}{HWM_t}
-\end{equation}
-
-
-5. Maximum Drawdown (MDD):
-
-- Wird genutzt, wenn ein bestimmter Zeit-Intervall untersucht wird
-
-\begin{equation}
-  \label{Maximum_Drawdown}
-  MDD_T = max_{t \leq T}DD_t
-\end{equation}
-
 
 ### Regressionsmodell
 
