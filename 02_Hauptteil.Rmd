@@ -142,7 +142,7 @@ Als nächstes werden die factordata bearbeitet
 ```{r,echo=FALSE}
 
 #einlesen der daten
-factordata <- read_csv("~/GitHub/Hedgefunds-Size-and-Age/DATA/factordata.csv")
+factordata <- read_csv("DATA/factordata.csv")
 
 # date-variable als date bezeichnen, format dem in clean_final angleichen
 factordata$date <- as.Date(factordata$date, format="%d.%m.%Y")
@@ -234,7 +234,7 @@ Dies wird erst für die Grundgesamtheit der Funds durchgeführt.
 
 tidy_data <- tidy_data %>% 
   group_by(secid) %>% 
-  mutate(lag_mri = lag(mri, n = 1), return = mri-lag_mri, hwm = cummax(mri), dd = (hwm - mri)/hwm)%>%
+  mutate(lag_mri = lag(mri, n = 1), return = (mri-lag_mri)/lag_mri*100, hwm = cummax(mri), dd = (hwm - mri)/hwm)%>%
   ungroup() %>% 
   arrange(secid, date) %>%
   select(!lag_mri)
