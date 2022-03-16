@@ -83,7 +83,7 @@ Um Größenvergleiche durchzuführen,werden aus dem Set alle Funds ohne einen We
 ```{r, echo=FALSE}
 #Für Größenvergleich Löschen aller Funds ohne Fund Size value
 
-basedata_size <- filter(basedata_clean, `Fund Size USD`>0)
+basedata_size <- filter(basedata, `Fund Size USD`>0)
 
 #auch hier anlegen der Daten, filtern nach Zeitinterval
 
