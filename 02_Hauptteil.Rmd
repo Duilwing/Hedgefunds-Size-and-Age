@@ -147,7 +147,9 @@ tidy_data$mri <- as.numeric(tidy_data$mri)
 #filtern nach Zeitinterval 2010-2020
 mri10_20 <- mri%>%
   filter(date>= "2010-01-01")%>%
-  filter(date< "2020-01-01")
+  filter(date< "2020-01-01")%>%
+  keep(~ (sum(. >= 0) / length(.)) >= 0.5)
+  
 
 #Umwandeln aller funds in character
 mri10_20$FHUSA04GGS <- as.character(mri10_20$FHUSA04GGS)
@@ -157,9 +159,8 @@ mri10_20$F00000GUU3 <- as.character(mri10_20$F00000GUU3)
 #pivot longer
 tidy_data_s <- pivot_longer(mri10_20, cols = 2:980, names_to ="secid", values_to = "mri")
 
-mrixd <- unique(mri10_20[2:980])<=60
 
-unique()
+
 #mri von character in numeric
 tidy_data_s$mri <- as.numeric(tidy_data_s$mri)
 ```
