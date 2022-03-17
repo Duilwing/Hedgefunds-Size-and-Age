@@ -36,7 +36,7 @@ library(RColorBrewer)
 #Laden von Basedata, Auswahl der verwendeten Variablen
 basedata <- read_csv("DATA/basedata.csv")
 
-basedata <- select(basedata, name, secid, `Inception Date`,`Obsolete Date`, `Fund Size Date`, `Fund Size USD`)
+basedata <- select(basedata, name, secid, `Inception Date`,`Obsolete Date`, `Fund Size Date`, `Fund Size USD`, `Net Assets Date`,`Net Assets - Share Class USD`)
 
 ```
 
@@ -45,8 +45,8 @@ Im Anschluss wird ein Zeitintervall für die Analyse bestimmt. In der vorliegend
 ```{r, echo=FALSE}
 #Ersetzen der NAs für spätestes Ablesedatum und Auswahl der Funds jünger als 2005-01-01 und aktiv bis 2015
 
-age_final <- basedata %>% 
-    mutate(`Obsolete Date` = coalesce(`Obsolete Date`,`Fund Size Date`))%>%
+age_final <- basedata %>%
+  mutate(`Obsolete Date` = coalesce(`Obsolete Date`,`Fund Size Date`))%>%
   filter(`Inception Date`< "2005-01-01")%>%
   filter(`Obsolete Date`> "2015-01-01")
 
@@ -72,7 +72,7 @@ age_final <- age_final %>%
 
 age_final <- age_final%>%
   mutate(Class = case_when(
-Age_Years < 4  ~ "young", Age_Years >= 4 & Age_Years < 10 ~ "medium", Age_Years >= 10 ~ "old"))%>%
+Age_Years < 4  ~ "young", Age_Years >= 4 & Age_Years < 8 ~ "medium", Age_Years >= 8 ~ "old"))%>%
   arrange(secid, .by_group = FALSE)
 
 ggplot(age_final)+ geom_bar(aes(Class))+ theme_minimal()
@@ -81,39 +81,46 @@ ggplot(age_final)+ geom_bar(aes(Class))+ theme_minimal()
 Um Größenvergleiche durchzuführen,werden aus dem Set alle Funds ohne einen Wert für size gelöscht. [Im Anschluss wird ebenfalls das Interval 2005 bis 2015 gebildet. Als Stichprobe ergeben sich 89 aktive Funds]
 
 ```{r, echo=FALSE}
-#Für Größenvergleich Löschen aller Funds ohne Fund Size value
+#Für Größenvergleich Löschen aller Funds ohne Fund Size value oder Net Asset Value
 
-basedata_size <- filter(basedata, `Fund Size USD`>0)
+basedata_size <- filter(basedata, `Net Assets - Share Class USD`>0 | `Fund Size USD` >0 )
 
-#auch hier anlegen der Daten, filtern nach Zeitinterval
+#auch hier anlegen der Daten, filtern nach Zeitinterval 2010 bis 2020, dann Auswahl der Funds, die mindestens fünf Jahre in Interval aktiv
 
 size_final <- basedata_size %>% 
     mutate(`Obsolete Date` = coalesce(`Obsolete Date`,`Fund Size Date`))%>%
-  filter(`Inception Date`< "2005-01-01")%>%
-  filter(`Obsolete Date`> "2015-01-01")%>%
-  filter(`Fund Size Date`> "2005-01-01")%>%
-  filter(`Fund Size Date`> "2015-01-01")
+  filter(`Fund Size Date`>="2010-01-01" | `Net Assets Date`>= "2010-01-01")%>%
+  filter(`Obsolete Date`>= "2015-01-01")
 
-#oder nur filtern nach ablesedatum der size
-size_final <- basedata_size %>% 
-    mutate(`Obsolete Date` = coalesce(`Obsolete Date`,`Fund Size Date`))%>%
-  filter(`Fund Size Date`> "2015-01-01")
+#Klassenbildung für Größe
 
-#Pi: bekomme hier eine Fehlermeldung beim Knitten, dass das Objekt 'basedata_clean2000' nicht gefunden wurde. Habe es daher erstmal rausgenommen.
-#LS: ist behoben
+size_final <- size_final%>%
+  mutate(`Fund Size USD` = coalesce(`Fund Size USD`, `Net Assets - Share Class USD`))%>%
+  mutate(Class = case_when(`Fund Size USD`
+ <= 50000000 ~ "small", `Fund Size USD` > 50000000  & `Fund Size USD` <= 250000000 ~ "medium", `Fund Size USD` > 250000000 ~ "big"))%>%
+  arrange(secid, .by_group = FALSE)
+
+
+
+ggplot(size_final)+ geom_bar(aes(Class))+ theme_minimal()
 
 ```
 
-Im Anschluss wurden die weiteren Datensätze eingearbeitet und benannt. Zuerst der mri
+Im Anschluss wurden die weiteren Datensätze eingearbeitet und benannt. Zuerst der mri für den Zeitraum 2005-2015 zur Analyse des Alters und für 2010-2020 für die Größe.
 
 ```{r,echo=FALSE}
 #laden des Datensatzes "mri"
 mri <- read_csv("DATA/mri.csv")
 
-# date-variable als date bezeichnen, format dem in clean_final angleichen
+# date-variable als date bezeichnen, format dem in age/size_final angleichen
 mri$date <- as.Date(mri$date, format="%d.%m.%Y")
+```
 
-#filtern nach Zeitinterval
+
+
+
+```{r}
+#filtern nach Zeitinterval 2005-2015
 mri05_15 <- mri%>%
   filter(date>= "2005-01-01")%>%
   filter(date< "2015-01-01")
@@ -136,6 +143,27 @@ tidy_data <- pivot_longer(mri05_15, cols = 2:231, names_to ="secid", values_to =
 tidy_data$mri <- as.numeric(tidy_data$mri)
 ```
 
+```{r}
+#filtern nach Zeitinterval 2010-2020
+mri10_20 <- mri%>%
+  filter(date>= "2010-01-01")%>%
+  filter(date< "2020-01-01")
+
+#Umwandeln aller funds in character
+mri10_20$FHUSA04GGS <- as.character(mri10_20$FHUSA04GGS)
+mri10_20$FHUSA04B6U <- as.character(mri10_20$FHUSA04B6U)
+mri10_20$F00000GUU3 <- as.character(mri10_20$F00000GUU3)
+
+#pivot longer
+tidy_data_s <- pivot_longer(mri10_20, cols = 2:980, names_to ="secid", values_to = "mri")
+
+mrixd <- unique(mri10_20[2:980])<=60
+
+unique()
+#mri von character in numeric
+tidy_data_s$mri <- as.numeric(tidy_data_s$mri)
+```
+
 
 Als nächstes werden die factordata bearbeitet
 
@@ -147,10 +175,14 @@ factordata <- read_csv("DATA/factordata.csv")
 # date-variable als date bezeichnen, format dem in clean_final angleichen
 factordata$date <- as.Date(factordata$date, format="%d.%m.%Y")
 
-#filtern nach Zeitinterval
-factordata_final <- factordata%>%
+#filtern nach Zeitintervallen
+factordata05_15 <- factordata%>%
   filter(date>= "2005-01-01")%>%
   filter(date< "2015-01-01")
+
+factordata10_20 <- factordata%>%
+  filter(date>= "2010-01-01")%>%
+  filter(date< "2020-01-01")
 
 
 
@@ -230,7 +262,7 @@ Nun können Verschiedene Kennziffern erstellt werden.
 Dies wird erst für die Grundgesamtheit der Funds durchgeführt.
 
 ```{r,echo=FALSE}
-#return,HWM und DD für mri für die einzelnen funds
+#return,HWM und DD für mri für die einzelnen funds mit age
 
 tidy_data <- tidy_data %>% 
   group_by(secid) %>% 
@@ -298,6 +330,33 @@ MDD = mean(MDD))%>%
 summary_final <- bind_rows(summary_young,summary_medium,summary_old, .id = "Class")%>%
   mutate(Class= c("young","medium","old"))
 ```
+
+Jetzt für Size das Gleiche 
+```{r}
+#Umgang mit den NAs
+
+
+tidy_data_s <- tidy_data_s%>%
+  drop_na(mri)%>%
+  group_by(secid)%>% 
+  filter(sum(mri)>60)
+  
+
+summary_all_s <- tidy_data_s %>%
+  group_by(secid)%>%
+  summarise(Mean = mean(mri, na.rm = TRUE))
+  
+where()  
+
+
+
+
+
+
+
+
+```
+
 
 \newpage
 
