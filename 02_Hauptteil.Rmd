@@ -98,9 +98,8 @@ size_final <- size_final%>%
   mutate(`Fund Size USD` = coalesce(`Fund Size USD`, `Net Assets - Share Class USD`))%>%
   mutate(Class = case_when(`Fund Size USD`
  <= 50000000 ~ "small", `Fund Size USD` > 50000000  & `Fund Size USD` <= 250000000 ~ "medium", `Fund Size USD` > 250000000 ~ "big"))%>%
-  arrange(secid, .by_group = FALSE)
-
-
+  arrange(secid, .by_group = FALSE)%>%
+  select(name, secid,`Fund Size USD`, `Net Assets - Share Class USD`, Class)
 
 ggplot(size_final)+ geom_bar(aes(Class))+ theme_minimal()
 
@@ -157,7 +156,7 @@ mri10_20$FHUSA04B6U <- as.character(mri10_20$FHUSA04B6U)
 mri10_20$F00000GUU3 <- as.character(mri10_20$F00000GUU3)
 
 #pivot longer
-tidy_data_s <- pivot_longer(mri10_20, cols = 2:980, names_to ="secid", values_to = "mri")
+tidy_data_s <- pivot_longer(mri10_20, cols = 2:334, names_to ="secid", values_to = "mri")
 
 
 
@@ -260,7 +259,7 @@ Nun können Verschiedene Kennziffern erstellt werden.
 
 
 \\
-Dies wird erst für die Grundgesamtheit der Funds durchgeführt.
+Dies wird erst für die Grundgesamtheit der Funds aus der Periode 2005-2015 durchgeführt.
 
 ```{r,echo=FALSE}
 #return,HWM und DD für mri für die einzelnen funds mit age
@@ -288,7 +287,7 @@ Im Anschluss werden die gleichen Kennziffern für die drei Klassen für Alter be
 
 
 ```{r,echo=FALSE}
-#mean return, volatility,VaR, maxDD für die funds
+#mean return, volatility,VaR, maxDD für die funds bei Alter
 
 summary <- tidy_data %>% 
   group_by(secid) %>% 
@@ -333,27 +332,72 @@ summary_final <- bind_rows(summary_young,summary_medium,summary_old, .id = "Clas
 ```
 
 Jetzt für Size das Gleiche 
+
 ```{r}
-#Umgang mit den NAs
+
+#lag erstellen, dann return, hwm, dd bestimmen
+tidy_data_s <- tidy_data_s %>% 
+  group_by(secid) %>% 
+  mutate(lag_mri = lag(mri, n = 1), return = (mri-lag_mri)/lag_mri*100, hwm = cummax(mri), dd = (hwm - mri)/hwm)%>%
+  ungroup() %>% 
+  arrange(secid, date) %>%
+  select(!lag_mri)
 
 
-tidy_data_s <- tidy_data_s%>%
-  drop_na(mri)%>%
-  group_by(secid)%>% 
-  filter(sum(mri)>60)
-  
+#mean return, volatility,VaR, maxDD für gesamte Stichprobe
 
-summary_all_s <- tidy_data_s %>%
-  group_by(secid)%>%
-  summarise(Mean = mean(mri, na.rm = TRUE))
-  
-where()  
+summary_all_s <- tidy_data_s %>% 
+  summarise(Mean = mean(return, na.rm = TRUE), Volatility = sd(return, na.rm = TRUE), VaR = quantile(return, probs = 0.05, na.rm = TRUE),
+MDD = max(dd, na.rm = TRUE))
+```
+
+Und dann einzeln nochmal
+```{r}
+#mean return, volatility,VaR, maxDD für die funds
+
+summary_s <- tidy_data_s %>% 
+  group_by(secid) %>% 
+  summarise(Mean = mean(return, na.rm = TRUE), Volatility = sd(return, na.rm = TRUE), VaR = quantile(return, probs = 0.05, na.rm = TRUE),
+MDD = max(dd, na.rm = TRUE))%>%
+  arrange(secid, .by_group = FALSE)
+
+#Luca: hier bei fünf funds ein problem, das muss angeguckt werden
 
 
+#erstellen eines großen Datensets mit Klassen von klein,mittel, groß
+size_final_summary <- merge(size_final, summary_s, by = "secid")%>%
+  arrange(secid, .by_group = FALSE)%>%
+  select(secid, Class, Mean, Volatility, VaR, MDD )
+
+ggplot(size_final_summary)+geom_bar(aes(x=Class), fill="steelblue")+theme_minimal()
+
+#Erstellen der einzelnen Zusammenfassungen für die Klassen
+summary_small <- size_final_summary%>%
+  filter(Class=="small")%>%
+  summarise(Mean = mean(Mean), Volatility = mean(Volatility), VaR = mean(VaR),
+MDD = mean(MDD))%>%
+  mutate(Class="small")%>%
+  relocate(Class, .before = Mean)
+
+summary_medium_s <- size_final_summary%>%
+  filter(Class=="medium")%>%
+  summarise(Mean = mean(Mean), Volatility = mean(Volatility), VaR = mean(VaR),
+MDD = mean(MDD))%>%
+  mutate(Class="medium")%>%
+  relocate(Class, .before = Mean)
 
 
+summary_big <- size_final_summary%>%
+  filter(Class=="big")%>%
+  summarise(Mean = mean(Mean), Volatility = mean(Volatility), VaR = mean(VaR),
+MDD = mean(MDD))%>%
+  mutate(Class="big")%>%
+  relocate(Class, .before = Mean)
 
+#Zusammenfassen in einer summary
 
+summary_final_s <- bind_rows(summary_small,summary_medium_s,summary_big, .id = "Class")%>%
+  mutate(Class= c("young","medium","old"))
 
 
 ```
