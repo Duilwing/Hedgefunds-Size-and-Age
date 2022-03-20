@@ -90,8 +90,8 @@ basedata_size <- filter(basedata, `Net Assets - Share Class USD`>0 | `Fund Size 
 
 size_final <- basedata_size %>% 
     mutate(`Obsolete Date` = coalesce(`Obsolete Date`,`Fund Size Date`))%>%
-  filter(`Fund Size Date`>="2010-01-01" | `Net Assets Date`>= "2010-01-01")%>%
-  filter(`Obsolete Date`>= "2015-01-01")
+  filter(`Fund Size Date`>="2010-01-01" | `Net Assets Date`>= "2010-01-01")
+  #filter(`Obsolete Date`>= "2015-01-01") Pi: Obsolete Date rausgenommen
 
 #Klassenbildung für Größe
 
