@@ -36,6 +36,7 @@ library(RColorBrewer)
 #Laden von Basedata, Auswahl der verwendeten Variablen
 basedata <- read_csv("DATA/basedata.csv")
 
+
 basedata <- select(basedata, name, secid, `Inception Date`,`Obsolete Date`, `Fund Size Date`, `Fund Size USD`, `Net Assets Date`,`Net Assets - Share Class USD`)
 
 ```
@@ -72,7 +73,7 @@ age_final <- age_final %>%
 
 age_final <- age_final%>%
   mutate(Class = case_when(
-Age_Years < 4  ~ "young", Age_Years >= 4 & Age_Years < 8 ~ "medium", Age_Years >= 8 ~ "old"))%>%
+Age_Years < 2  ~ "young", Age_Years >= 2 & Age_Years < 4 ~ "medium", Age_Years >= 4 ~ "old"))%>%
   arrange(secid, .by_group = FALSE)
 
 ggplot(age_final)+ geom_bar(aes(Class))+ theme_minimal()
@@ -97,7 +98,7 @@ size_final <- basedata_size %>%
 size_final <- size_final%>%
   mutate(`Fund Size USD` = coalesce(`Fund Size USD`, `Net Assets - Share Class USD`))%>%
   mutate(Class = case_when(`Fund Size USD`
- <= 50000000 ~ "small", `Fund Size USD` > 50000000  & `Fund Size USD` <= 250000000 ~ "medium", `Fund Size USD` > 250000000 ~ "big"))%>%
+ <= 100000000 ~ "small", `Fund Size USD` > 100000000  & `Fund Size USD` <= 500000000 ~ "medium", `Fund Size USD` > 500000000 ~ "big"))%>%
   arrange(secid, .by_group = FALSE)%>%
   select(name, secid,`Fund Size USD`, `Net Assets - Share Class USD`, Class)
 
@@ -119,24 +120,20 @@ mri$date <- as.Date(mri$date, format="%d.%m.%Y")
 
 
 ```{r}
-#filtern nach Zeitinterval 2005-2015
+#filtern nach Zeitinterval 2005-2015, behalten werden alle funds länger gleich als 60 Monate gelaufen
+
+
 mri05_15 <- mri%>%
   filter(date>= "2005-01-01")%>%
-  filter(date< "2015-01-01")
-
-#Löschen aller Funds mit NAs, also keinen Werten für mri
-
-mri05_15[, 2:980][mri05_15[, 2:980] == "-NA"] <- NA
-
-mri05_15 <- mri05_15 %>%
-    select_if(~ !any(is.na(.)))
+  filter(date< "2015-01-01")%>%
+  keep(~ (sum(. >= 0) / length(.)) >= 0.5)
 
 #umwandeln aller funds in character, dann pivot_longer um daten zu reorganisieren
 mri05_15$FHUSA04GGS <- as.character(mri05_15$FHUSA04GGS)
 mri05_15$FHUSA04B6U <- as.character(mri05_15$FHUSA04B6U)
 mri05_15$F00000GUU3 <- as.character(mri05_15$F00000GUU3)
 
-tidy_data <- pivot_longer(mri05_15, cols = 2:231, names_to ="secid", values_to = "mri")
+tidy_data <- pivot_longer(mri05_15, cols = 2:715, names_to ="secid", values_to = "mri")
 
 #mri von character in numeric
 tidy_data$mri <- as.numeric(tidy_data$mri)
