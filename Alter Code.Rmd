@@ -1,0 +1,424 @@
+
+
+```{r, echo=FALSE}
+#laden der benötigten packages
+library(tidyverse)
+library(scales)
+library(lubridate)
+library(RColorBrewer)
+library(wesanderson)
+library(viridis)
+```
+
+```{r, echo=FALSE}
+#Laden von Basedata, Auswahl der verwendeten Variablen
+basedata <- read_csv("DATA/basedata.csv")
+
+
+basedata <- select(basedata, name, secid, `Inception Date`,`Obsolete Date`, `Fund Size Date`, `Fund Size USD`, `Net Assets Date`,`Net Assets - Share Class USD`)
+
+```
+
+
+```{r, echo=FALSE}
+#Für Alter: Ersetzen der NAs für spätestes Ablesedatum und Auswahl der Funds jünger als 2005-01-01
+
+age_final <- basedata %>%
+  mutate(`Obsolete Date` = coalesce(`Obsolete Date`,`Fund Size Date`))%>%
+  filter(`Inception Date`<= "2005-01-01")
+
+
+```
+
+```{r, echo=FALSE}
+#Für Größenvergleich Löschen aller Funds mit Fund Size value oder Net Asset Value unter einer Million
+
+basedata_size <- filter(basedata, `Net Assets - Share Class USD`>=1000000 | `Fund Size USD` >=1000000 )
+
+#filtern nach Zeitinterval ab 2010
+
+size_final <- basedata_size %>% 
+    mutate(`Obsolete Date` = coalesce(`Obsolete Date`,`Fund Size Date`))%>%
+  filter(`Fund Size Date`>="2010-01-01" | `Net Assets Date`>= "2010-01-01")
+
+
+```
+
+```{r,echo=FALSE}
+#laden des Datensatzes "mri"
+mri <- read_csv("DATA/mri.csv")
+
+# date-variable als date bezeichnen, format dem in age/size_final angleichen
+mri$date <- as.Date(mri$date, format="%d.%m.%Y")
+```
+
+```{r}
+#für Age: Filtern nach Zeitinterval 2005-2015, behalten werden alle funds länger gleich als 60 Monate gelaufen
+
+mri05_15 <- mri%>%
+  filter(date>= "2005-01-01")%>%
+  filter(date< "2015-01-01")%>%
+  keep(~ (sum(. >= 0) / length(.)) >= 0.5)
+
+#umwandeln aller funds in character, dann pivot_longer um daten zu reorganisieren
+mri05_15$FHUSA04GGS <- as.character(mri05_15$FHUSA04GGS)
+mri05_15$FHUSA04B6U <- as.character(mri05_15$FHUSA04B6U)
+mri05_15$F00000GUU3 <- as.character(mri05_15$F00000GUU3)
+
+tidy_data <- pivot_longer(mri05_15, cols = 2:715, names_to ="secid", values_to = "mri")
+
+#mri von character in numeric
+tidy_data$mri <- as.numeric(tidy_data$mri)
+
+```
+
+```{r}
+#Für Size: filtern nach Zeitinterval 2010-2020, behalten aller funds länger als 60 Monate gelaufen
+
+mri10_20 <- mri%>%
+  filter(date>= "2010-01-01")%>%
+  filter(date< "2020-01-01")%>%
+  keep(~ (sum(. >= 0) / length(.)) >= 0.5)
+  
+#Umwandeln aller funds in character
+mri10_20$FHUSA04GGS <- as.character(mri10_20$FHUSA04GGS)
+mri10_20$FHUSA04B6U <- as.character(mri10_20$FHUSA04B6U)
+mri10_20$F00000GUU3 <- as.character(mri10_20$F00000GUU3)
+
+#pivot longer
+tidy_data_s <- pivot_longer(mri10_20, cols = 2:334, names_to ="secid", values_to = "mri")
+
+#mri von character in numeric
+tidy_data_s$mri <- as.numeric(tidy_data_s$mri)
+```
+
+
+```{r,echo=FALSE}
+
+#einlesen der daten
+factordata <- read_csv("DATA/factordata.csv")
+
+# date-variable als date bezeichnen, format dem in clean_final angleichen
+factordata$date <- as.Date(factordata$date, format="%d.%m.%Y")
+
+#filtern nach Zeitintervallen Age:
+factordata05_15 <- factordata%>%
+  filter(date>= "2005-01-01")%>%
+  filter(date< "2015-01-01")
+
+#Size:
+factordata10_20 <- factordata%>%
+  filter(date>= "2010-01-01")%>%
+  filter(date< "2020-01-01")
+```
+
+
+
+```{r,echo=FALSE}
+#return,HWM und DD für mri für die einzelnen funds mit age
+
+tidy_data <- tidy_data %>% 
+  group_by(secid) %>% 
+  mutate(lag_mri = lag(mri, n = 1), return = mri/lag_mri-1, hwm = cummax(mri), dd = (hwm - mri)/hwm)%>%
+  ungroup() %>% 
+  arrange(secid, date) %>%
+  select(!lag_mri)
+
+
+#mean return, volatility,VaR, maxDD für gesamte Stichprobe
+
+summary_all <- tidy_data %>% 
+  summarise(Mean = 12*mean(return, na.rm = TRUE), Volatility = sqrt(12)*sd(return, na.rm = TRUE), VaR = quantile(return, probs = 0.05, na.rm = TRUE),
+MDD = max(dd, na.rm = TRUE))
+
+```
+
+
+
+```{r, echo=FALSE}
+
+#Alter als Differenz von der unteren Grenze 2005-01-01, Umwandlung in Jahre gerundet als neue Spalte
+
+age_final <- age_final %>%
+  mutate(Age_Int=as.Date("2005-01-01"))%>%
+  mutate(Age= (`Age_Int` - `Inception Date`))%>%
+  mutate((Month = round((Age/30.417)/12, digit=1)))%>%
+  mutate(Age_Years=as.numeric(`(Month = round((Age/30.417)/12, digit = 1))`))%>%
+  select(name, secid,`Inception Date`,`Obsolete Date`,Age_Years)
+
+# Bildung der Klassen für das Alter
+
+age_final <- age_final%>%
+  mutate(Class = case_when(
+Age_Years < 2  ~ "young", Age_Years >= 2 & Age_Years < 4 ~ "medium", Age_Years >= 4 ~ "old"))%>%
+  arrange(secid, .by_group = FALSE)
+
+```
+
+```{r,echo=FALSE}
+#mean return, volatility,VaR, maxDD für die funds bei Alter
+
+summary <- tidy_data %>% 
+  group_by(secid) %>% 
+  summarise(Mean = 12*mean(return, na.rm = TRUE), Volatility = sqrt(12)*sd(return, na.rm = TRUE), VaR = quantile(return, probs = 0.05, na.rm = TRUE),
+MDD = max(dd, na.rm = FALSE))%>%
+  arrange(secid, .by_group = FALSE)
+
+#erstellen eines großen Datensets mit Klassen von klein,mittel, groß
+age_final_summary <- merge(age_final, summary, by = "secid")%>%
+  arrange(secid, .by_group = FALSE)%>%
+  select(secid, Class, Mean, Volatility, VaR, MDD )
+
+
+#sortieren nach Klassen
+age_final_summary <- age_final_summary%>%
+  arrange(match(Class, c("young", "medium", "old")))
+
+#Festlegung Reihenfolge für plots
+age_final_summary$Class <- factor(age_final_summary$Class, levels = c("young", "medium", "old"))
+
+#plot mit viridis
+ggplot(age_final_summary)+geom_bar(aes(x=Class,y = ..prop.., group = 1), stat = "count", fill=(values=viridis(3)))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()
+
+#plot mit wes anderson farben ggplot(age_final_summary)+geom_bar(aes(x=Class,y = ..prop.., group = 1), stat = "count", fill=(values=wes_palette(n=3,"Darjeeling1")))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()
+
+```
+
+
+```{r}
+
+#Erstellen der einzelnen Zusammenfassungen für die Klassen
+summary_young <- age_final_summary%>%
+  filter(Class=="young")%>%
+  summarise(Mean = mean(Mean), Volatility = mean(Volatility), VaR = mean(VaR),
+MDD = mean(MDD, na.rm=TRUE))%>%
+  mutate(Class="young")%>%
+  relocate(Class, .before = Mean)
+
+summary_medium <- age_final_summary%>%
+  filter(Class=="medium")%>%
+  summarise(Mean = mean(Mean), Volatility = mean(Volatility), VaR = mean(VaR),
+MDD = mean(MDD, na.rm=TRUE))%>%
+  mutate(Class="medium")%>%
+  relocate(Class, .before = Mean)
+
+
+summary_old <- age_final_summary%>%
+  filter(Class=="old")%>%
+  summarise(Mean = mean(Mean), Volatility = mean(Volatility), VaR = mean(VaR),
+MDD = mean(MDD, na.rm=TRUE))%>%
+  mutate(Class="old")%>%
+  relocate(Class, .before = Mean)
+
+#Zusammenfassen in einer summary
+
+summary_final <- bind_rows(summary_young,summary_medium,summary_old, .id = "Class")%>%
+  mutate(Class= c("young","medium","old"))
+
+#plot der summary ggplot(summary_final)+ geom_bar(aes(x= Mean & Volatility, y = ..prop.., group = 3), stat = "count", fill=(values=wes_palette(n=3,"Darjeeling1")))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()
+
+```
+
+
+```{r}
+
+#Für Size: lag erstellen, dann return, hwm, dd bestimmen
+tidy_data_s <- tidy_data_s %>% 
+  group_by(secid) %>% 
+  mutate(lag_mri = lag(mri, n = 1), return = mri/lag_mri-1, hwm = cummax(mri), dd = (hwm - mri)/hwm)%>%
+  ungroup() %>% 
+  arrange(secid, date) %>%
+  select(!lag_mri)
+
+
+#mean return, volatility,VaR, maxDD für gesamte Stichprobe
+
+summary_all_s <- tidy_data_s %>% 
+  summarise(Mean = mean(return, na.rm = TRUE), Volatility = sd(return, na.rm = TRUE), VaR = quantile(return, probs = 0.05, na.rm = TRUE),
+MDD = max(dd, na.rm = TRUE))
+```
+Für die gesamte Stichprobe ergeben sich folgende Kennziffern\\
+
+Nun wird die Darstellung nach einzelnen Funds durchgeführt und diese ebenfalls Klassen zugeordnet
+```{r}
+#mean return, volatility,VaR, maxDD für die einzelnen funds
+#Luca: hier bei fünf funds für MDD ein problem, die werden daher rausgelöscht
+
+summary_s <- tidy_data_s %>% 
+  group_by(secid) %>% 
+  summarise(Mean = mean(return, na.rm = TRUE), Volatility = sd(return, na.rm = TRUE), VaR = quantile(return, probs = 0.05, na.rm = TRUE),
+MDD = max(dd, na.rm = TRUE))%>%
+  filter(MDD!="-Inf")%>%
+  arrange(secid, .by_group = FALSE)
+
+#erstellen eines großen Datensets 
+size_final_summary <- merge(size_final, summary_s, by = "secid")%>%
+  arrange(secid, .by_group = FALSE)
+
+
+```
+
+
+```{r}
+#Klassenbildung für Größe nach Jones
+
+size_final_j <- size_final_summary%>%
+  mutate(`Fund Size USD` = coalesce(`Fund Size USD`, `Net Assets - Share Class USD`))%>%
+  mutate(Class = case_when(`Fund Size USD`
+ <= 100000000 ~ "small", `Fund Size USD` > 100000000  & `Fund Size USD` <= 500000000 ~ "medium", `Fund Size USD` > 500000000 ~ "big"))%>%
+  arrange(secid, .by_group = FALSE)
+
+#sortierung nach klein -> groß
+size_final_j$Class <- factor(size_final_j$Class, levels = c("small", "medium", "big"))
+
+#plot mit viridis
+ggplot(size_final_j)+geom_bar(aes(x=Class,y = ..prop.., group = 1), stat = "count", fill=(values=viridis(3)))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()
+
+#plot mit wes anderson farben ggplot(size_final_j)+geom_bar(aes(x=Class,y = ..prop.., group = 1), stat = "count", fill=(values=wes_palette(n=3,"Darjeeling1")))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()
+
+```
+Die Darstellung der Verteilung mit Klassenbildung nach Jones zeigt eine klare Verzerrung hin zu kleinen Funds. So bilden die kleinen Funds mit 234 Vertretern ca. 77% der Verteilung, während große Funds mit 5,6% unterrepräsentiert sind. Somit ist keine Analyse für Funds ausserhalb der Kategorie klein gegeben.
+
+Um dem gerecht zu werden, wird ein anderer Ansatz, die Einteilung in "20% Centile" vorgenommen.
+```{r}
+# Einteilung der Klassen in 20 Centile
+
+
+size_final_summary <- size_final_summary%>%
+  mutate(`Fund Size USD` = coalesce(`Fund Size USD`, `Net Assets - Share Class USD`))%>%
+  mutate(Quartile_Class = ntile(`Fund Size USD`, 5))%>%
+  arrange(secid, .by_group = FALSE)
+```
+
+
+```{r}
+#Erstellen der einzelnen Zusammenfassungen für die Klassen
+
+summary_01 <- size_final_summary%>%
+  filter(Quartile_Class=="1")%>%
+  summarise(Mean = mean(Mean), Volatility = mean(Volatility), VaR = mean(VaR),
+MDD = mean(MDD))%>%
+  mutate(Quartile_Class="1")%>%
+  relocate(Quartile_Class, .before = Mean)
+
+summary_02 <- size_final_summary%>%
+  filter(Quartile_Class=="2")%>%
+  summarise(Mean = mean(Mean), Volatility = mean(Volatility), VaR = mean(VaR),
+MDD = mean(MDD))%>%
+  mutate(Quartile_Class="2")%>%
+  relocate(Quartile_Class, .before = Mean)
+
+summary_03 <- size_final_summary%>%
+  filter(Quartile_Class=="3")%>%
+  summarise(Mean = mean(Mean), Volatility = mean(Volatility), VaR = mean(VaR),
+MDD = mean(MDD))%>%
+  mutate(Quartile_Class="3")%>%
+  relocate(Quartile_Class, .before = Mean)
+
+summary_04 <- size_final_summary%>%
+  filter(Quartile_Class=="4")%>%
+  summarise(Mean = mean(Mean), Volatility = mean(Volatility), VaR = mean(VaR),
+MDD = mean(MDD))%>%
+  mutate(Quartile_Class="4")%>%
+  relocate(Quartile_Class, .before = Mean)
+
+summary_05 <- size_final_summary%>%
+  filter(Quartile_Class=="5")%>%
+  summarise(Mean = mean(Mean), Volatility = mean(Volatility), VaR = mean(VaR),
+MDD = mean(MDD))%>%
+  mutate(Quartile_Class="5")%>%
+  relocate(Quartile_Class, .before = Mean)
+
+
+
+#Zusammenfassen in einer summary
+
+summary_final_s <- bind_rows(summary_01,summary_02,summary_03,summary_04,summary_05, .id = "Quartile_Class")
+```
+
+Hieraus ergeben sich folgende Kennziffern für Size:
+
+
+\\
+Dies ergibt ein ganz anderes Bild als bei Jones(2007). Vergleicht man hier zum Beispiel die nach ihrer Definition kleinen Funds ergeben sich folgende Kennzahlen
+
+```{r}
+#für Jones:
+
+
+#Erstellen der einzelnen Zusammenfassungen für die Klassen
+summary_small_j <- size_final_j%>%
+  filter(Class=="small")%>%
+  summarise(Mean = mean(Mean), Volatility = mean(Volatility), VaR = mean(VaR),
+MDD = mean(MDD, na.rm=TRUE))%>%
+  mutate(Class="small")%>%
+  relocate(Class, .before = Mean)
+
+summary_medium_j <- size_final_j%>%
+  filter(Class=="medium")%>%
+  summarise(Mean = mean(Mean), Volatility = mean(Volatility), VaR = mean(VaR),
+MDD = mean(MDD, na.rm=TRUE))%>%
+  mutate(Class="medium")%>%
+  relocate(Class, .before = Mean)
+
+summary_big_j <- size_final_j%>%
+  filter(Class=="big")%>%
+  summarise(Mean = mean(Mean), Volatility = mean(Volatility), VaR = mean(VaR),
+MDD = mean(MDD, na.rm=TRUE))%>%
+  mutate(Class="big")%>%
+  relocate(Class, .before = Mean)
+
+summary_final_s_j <- bind_rows(summary_small_j,summary_medium_j,summary_big_j, .id = "Class")
+```
+
+
+```{r,echo=FALSE}
+#zum Spass: kleine darstellung für alle Funds, white noise
+
+ggplot(data=tidy_data) + aes(x=date, y = return) + geom_line()
+
+# plot aller funds mit mean und volatility, sortiert nach Klassen für Alter mit age_final_summary
+
+age_final_summary$Class <- factor(age_final_summary$Class, levels = c("young", "medium", "old"))
+
+ggplot(age_final_summary,
+  aes(x=Mean, y=Volatility, color=Class)) +
+  geom_point(size=1.75, alpha=0.8)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
+
+#wes anderson
+#scale_color_manual(values=wes_palette(n=3,"Darjeeling1"))+ theme_minimal()
+
+```
+
+```{r}
+# plot aller funds mit mean und volatility, sortiert nach Klassen für size mit size_final_summary 
+
+size_final_summary$Quartile_Class <- factor(size_final_summary$Quartile_Class, levels = c("1", "2", "3","4","5"))
+
+ggplot(size_final_summary,
+  aes(x=Mean, y=Volatility, color=Quartile_Class)) +
+  geom_point(size=1.75, alpha=0.8)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
+
+#scale_color_manual(values=wes_palette(n=5,"Darjeeling1"))+ theme_minimal()
+```
+
+
+```{r,echo=FALSE}
+#Darstellung Zshg. Volatility/Mean für Alter nur der drei Klassen
+
+summary_final$Class <- factor(summary_final$Class, levels = c("young", "medium", "old"))
+
+ggplot(summary_final,
+  aes(x=Mean, y=Volatility, color=Class)) +
+  geom_point(size=3, alpha=1)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
+```
+
+```{r}
+#Darstellung Zshg. Volatility/Mean für Size nur der fünf Klassen
+
+summary_final_s$Quartile_Class <- factor(summary_final_s$Quartile_Class, levels = c("1", "2", "3","4","5"))
+
+ggplot(summary_final_s,
+  aes(x=Mean, y=Volatility, color=Quartile_Class)) +
+  geom_point(size=3, alpha=1)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
+```
