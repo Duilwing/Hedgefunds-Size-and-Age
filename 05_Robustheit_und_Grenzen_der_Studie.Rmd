@@ -1,0 +1,24 @@
+Hier wird etwas über die Grenzen der Untersuchung stehen.
+
+Ammann and Moerth (2005) über Liang (1999):
+The assets of the funds are taken only from one point in time at the end of the period. Therefore the result may simply suggest that successful funds attract more money over time and therefore have a positive correlation to past performance. The study therefore does not necessarily measure the impact of fund assets on performance, but the impact of performance on fund assets.
+Auch Gregoriou and Rouah (2003) haben das AUM am inception date genutzt, und nicht das durchschnittliche AUM wie in der Literatur üblich.
+
+Ammann and Moerth (2005) über Amenc and Martellini (2003):
+The separation of the data into small and large funds is simplistic and not sufficient to measure the relationship between fund sizes and performance.
+
+Ammann and Moerth (2005) über Getmansky (2004):
+The use of quadratic regressions raises the question of data fitting. The use of the relationship between fund sizes and the performance of individual strategies is limited to the relatively low number of funds per strategy.
+
+Amenc and Martellini (2003):
+Given that it is a common practice or hedge fund managers to trade in options and/or follow dynamic trading strategies that generate non-linear exposures to standard asset classes (e.g. Fung and Hsieh (1997)), it is likely that using a simple CAPM formula to measure these manager’s alphas will lead to inaccurate estimates of their ability to generate superior risk-adjusted returns on the basis of superior picking or timing skills.
+
+Stafylas et al. (2016):
+a question that arises is whether indeed there is any point in comparing hedge funds with different lengths of tracks records that started in different market environments. In our opinion, that concern is important because the results of these comparisons are misleading and are not likely to give a real picture of hedge funds’ performance.
+
+
+- Durchführen der Regressionen mit Carhart's Alpha
+- Durchführen der Regressionen mit dem Modell von Fung and Hsieh (1997)
+
+
+\newpage

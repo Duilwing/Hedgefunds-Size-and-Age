@@ -1,0 +1,40 @@
+
+## Alpha
+
+Hier werden die Ergebnisse für Alpha dargestellt.
+
+Amenc and Martellini (2003):
+Given that it is a common practice or hedge fund managers to trade in options and/or follow dynamic trading strategies that generate non-linear exposures to standard asset classes (e.g. Fung and Hsieh (1997)), it is likely that using a simple CAPM formula to measure these manager’s alphas will lead to inaccurate estimates of their ability to generate superior risk-adjusted returns on the basis of superior picking or timing skills.
+
+
+## Carhart's alpha
+
+Hier werden die Ergebnisse für Carhart's alpha dargestellt.
+
+
+## Sharpe Ratios
+
+Hier werden die Sharpe Ratios der Fonds berechnet und dargestellt.
+
+
+## Information Ratio
+
+Hier werden die Information Ratios berechnet und dargestellt.
+
+
+## Sortino Ratio
+
+Hier werden die Sortino Ratios berechnet und dargestellt.
+
+
+## Coherence
+
+Hier wird etwas zur Kohärenz geschrieben stehen, wobei noch nicht klar ist was damit gemeint ist.
+
+
+## Persistence
+
+'Performance Persistence' beschreibt, wie stetig die Performance eines Hedge Funds ist - also wie konstant ein Hedge Fund performt.[@Stafylas.2016, p. 15]
+
+
+\newpage

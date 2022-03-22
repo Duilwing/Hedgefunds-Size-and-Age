@@ -308,28 +308,38 @@ ggplot(summary_final_size,
   aes(x=mean, y=volatility, color=Quantile_Class)) +
   geom_point(size=1.75, alpha=0.8)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
 ```
+
+
 ```{r}
 #Summary für alles nach Klassen für Alter
 #Erstellen der einzelnen Zusammenfassungen für die Klassen
 class_young <- summary_final_age%>%
   filter(age_class=="young")%>%
-  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
-ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
   mutate(class="young")%>%
   relocate(class, .before = mean_c)
 
 class_medium_age <- summary_final_age%>%
   filter(age_class=="medium")%>%
-  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
-ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
   mutate(class="medium")%>%
   relocate(class, .before = mean_c)
 
-
 class_old <- summary_final_age%>%
   filter(age_class=="old")%>%
-  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
-ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
   mutate(class="old")%>%
   relocate(class, .before = mean_c)
 
@@ -345,36 +355,51 @@ class_summary_final_age <- bind_rows(class_young,class_medium_age,class_old, .id
 
 class_01 <- summary_final_size%>%
   filter(Quantile_Class=="1")%>%
-  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
-ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
   mutate(class="1")%>%
   relocate(class, .before = mean_c)
 
 class_02 <- summary_final_size%>%
   filter(Quantile_Class=="2")%>%
-  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
-ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
   mutate(class="2")%>%
   relocate(class, .before = mean_c)
 
 class_03 <- summary_final_size%>%
   filter(Quantile_Class=="3")%>%
-  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
-ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
   mutate(class="3")%>%
   relocate(class, .before = mean_c)
 
 class_04 <- summary_final_size%>%
   filter(Quantile_Class=="4")%>%
-  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
-ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
   mutate(class="4")%>%
   relocate(class, .before = mean_c)
 
 class_05 <- summary_final_size%>%
   filter(Quantile_Class=="5")%>%
-  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
-ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
   mutate(class="5")%>%
   relocate(class, .before = mean_c)
 
@@ -392,23 +417,32 @@ class_summary_final_size <- bind_rows(class_01,class_02,class_03,class_04,class_
 
 class_small <- summary_final_size%>%
   filter(Class_Jones=="small")%>%
-  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
-ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
   mutate(class="small")%>%
   relocate(class, .before = mean_c)
 
 class_medium_size <- summary_final_size%>%
   filter(Class_Jones=="medium")%>%
-  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
-ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
   mutate(class="medium")%>%
   relocate(class, .before = mean_c)
 
 
 class_big <- summary_final_size%>%
   filter(Class_Jones=="big")%>%
-  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
-ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
   mutate(class="big")%>%
   relocate(class, .before = mean_c)
 
@@ -428,6 +462,7 @@ ggplot(class_summary_final_age,
   aes(x=mean_c, y=volatility_c, color=class)) +
   geom_point(size=3, alpha=1)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
 ```
+
 ```{r}
 #Darstellung Zshg. Volatility/Mean für Size nur der fünf Klassen
 
@@ -437,6 +472,7 @@ ggplot(class_summary_final_size,
   aes(x=mean_c, y=volatility_c, color=class)) +
   geom_point(size=3, alpha=1)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
 ```
+
 ```{r}
 #Darstellung Zshg. Volatility/Mean für Size nur der drei Klassen 
 

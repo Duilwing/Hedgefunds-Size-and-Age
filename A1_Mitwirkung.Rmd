@@ -1,0 +1,11 @@
+
+| Section | Student            |
+|--------:|--------------------|
+|       1 | Melissa Musterfrau |
+|     2.1 | Maxi Musterperson  |
+|     2.2 | Maxi Musterperson  |
+|     3.1 | Max Mustermann     |
+|     ... | ...                |
+
+
+We decided for a joint evaluation of the thesis.
