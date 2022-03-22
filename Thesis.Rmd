@@ -1,6 +1,6 @@
 ---
 title: "Jung gegen Alt: Einfluss von Alter und Größe auf die Performance von Hedgefunds"
-author1: "Luca "
+author1: "Luca"
 adress_street_and_no1: "Königsworther Platz 1"
 postcode1: "30167"
 place1: "Hannover"
@@ -8,7 +8,7 @@ matriculation_number1: "1234567"
 semester1: "1"
 course_of_study1: "Wirtschaftswissenschaft"
 # if you write in a team, put the data of the second author here:
-author2: "Melissa Musterfrau"
+author2: "Sebastian"
 adress_street_and_no2: "Königsworther Platz 2"
 postcode2: "30167"
 place2: "Hannover"
@@ -20,7 +20,7 @@ university: "Leibniz University Hannover"
 faculty: "School of Economics and Management" 
 institute: "Institute of Banking and Finance"
 advisor: "Prof. Dr. Maik Dierkes"
-altadvisor: "Dr. Sebastian Schrön"            #Pi: Ist ja mittlerweile Dr. der Gute
+altadvisor: "Dr. Sebastian Schrön"
 module: "Hedge Funds: Trading Strategies and Performance Evaluation"
 # Belegnummer:
 module_number: "374040"
@@ -50,16 +50,9 @@ editor_options:
 ```{r setup, include=FALSE, warning= FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 
-
-
-sharkdata <- "https://raw.githubusercontent.com/allisonhorst/stats-illustrations/master/other-stats-artwork/shark_raw.csv"
-
-#Pi: das kann raus - hatte er nur für den Graphen in Hai-Form drin
-
-
 library(knitr)
 library(tidyverse)
-library(tinytex) #Pi: sonst funktioniert das knitten nicht
+library(tinytex)
 
 ```
 
@@ -68,24 +61,45 @@ library(tinytex) #Pi: sonst funktioniert das knitten nicht
 ```{r child='01_Einleitung.Rmd'}
 ```
 
-# Hauptteil
+# Theoretischer Hintergrund
 
-```{r child='02_Hauptteil.Rmd'}
+```{r child='02_Theoretischer_Hintergrund.Rmd'}
 ```
 
-# Fazit
+# Datensatz und Methodik
 
-```{r child='03_Fazit.Rmd'}
+```{r child='03_Datensatz_und_Methodik.Rmd'}
 ```
 
-# Tabellenverzeichnis
+# Ergebnisse
 
-```{r child='04_Tabellenverzeichnis.Rmd'}
+```{r child='04_Ergebnisse.Rmd'}
 ```
+
+# Robustheit und Grenzen der Studie
+
+```{r child='05_Robustheit_und_Grenzen_der_Studie.Rmd'}
+```
+
+# Schlussfolgerung
+
+```{r child='06_Schlussfolgerung.Rmd'}
+```
+
+<!-- this command \appendix changes the numbering of sections to alphabetical -->
+
+```{=tex}
+\appendix
+\newpage
+```
+# Mitwirkung
+
+```{r child='A1_Mitwirkung.Rmd'}
+```
+
+<!-- Makes sure to have a new page for your literature -->
+
 
 \newpage
 
 # Literaturverzeichnis
-
-```{r child='05_Literaturverzeichnis.Rmd'}
-```
