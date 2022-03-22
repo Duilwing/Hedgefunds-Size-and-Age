@@ -1,21 +1,3 @@
-## Die Forschungsfrage
-
--   Darstellung der FF
--   Überblick über Literatur, vor allem Jones als Ausgangspaper
-
-Jones (2007) unterteilt in ihrem Paper "Examination of fund age and size and its impact on hedge fund performance" die untersuchten Hedgefunds in drei Größenkategorien auf. Größe, englisch "size" definiert sich nach Stafylas (2016) als Assets under Management (AUM). Jones unterscheidet zwischen Funds kleiner 100 Millionen USD, 100 bis 500M USD und Funds größer als 500M USD. Im Anschluss wird eine Performance-Analyse mittels des mon. returns der letzen zehn Jahre durchgeführt. Hierbei stellt Jones (2007) zwar höhere returns für kleine Funds fest, diese gehen aber auch mit einer höheren Volatilität einher. So ergibt als ..., während die Volatilität....
-
-Jones (2007) untersucht im Anschluss Performance-Unterschiede für Hedgefunds unterschiedlichen Alters. Auch hier werden drei Kategorien je nach Alter der Funds definiert, jünger als zwei Jahre, zwei bis vier Jahre und älter als vier Jahre. Bei der Analyse der returns stellt Jones (2007) einen Vorteil von jungen gegenüber etablierten, älteren Funds fest.
-
-Frumkin (2009): - Alter spielt eine Rolle, Größe nicht - Gleicher Zshg. von Alter/performance wie bei Jones (2007)
-
-### Einfluss von Alter und Größe auf Performance
-
-### Motivation hinter Forschungsfrage
-
-\newpage
-
-## Datensatz
 
 -   Darstellung des Datensatzes, hier mit ersten einfachen R-Operationen (summary und so)
 -   Wie haben wir die Hedgefunds ausgewählt?
@@ -92,6 +74,12 @@ tidy_data <- pivot_longer(mri05_15, cols = 2:715, names_to ="secid", values_to =
 
 #mri von character in numeric
 tidy_data$mri <- as.numeric(tidy_data$mri)
+
+df[is.na(df)] <- "foo"
+
+x[, 1:2][is.na(x[, 1:2])] <- 0
+
+
 ```
 
 ```{r}
@@ -266,8 +254,18 @@ age_final_summary <- merge(age_final, summary, by = "secid")%>%
   arrange(secid, .by_group = FALSE)%>%
   select(secid, Class, Mean, Volatility, VaR, MDD )
 
-#plot der summary mit Klassen mit wes anderson farben
-ggplot(age_final_summary)+geom_bar(aes(x=Class,y = ..prop.., group = 1), stat = "count", fill=(values=wes_palette(n=3,"Darjeeling1")))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()
+
+#sortieren nach Klassen
+age_final_summary <- age_final_summary%>%
+  arrange(match(Class, c("young", "medium", "old")))
+
+#Festlegung Reihenfolge für plots
+age_final_summary$Class <- factor(age_final_summary$Class, levels = c("young", "medium", "old"))
+
+#plot mit viridis
+ggplot(age_final_summary)+geom_bar(aes(x=Class,y = ..prop.., group = 1), stat = "count", fill=(values=viridis(3)))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()
+
+#plot mit wes anderson farben ggplot(age_final_summary)+geom_bar(aes(x=Class,y = ..prop.., group = 1), stat = "count", fill=(values=wes_palette(n=3,"Darjeeling1")))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()
 
 ```
 
@@ -359,9 +357,14 @@ size_final_j <- size_final_summary%>%
  <= 100000000 ~ "small", `Fund Size USD` > 100000000  & `Fund Size USD` <= 500000000 ~ "medium", `Fund Size USD` > 500000000 ~ "big"))%>%
   arrange(secid, .by_group = FALSE)
 
+#sortierung nach klein -> groß
+size_final_j$Class <- factor(size_final_j$Class, levels = c("small", "medium", "big"))
 
-#plot mit wes anderson farben
-ggplot(size_final_j)+geom_bar(aes(x=Class,y = ..prop.., group = 1), stat = "count", fill=(values=wes_palette(n=3,"Darjeeling1")))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()
+#plot mit viridis
+ggplot(size_final_j)+geom_bar(aes(x=Class,y = ..prop.., group = 1), stat = "count", fill=(values=viridis(3)))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()
+
+#plot mit wes anderson farben ggplot(size_final_j)+geom_bar(aes(x=Class,y = ..prop.., group = 1), stat = "count", fill=(values=wes_palette(n=3,"Darjeeling1")))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()
+
 ```
 Die Darstellung der Verteilung mit Klassenbildung nach Jones zeigt eine klare Verzerrung hin zu kleinen Funds. So bilden die kleinen Funds mit 234 Vertretern ca. 77% der Verteilung, während große Funds mit 5,6% unterrepräsentiert sind. Somit ist keine Analyse für Funds ausserhalb der Kategorie klein gegeben.
 
@@ -468,15 +471,53 @@ Eine einfache Darstellung der returns ist nicht hilfreich, erst nach Klassifizie
 ```{r,echo=FALSE}
 #zum Spass: kleine darstellung für alle Funds, white noise
 
-#ggplot(data=tidy_data) + aes(x=date, y = return) + geom_line()
+ggplot(data=tidy_data) + aes(x=date, y = return) + geom_line()
+
+# plot aller funds mit mean und volatility, sortiert nach Klassen für Alter mit age_final_summary
+
+age_final_summary$Class <- factor(age_final_summary$Class, levels = c("young", "medium", "old"))
+
+ggplot(age_final_summary,
+  aes(x=Mean, y=Volatility, color=Class)) +
+  geom_point(size=1.75, alpha=0.8)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
+
+#wes anderson
+#scale_color_manual(values=wes_palette(n=3,"Darjeeling1"))+ theme_minimal()
+
 ```
 
+```{r}
+# plot aller funds mit mean und volatility, sortiert nach Klassen für size mit age_final_summary 
+
+size_final_summary$Quartile_Class <- factor(size_final_summary$Quartile_Class, levels = c("1", "2", "3","4","5"))
+
+ggplot(size_final_summary,
+  aes(x=Mean, y=Volatility, color=Quartile_Class)) +
+  geom_point(size=1.75, alpha=0.8)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
+
+#scale_color_manual(values=wes_palette(n=5,"Darjeeling1"))+ theme_minimal()
+```
 
 
 ```{r,echo=FALSE}
-#Darstellung Zshg. Volatility/Mean für Alter
-#ggplot(data=summary_final) + geom_point(aes(x=Volatility, y = Mean, color = Class)) + theme_minimal()
+#Darstellung Zshg. Volatility/Mean für Alter nur der drei Klassen
+
+summary_final$Class <- factor(summary_final$Class, levels = c("young", "medium", "old"))
+
+ggplot(summary_final,
+  aes(x=Mean, y=Volatility, color=Class)) +
+  geom_point(size=3, alpha=1)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
 ```
+```{r}
+#Darstellung Zshg. Volatility/Mean für Size nur der fünf Klassen
+
+summary_final_s$Quartile_Class <- factor(summary_final_s$Quartile_Class, levels = c("1", "2", "3","4","5"))
+
+ggplot(summary_final_s,
+  aes(x=Mean, y=Volatility, color=Quartile_Class)) +
+  geom_point(size=3, alpha=1)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
+```
+
 
 \newpage
 
