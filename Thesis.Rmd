@@ -36,7 +36,7 @@ output:
     keep_tex: false
     number_sections: true
 geometry: "a4paper, left=2cm,right=5cm,top=3cm,bottom=3cm"
-bibliography: BIB/example_bibliography.bib
+bibliography: BIB/bibliography.bib
 csl: CSL/apa.csl
 fontsize: 11pt
 linestretch: 1.5
