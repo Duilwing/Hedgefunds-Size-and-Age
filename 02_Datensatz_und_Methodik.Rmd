@@ -13,6 +13,7 @@ Ammann und Moerth (2005):
 library(tidyverse)
 library(tinytex)
 library(broom)
+library(viridis)
 
 ```
 
@@ -231,16 +232,220 @@ summary_final_size <- final_data_size %>%
   mutate(ir = sqrt(12)*alpha/idiosyncratic_risk,
          alpha = 12*alpha) %>%
   left_join(base_data_size, by = "secid") %>%  # Hinzufügen der Variablen Name, Alter und Alters-Klasse
-  mutate(Quantile_Class = ntile(`size`, 5)) %>% # Einstufung nach Klassen
-  select(name, secid, mean, volatility, sr, alpha, ir, size, Quantile_Class)
+  mutate(Quantile_Class = ntile(`size`, 5)) %>%
+  mutate(Class_Jones= case_when(`size`
+ <= 100000000 ~ "small", `size` > 100000000  & `size` <= 500000000 ~ "medium", `size` > 500000000 ~ "big"))%>%              # Einstufung nach Klassen nach Jones
+  select(name, secid, mean, volatility, sr, alpha, ir, size, Quantile_Class, Class_Jones)
 
+```
+Zuerst müssen die Daten aus dem datensatz "Basedata" geladen und die benötigten Variablen ausgesucht werden.
+Um Altersvergleiche zu bestimmen, müssen das Alter bzw. die Lebensspanne der funds bestimmt werden.Als Alter wird das Alter zum Beginn des Intervalls verwendet.
+Im Anschluss wird ein Zeitintervall für die Analyse bestimmt. In der vorliegenden Analyse werden nur Funds, die vor 2005 gegründet wurden, untersucht. Für einige Funds wird kein Obsolete Date aufgeführt. Da aber häufig Ablesedaten für die size aufgeführt werden, wird für alle NAs das Ablesedatum der Größe eingefügt. Liegt dieses ebenfalls nicht vor, werden diese Funds nicht berücksichtigt.
+Um Größenvergleiche durchzuführen,werden aus dem Set alle Funds mit einem Wert für size oder Net Asset Value von unter einer Million USD gelöscht. Im Anschluss wird das Interval für alle Funds aktiv ab 2010 gebildet und die Klasseneinteilung nach Jones(2007) vorgenommen.
+Im Anschluss wurden die weiteren Datensätze eingearbeitet und benannt. Zuerst der mri für den Zeitraum 2005-2015 zur Analyse des Alters und für 2010-2020 für die Größe.
+
+```{r}
+#sortieren nach Klassen
+summary_final_age <- summary_final_age%>%
+  arrange(match(age_class, c("young", "medium", "old")))
+
+#Festlegung Reihenfolge für plots
+summary_final_age$age_class <- factor(summary_final_age$age_class, levels = c("young", "medium", "old"))
+
+#plot mit viridis
+ggplot(summary_final_age)+geom_bar(aes(x=age_class,y = ..prop.., group = 1), stat = "count", fill=(values=viridis(3)))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()
+```
+
+Nach Filtern und Bestimmen der Klassen mit den Größen jung als unter zwei Jahre, medium als zwischen zwei und vier und alt als alle funds über vier ergibt sich die in Figure () dargestellte Verteilung. Insgesamt werden ... Funds berücksichtigt. Auch wenn alte Funds mit einer Anzahl von ... ca. ...% der Verteilung stellen, ist die Anzahl für junge () und mittlere () Funds ausreichend groß für eine weitere Analyse. Hier folgt die Arbeit der Einteilung von Jones(2007).
+
+```{r}
+#sortieren nach Klassen
+summary_final_size <- summary_final_size%>%
+  arrange(match(Class_Jones, c("small", "medium", "big")))
+
+#Festlegung Reihenfolge für plots
+summary_final_size$Class_Jones <- factor(summary_final_size$Class_Jones, levels = c("small", "medium", "big"))
+
+#plot mit viridis
+ggplot(summary_final_size)+geom_bar(aes(x=Class_Jones,y = ..prop.., group = 1), stat = "count", fill=(values=viridis(3)))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()
 ```
 
 
+Die Darstellung der Verteilung mit Klassenbildung nach Jones zeigt eine klare Verzerrung hin zu kleinen Funds. So bilden die kleinen Funds mit ... Vertretern ca. ...% der Verteilung, während große Funds mit ...% unterrepräsentiert sind. Somit ist keine Analyse für Funds ausserhalb der Kategorie klein gegeben.
+
+Um dem gerecht zu werden, wird ein anderer Ansatz, die Einteilung in "20% Centile" vorgenommen.
 
 ## Deskriptive Statistik
 
-Hier werden die deskriptiven Statistiken dargestellt.
+Zuerst werden Kennziffern für gesamten Datensätze bestimmt.\\
+
+Im Anschluss werden die gleichen Kennziffern für die drei Klassen für Alter bestimmt. Um Altersvergleiche zu bestimmen, müssen das Alter bzw. die Lebensspanne der funds bestimmt werden.Als Alter wird das Alter zum Beginn des Intervalls verwendet.
+
+
+```{r}
+#zum Spass: kleine darstellung für alle Funds bei Age, white noise
+
+ggplot(data=tidy_return_age) + aes(x=date, y = ret) + geom_line()
+```
+
+Eine einfache Darstellung der returns ist nicht hilfreich, erst nach Klassifizierung und Bearbeitung der Daten ergeben sich die Zusammenhänge.
+
+```{r}
+# plot aller funds mit mean und volatility, sortiert nach Klassen für Alter mit summary_final_age
+
+
+ggplot(summary_final_age,
+  aes(x=mean, y=volatility, color=age_class)) +
+  geom_point(size=1.75, alpha=0.8)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
+```
+
+```{r}
+# plot aller funds mit mean und volatility, sortiert nach Klassen für Size mit summary_final_size
+
+summary_final_size$Quantile_Class <- factor(summary_final_size$Quantile_Class, levels = c("1", "2", "3","4","5"))
+
+ggplot(summary_final_size,
+  aes(x=mean, y=volatility, color=Quantile_Class)) +
+  geom_point(size=1.75, alpha=0.8)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
+```
+```{r}
+#Summary für alles nach Klassen für Alter
+#Erstellen der einzelnen Zusammenfassungen für die Klassen
+class_young <- summary_final_age%>%
+  filter(age_class=="young")%>%
+  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
+ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  mutate(class="young")%>%
+  relocate(class, .before = mean_c)
+
+class_medium_age <- summary_final_age%>%
+  filter(age_class=="medium")%>%
+  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
+ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  mutate(class="medium")%>%
+  relocate(class, .before = mean_c)
+
+
+class_old <- summary_final_age%>%
+  filter(age_class=="old")%>%
+  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
+ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  mutate(class="old")%>%
+  relocate(class, .before = mean_c)
+
+#Zusammenfassen in einer summary
+
+class_summary_final_age <- bind_rows(class_young,class_medium_age,class_old, .id = "age_class")%>%
+  mutate(class= c("young","medium","old"))%>%
+  select(2:7)
+```
+
+```{r}
+#Erstellen der einzelnen Zusammenfassungen für die Klassen bei Size mit Quantilen
+
+class_01 <- summary_final_size%>%
+  filter(Quantile_Class=="1")%>%
+  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
+ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  mutate(class="1")%>%
+  relocate(class, .before = mean_c)
+
+class_02 <- summary_final_size%>%
+  filter(Quantile_Class=="2")%>%
+  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
+ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  mutate(class="2")%>%
+  relocate(class, .before = mean_c)
+
+class_03 <- summary_final_size%>%
+  filter(Quantile_Class=="3")%>%
+  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
+ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  mutate(class="3")%>%
+  relocate(class, .before = mean_c)
+
+class_04 <- summary_final_size%>%
+  filter(Quantile_Class=="4")%>%
+  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
+ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  mutate(class="4")%>%
+  relocate(class, .before = mean_c)
+
+class_05 <- summary_final_size%>%
+  filter(Quantile_Class=="5")%>%
+  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
+ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  mutate(class="5")%>%
+  relocate(class, .before = mean_c)
+
+
+#Zusammenfassen in einer summary
+
+class_summary_final_size <- bind_rows(class_01,class_02,class_03,class_04,class_05, .id = "age_class")%>%
+  mutate(class= c("1","2","3","4","5"))%>%
+  select(2:7)
+```
+
+```{r}
+#Summary für alles nach Klassen für Size nach Jones
+#Erstellen der einzelnen Zusammenfassungen für die Klassen
+
+class_small <- summary_final_size%>%
+  filter(Class_Jones=="small")%>%
+  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
+ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  mutate(class="small")%>%
+  relocate(class, .before = mean_c)
+
+class_medium_size <- summary_final_size%>%
+  filter(Class_Jones=="medium")%>%
+  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
+ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  mutate(class="medium")%>%
+  relocate(class, .before = mean_c)
+
+
+class_big <- summary_final_size%>%
+  filter(Class_Jones=="big")%>%
+  summarise(mean_c = mean(mean), volatility_c = mean(volatility), sr_c = mean(sr),
+ir_c=mean(ir), alpha_c=mean(alpha))%>%
+  mutate(class="big")%>%
+  relocate(class, .before = mean_c)
+
+#Zusammenfassen in einer summary
+
+class_summary_final_size_jones <- bind_rows(class_small,class_medium_size,class_big, .id = "age_class")%>%
+  mutate(class= c("small","medium","big"))%>%
+  select(2:7)
+```
+
+```{r}
+#Darstellung Zshg. Volatility/Mean für Alter nur der drei Klassen class_summary_final_age
+
+class_summary_final_age$class <- factor(class_summary_final_age$class, levels = c("young", "medium", "old"))
+
+ggplot(class_summary_final_age,
+  aes(x=mean_c, y=volatility_c, color=class)) +
+  geom_point(size=3, alpha=1)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
+```
+```{r}
+#Darstellung Zshg. Volatility/Mean für Size nur der fünf Klassen
+
+class_summary_final_size$class <- factor(class_summary_final_size$class, levels = c("1", "2", "3","4","5"))
+
+ggplot(class_summary_final_size,
+  aes(x=mean_c, y=volatility_c, color=class)) +
+  geom_point(size=3, alpha=1)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
+```
+```{r}
+#Darstellung Zshg. Volatility/Mean für Size nur der drei Klassen 
+
+class_summary_final_size_jones$class <- factor(class_summary_final_size_jones$class, levels = c("small", "medium", "big"))
+
+ggplot(class_summary_final_size_jones,
+  aes(x=mean_c, y=volatility_c, color=class)) +
+  geom_point(size=3, alpha=1)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
+```
 
 
 ## Performancemaße
