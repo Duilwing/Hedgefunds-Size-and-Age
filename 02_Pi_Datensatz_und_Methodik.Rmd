@@ -1,0 +1,234 @@
+
+## Selektion des Datensatzes
+
+Hier werden wir beschreiben, wie wir die Daten ausgesucht haben.
+
+Ammann und Moerth (2005):
+"The data prior to 1994 have been backfilled by hedge fund managers starting to report in 1994 or later. Therefore, data prior to 1994 contain a number of biases and have not been used for this analysis."
+
+
+<!--Laden der benötigten Packages-->
+```{r loading packages, include=FALSE, warning= FALSE}
+
+library(tidyverse)
+library(tinytex)
+library(broom)
+
+```
+
+
+<!--Laden der Informationen zu den einzelnen Hedgefunds-->
+```{r base_data, include=FALSE, warning= FALSE}
+
+base_data <- read_csv("./DATA/basedata.csv") %>%
+  #filter(`Morningstar Category` != "HF Fund of Funds - Equity") %>%
+  select(`name`, `secid`, `Inception Date`, `Obsolete Date`, `Status`, `Net Assets Date`,
+         `Net Assets - Share Class USD`, `Fund Size Date`, `Fund Size USD`)
+
+base_data_age <- base_data %>%
+  filter(`Inception Date` <= "2005-01-01") %>% #Nur Fonds die vor/am 2005-01-01 gegründet wurden
+  mutate(age_y = as.numeric(round((as.Date("2005-01-01") - `Inception Date`)/365))) %>% #Berechnung Alter
+  mutate(age_class = case_when(                # Erstellung der Altersklassen
+    age_y < 2 ~ "young",
+    age_y >= 2 & age_y <=4 ~ "medium",
+    age_y > 4 ~ "old")) %>%
+  arrange(secid, .by_group = FALSE) %>%
+  select(`name`, `secid`, `age_y`, `age_class`)
+
+base_data_size <- base_data %>%
+  mutate(`size` = coalesce(`Fund Size USD`, `Net Assets - Share Class USD`)) %>% # Gemergte Variable 'size'
+  mutate(`size_date` = coalesce(`Fund Size Date`, `Net Assets Date`)) %>% # Gemergte Variable 'size date'
+  filter(`size` >= 1000000 & `size_date` >= "2010-01-01") %>% # Nur Fonds mit Mindestgröße & akt. Size-Date
+  mutate(quantile_class = ntile(`size`, 5)) %>% # Einstufung nach Klassen
+  arrange(secid, .by_group = FALSE) %>%
+  select(`name`, `secid`, `size`, `quantile_class`)
+
+
+```
+
+
+<!--Laden der Faktor-Daten-->
+```{r factor_data, include=FALSE, warning= FALSE}
+
+factor_data <- read_csv("./DATA/factordata.csv",
+    col_types = cols(
+    date = col_date(format = "%d%.%m%.%Y"))) %>%
+    select(date, mktrf, smb, hml, umd, rf)
+
+factor_data_age <- factor_data %>%
+  filter(date >= "2004-12-31" & date <= "2015-12-31") # Einschränken auf den Zeitraum 01/2005-12/2015
+
+factor_data_size <- factor_data %>%
+  filter(date >= "2009-12-31") # Einschränken auf den Zeitraum 01/2010-08/2020
+
+
+# mktrf = market reference
+# smb = Size factor; small-minus-big
+# hml = Value factor; high-minus-low
+# rmw = robust-minus-weak
+# cma = conservative-minus-aggressive
+# rf = risk free rate
+# umd = Momentum factor; up-minus-down
+
+```
+
+
+<!--Laden des raw_data Datensatzes-->
+```{r raw_data, include=FALSE, warning= FALSE}
+
+raw_data <- read_csv("./DATA/mri.csv",
+                    na = "-NA",
+                    col_types = cols(
+                    date = col_date(format = "%d%.%m%.%Y")))
+
+raw_data_age <- raw_data %>%
+  filter(date >= "2004-12-31" & date <= "2015-12-31") # Einschränken auf den Zeitraum 01/2005-12/2015
+                                                      # Hier fehlt noch die Syntax mit den 60 Datenpunkten
+
+raw_data_size <- raw_data %>%
+  filter(date >= "2009-12-31") # Einschränken auf den Zeitraum 01/2010-08/2020
+                               # Hier fehlt noch die Syntax mit den 60 Datenpunkten
+
+
+```
+
+
+<!--Eingrenzen von raw_data entsprechend der Selektion in base_data-->
+```{r, include=FALSE, warning= FALSE}
+
+# Für Age:
+
+list_age <- base_data_age$secid %>%    # Liste mit Fonds, die für die Stichprobe "Age" aus dem base_data
+  c(., "date")                         # Datensatz gefiltert wurden
+
+raw_data_age_funds <- raw_data_age %>% # Erstellen eines Subsets von raw_data, welches nur die Fonds aus
+  select(all_of(list_age)) %>%         # der zuvor erstellten Age-Liste enthält
+  relocate(date)
+
+
+# Für Size:
+
+list_size <- base_data_size$secid %>%    # Liste mit Fonds, die für die Stichprobe "Size" aus dem base_data
+  c(., "date")                           # Datensatz gefiltert wurden
+
+raw_data_size_funds <- raw_data_size %>% # Erstellen eines Subsets von raw_data, welches nur die Fonds aus
+  select(all_of(list_size)) %>%          # der zuvor erstellten Size-Liste enthält
+  relocate(date)
+
+```
+
+
+<!--Aufräumen (tidy) und Return-Berechnung von beiden raw_data Datensätzen-->
+```{r}
+
+# Für Age:
+tidy_return_age <- raw_data_age_funds %>%
+      pivot_longer(cols = !date,
+      names_to = "secid",
+      values_to = "prc") %>%
+      group_by(secid) %>%
+      mutate(ret = prc/lag(prc, n = 1)-1) %>%
+      ungroup() %>%
+      arrange(secid, date) %>%
+      filter(!is.na(prc))
+
+# Für Size:
+tidy_return_size <- raw_data_size_funds %>%
+      pivot_longer(cols = !date,
+      names_to = "secid",
+      values_to = "prc") %>%
+      group_by(secid) %>%
+      mutate(ret = prc/lag(prc, n = 1)-1) %>%
+      ungroup() %>%
+      arrange(secid, date) %>%
+      filter(!is.na(prc))
+
+
+```
+
+
+<!--Mergen von tidy_data und factor_data-->
+```{r}
+
+# Für Age:
+final_data_age <- left_join(tidy_return_age, factor_data_age, by = "date") %>%
+      mutate(retrf = ret - rf)
+
+# Für Size:
+final_data_size <- left_join(tidy_return_size, factor_data_size, by = "date") %>%
+      mutate(retrf = ret - rf)
+
+
+
+```
+
+
+<!--IR und SR in einem Schritt für Age-->
+```{r, echo = TRUE}
+
+alphas_final_age <- final_data_age %>%
+  group_by(secid) %>%
+  do(tidy(lm(retrf~mktrf, data = .)))  %>% 
+  filter(term == "(Intercept)") %>% 
+  select(secid, estimate) %>% 
+  rename(alpha = estimate)
+
+
+summary_final_age <- final_data_age %>%
+  group_by(secid) %>%
+  do(augment(lm(retrf~mktrf, data = .)))  %>% 
+  summarise(idiosyncratic_risk = sd(.resid, na.rm = TRUE), #.resid sind die Residuale
+            mean = 12*mean(retrf, na.rm = TRUE),
+            volatility = sqrt(12)*sd(retrf, na.rm = TRUE),
+            sr = mean/volatility) %>% 
+  left_join(alphas_final_age, by = "secid") %>% # Hinzufügen der Alphas zum Datensatz
+  mutate(ir = sqrt(12)*alpha/idiosyncratic_risk,
+         alpha = 12*alpha) %>% 
+  left_join(base_data_age, by = "secid") %>%  # Hinzufügen der Variablen Name, Alter und Alters-Klasse
+  select(name, secid, mean, volatility, sr, alpha, ir, age_y, age_class)
+
+view(summary_final_age)
+  
+```
+
+
+<!--IR und SR in einem Schritt für Size-->
+```{r, echo = TRUE}
+
+alphas_final_size <- final_data_size %>%
+  group_by(secid) %>%
+  do(tidy(lm(retrf~mktrf, data = .)))  %>% 
+  filter(term == "(Intercept)") %>% 
+  select(secid, estimate) %>% 
+  rename(alpha = estimate)
+
+
+summary_final_size <- final_data_size %>%
+  group_by(secid) %>%
+  do(augment(lm(retrf~mktrf, data = .)))  %>% 
+  summarise(idiosyncratic_risk = sd(.resid, na.rm = TRUE), #.resid sind die Residuale
+            mean = 12*mean(retrf, na.rm = TRUE),
+            volatility = sqrt(12)*sd(retrf, na.rm = TRUE),
+            sr = mean/volatility) %>% 
+  left_join(alphas_final_size, by = "secid") %>% # Hinzufügen der Alphas zum Datensatz
+  mutate(ir = sqrt(12)*alpha/idiosyncratic_risk,
+         alpha = 12*alpha) %>% 
+  left_join(base_data_size, by = "secid") %>%  # Hinzufügen der Variablen Name, Alter und Alters-Klasse
+  select(name, secid, mean, volatility, sr, alpha, ir, size, quantile_class)
+
+view(summary_final_size)
+  
+```
+
+
+
+## Deskriptive Statistik
+
+Hier werden die deskriptiven Statistiken dargestellt.
+
+
+## Performancemaße
+
+Hier werden die genutzten Performancemaße vorgestellt.
+
+\newpage
