@@ -21,7 +21,7 @@ library(broom)
 ```{r base_data, include=FALSE, warning= FALSE}
 
 base_data <- read_csv("./DATA/basedata.csv") %>%
-  #filter(`Morningstar Category` != "HF Fund of Funds - Equity") %>%
+  filter(`Morningstar Category` != "HF Fund of Funds - Equity") %>%
   select(`name`, `secid`, `Inception Date`, `Obsolete Date`, `Status`, `Net Assets Date`,
          `Net Assets - Share Class USD`, `Fund Size Date`, `Fund Size USD`)
 
@@ -39,9 +39,8 @@ base_data_size <- base_data %>%
   mutate(`size` = coalesce(`Fund Size USD`, `Net Assets - Share Class USD`)) %>% # Gemergte Variable 'size'
   mutate(`size_date` = coalesce(`Fund Size Date`, `Net Assets Date`)) %>% # Gemergte Variable 'size date'
   filter(`size` >= 1000000 & `size_date` >= "2010-01-01") %>% # Nur Fonds mit Mindestgröße & akt. Size-Date
-  mutate(quantile_class = ntile(`size`, 5)) %>% # Einstufung nach Klassen
   arrange(secid, .by_group = FALSE) %>%
-  select(`name`, `secid`, `size`, `quantile_class`)
+  select(`name`, `secid`, `size`)
 
 
 ```
@@ -56,10 +55,10 @@ factor_data <- read_csv("./DATA/factordata.csv",
     select(date, mktrf, smb, hml, umd, rf)
 
 factor_data_age <- factor_data %>%
-  filter(date >= "2004-12-31" & date <= "2015-12-31") # Einschränken auf den Zeitraum 01/2005-12/2015
+  filter(date >= "2005-01-01" & date < "2015-01-01") # Einschränken auf den Zeitraum 01/2005-01/2015
 
 factor_data_size <- factor_data %>%
-  filter(date >= "2009-12-31") # Einschränken auf den Zeitraum 01/2010-08/2020
+  filter(date >= "2010-01-01") # Einschränken auf den Zeitraum 01/2010-08/2020
 
 
 # mktrf = market reference
@@ -77,17 +76,21 @@ factor_data_size <- factor_data %>%
 ```{r raw_data, include=FALSE, warning= FALSE}
 
 raw_data <- read_csv("./DATA/mri.csv",
-                    na = "-NA",
                     col_types = cols(
                     date = col_date(format = "%d%.%m%.%Y")))
 
 raw_data_age <- raw_data %>%
-  filter(date >= "2004-12-31" & date <= "2015-12-31") # Einschränken auf den Zeitraum 01/2005-12/2015
-                                                      # Hier fehlt noch die Syntax mit den 60 Datenpunkten
+  filter(date >= "2005-01-01" & date <= "2015-01-01") %>%# Einschränken auf den Zeitraum 01/2005-12/2015
+  keep(~ (sum(. >= 0) / length(.)) >= 0.5)
+
+raw_data_age[,2:715][raw_data_age[,2:715] == "-NA"] <- NA
+
 
 raw_data_size <- raw_data %>%
-  filter(date >= "2009-12-31") # Einschränken auf den Zeitraum 01/2010-08/2020
-                               # Hier fehlt noch die Syntax mit den 60 Datenpunkten
+  filter(date >= "2010-01-01") %>% # Einschränken auf den Zeitraum 01/2010-08/2020
+  keep(~ (sum(. >= 0) / length(.)) >= 0.5)               
+
+raw_data_size[,2:309][raw_data_size[,2:309] == "-NA"] <- NA
 
 
 ```
@@ -102,7 +105,7 @@ list_age <- base_data_age$secid %>%    # Liste mit Fonds, die für die Stichprob
   c(., "date")                         # Datensatz gefiltert wurden
 
 raw_data_age_funds <- raw_data_age %>% # Erstellen eines Subsets von raw_data, welches nur die Fonds aus
-  select(all_of(list_age)) %>%         # der zuvor erstellten Age-Liste enthält
+  select(any_of(list_age)) %>%         # der zuvor erstellten Age-Liste enthält
   relocate(date)
 
 
@@ -112,7 +115,7 @@ list_size <- base_data_size$secid %>%    # Liste mit Fonds, die für die Stichpr
   c(., "date")                           # Datensatz gefiltert wurden
 
 raw_data_size_funds <- raw_data_size %>% # Erstellen eines Subsets von raw_data, welches nur die Fonds aus
-  select(all_of(list_size)) %>%          # der zuvor erstellten Size-Liste enthält
+  select(any_of(list_size)) %>%          # der zuvor erstellten Size-Liste enthält
   relocate(date)
 
 ```
@@ -122,21 +125,38 @@ raw_data_size_funds <- raw_data_size %>% # Erstellen eines Subsets von raw_data,
 ```{r}
 
 # Für Age:
+
+raw_data_age_funds$FHUSA04B6U <- as.character(raw_data_age_funds$FHUSA04B6U)
+raw_data_age_funds$F00000GUU3 <- as.character(raw_data_age_funds$F00000GUU3)
+
 tidy_return_age <- raw_data_age_funds %>%
       pivot_longer(cols = !date,
       names_to = "secid",
-      values_to = "prc") %>%
+      values_to = "prc")
+
+tidy_return_age$prc <- as.numeric(tidy_return_age$prc)
+
+tidy_return_age <- tidy_return_age %>%
       group_by(secid) %>%
       mutate(ret = prc/lag(prc, n = 1)-1) %>%
       ungroup() %>%
       arrange(secid, date) %>%
       filter(!is.na(prc))
 
+
 # Für Size:
+
+raw_data_size_funds$FHUSA04B6U <- as.character(raw_data_size_funds$FHUSA04B6U)
+raw_data_size_funds$F00000GUU3 <- as.character(raw_data_size_funds$F00000GUU3)
+
 tidy_return_size <- raw_data_size_funds %>%
       pivot_longer(cols = !date,
       names_to = "secid",
-      values_to = "prc") %>%
+      values_to = "prc")
+
+tidy_return_size$prc <- as.numeric(tidy_return_size$prc)
+
+tidy_return_size <- tidy_return_size %>%
       group_by(secid) %>%
       mutate(ret = prc/lag(prc, n = 1)-1) %>%
       ungroup() %>%
@@ -157,7 +177,6 @@ final_data_age <- left_join(tidy_return_age, factor_data_age, by = "date") %>%
 # Für Size:
 final_data_size <- left_join(tidy_return_size, factor_data_size, by = "date") %>%
       mutate(retrf = ret - rf)
-
 
 
 ```
@@ -187,8 +206,6 @@ summary_final_age <- final_data_age %>%
   left_join(base_data_age, by = "secid") %>%  # Hinzufügen der Variablen Name, Alter und Alters-Klasse
   select(name, secid, mean, volatility, sr, alpha, ir, age_y, age_class)
 
-view(summary_final_age)
-  
 ```
 
 
@@ -212,12 +229,11 @@ summary_final_size <- final_data_size %>%
             sr = mean/volatility) %>% 
   left_join(alphas_final_size, by = "secid") %>% # Hinzufügen der Alphas zum Datensatz
   mutate(ir = sqrt(12)*alpha/idiosyncratic_risk,
-         alpha = 12*alpha) %>% 
+         alpha = 12*alpha) %>%
   left_join(base_data_size, by = "secid") %>%  # Hinzufügen der Variablen Name, Alter und Alters-Klasse
-  select(name, secid, mean, volatility, sr, alpha, ir, size, quantile_class)
+  mutate(Quantile_Class = ntile(`size`, 5)) %>% # Einstufung nach Klassen
+  select(name, secid, mean, volatility, sr, alpha, ir, size, Quantile_Class)
 
-view(summary_final_size)
-  
 ```
 
 
