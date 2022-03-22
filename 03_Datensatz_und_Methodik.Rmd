@@ -14,6 +14,8 @@ library(tidyverse)
 library(tinytex)
 library(broom)
 library(viridis)
+library(DescTools) # Zum Durchführen des Jarque-Bera Tests auf Normalverteilung der Returns
+
 
 ```
 
@@ -166,6 +168,36 @@ tidy_return_size <- tidy_return_size %>%
 
 
 ```
+
+
+<!--Durchführen des Jarque-Bera Tests auf Normalverteilung der Returns-->
+```{r, include=FALSE, warning= FALSE}
+
+
+# Für Age:
+DescTools::JarqueBeraTest(x = tidy_return_age$prc,
+                          robust = TRUE,
+                          method = c("chisq", "mc"),
+                          N = 0,
+                          na.rm = FALSE)
+
+ggplot(data = tidy_return_age, aes(x=ret)) +
+  geom_histogram(binwidth = 0.001)
+  
+
+# Für Size:
+DescTools::JarqueBeraTest(x = tidy_return_size$prc,
+                          robust = TRUE,
+                          method = c("chisq", "mc"),
+                          N = 0,
+                          na.rm = FALSE)
+
+ggplot(data = tidy_return_size, aes(x=ret)) +
+  geom_histogram(binwidth = 0.001)
+
+
+```
+
 
 
 <!--Mergen von tidy_data und factor_data-->
