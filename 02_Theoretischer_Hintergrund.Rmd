@@ -12,6 +12,11 @@ If so, which of the characteristics is more important?"
 
 ## Herleitung der Hypothesen
 
-Hier wird es um die aufgestellten Hypothesen gehen.
+Auf Basis der Literatur wurden nachfolgende Hypothesen aufgestellt:
+
+\begin{itemize}
+  \item \(H_1:\) Kleine Fonds outperformen große Fonds.
+  \item \(H_2:\) Junge Fonds outperformen alte Fonds.
+\end{itemize}
 
 \newpage

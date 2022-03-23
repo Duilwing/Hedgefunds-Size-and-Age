@@ -3,11 +3,111 @@
 
 Hier werden die Ergebnisse für Alpha dargestellt.
 
-Amenc and Martellini (2003):
-Given that it is a common practice or hedge fund managers to trade in options and/or follow dynamic trading strategies that generate non-linear exposures to standard asset classes (e.g. Fung and Hsieh (1997)), it is likely that using a simple CAPM formula to measure these manager’s alphas will lead to inaccurate estimates of their ability to generate superior risk-adjusted returns on the basis of superior picking or timing skills.
+
+<!--Alpha-Regression Alter in Jahren-->
+```{r Alpha-Regression Alter in Jahren, echo=FALSE, warning= FALSE}
+
+model_alpha_age_y_summary <- summary_final_age %>%
+  lm(alpha~age_y, data = .) %>%
+  tidy()
+
+knitr::kable(model_alpha_age_y_summary)
+
+```
+
+<!--Alpha-Regression Alter in Klassen-->
+```{r Alpha-Regression Alter in Klassen, echo=FALSE, warning= FALSE}
+
+# 1. Erstellen von Dummy-Variablen für die Altersklassen
+
+summary_final_age <- summary_final_age %>%
+  mutate(young = case_when(`age_y` <= 1 ~ 1,
+                           `age_y` > 1 ~ 0),
+         medium = case_when(`age_y` >= 2 & `age_y` <= 4 ~ 1,
+                            `age_y` < 2 | `age_y` > 4 ~ 0),
+         old = case_when(`age_y` > 4 ~ 1,
+                         `age_y` <= 4 ~ 0))
 
 
-## Carhart's alpha
+# 2. Durchführen der Regression
+
+model_alpha_age_c_summary <- summary_final_age %>%
+  lm(alpha~young + old, data = .) %>%               # Klasse 'medium' als Referenz-Kategorie
+  tidy()
+
+knitr::kable(model_alpha_age_c_summary)
+
+```
+
+<!--Alpha-Regression Größe in USD-->
+```{r Alpha-Regression Größe in USD, include=FALSE, warning= FALSE}
+
+model_alpha_size_usd_summary <- summary_final_size %>%
+  lm(alpha~size, data = .) %>%
+  tidy()
+
+knitr::kable(model_alpha_size_usd_summary)
+
+# Regressions-Koeffizient ist nicht aussagekräftig
+
+```
+
+<!--Alpha-Regression Größe in Klassen nach Jones-->
+```{r Alpha-Regression Größe in Klassen nach Jones, echo=FALSE, warning= FALSE}
+
+# 1. Erstellen von Dummy-Variablen für die Altersklassen
+
+summary_final_size <- summary_final_size %>%
+  mutate(small = case_when(`size` <= 100000000 ~ 1,
+                           `size` > 100000000 ~ 0),
+         medium = case_when(`size` > 100000000 & `size` <= 500000000 ~ 1,
+                            `size` <= 100000000 | `size` > 500000000 ~ 0),
+         big = case_when(`size` > 500000000 ~ 1,
+                         `size` <= 500000000 ~ 0))
+
+
+# 2. Durchführen der Regression
+
+model_alpha_size_c_summary <- summary_final_size %>%
+  lm(alpha~small + big, data = .) %>%               # Klasse 'medium' als Referenz-Kategorie
+  tidy()
+
+knitr::kable(model_alpha_size_c_summary)
+
+```
+
+<!--Alpha-Regression Größe in Klassen nach Quantilen-->
+```{r Alpha-Regression Größe in Klassen nach Quantilen, echo=FALSE, warning= FALSE}
+
+# 1. Erstellen von Dummy-Variablen für die Size-Klassen
+
+
+summary_final_size <- summary_final_size %>%
+  mutate(Q_1 = case_when(`Quantile_Class` == "1" ~ 1,
+                         `Quantile_Class` != "1" ~ 0),
+         Q_2 = case_when(`Quantile_Class` == "2" ~ 1,
+                         `Quantile_Class` != "2" ~ 0),
+         Q_3 = case_when(`Quantile_Class` == "3" ~ 1,
+                         `Quantile_Class` != "3" ~ 0),
+         Q_4 = case_when(`Quantile_Class` == "4" ~ 1,
+                         `Quantile_Class` != "4" ~ 0),
+         Q_5 = case_when(`Quantile_Class` == "5" ~ 1,
+                         `Quantile_Class` != "5" ~ 0))
+
+
+# 2. Durchführen der Regression
+
+model_alpha_size_cq_summary <- summary_final_size %>%
+  lm(alpha~Q_1 + Q_2 + Q_4 + Q_5, data = .) %>%               # Klasse 'Q_3' als Referenz-Kategorie
+  tidy()
+
+knitr::kable(model_alpha_size_cq_summary)
+
+```
+
+
+
+## Carhart's alpha (optional)
 
 Hier werden die Ergebnisse für Carhart's alpha dargestellt.
 
@@ -16,20 +116,139 @@ Hier werden die Ergebnisse für Carhart's alpha dargestellt.
 
 Hier werden die Sharpe Ratios der Fonds berechnet und dargestellt.
 
+<!--SR-Regression Alter in Jahren-->
+```{r SR-Regression Alter in Jahren, echo=FALSE, warning= FALSE}
+
+model_sr_age_y_summary <- summary_final_age %>%
+  lm(sr~age_y, data = .) %>%
+  tidy()
+
+knitr::kable(model_sr_age_y_summary)
+
+```
+
+<!--SR-Regression Alter in Klassen-->
+```{r SR-Regression Alter in Klassen, echo=FALSE, warning= FALSE}
+
+model_sr_age_c_summary <- summary_final_age %>%
+  lm(sr~young + old, data = .) %>%               # Klasse 'medium' als Referenz-Kategorie
+  tidy()
+
+knitr::kable(model_sr_age_c_summary)
+
+```
+
+<!--SR-Regression Größe in USD-->
+```{r SR-Regression Größe in USD, echo=FALSE, warning= FALSE}
+
+model_sr_size_usd_summary <- summary_final_size %>%
+  lm(sr~size, data = .) %>%
+  tidy()
+
+knitr::kable(model_sr_size_usd_summary)
+
+# Regression nicht aussagekräftig
+
+```
+
+<!--SR-Regression Größe in Klassen nach Jones-->
+```{r SR-Regression Größe in Klassen nach Jones, echo=FALSE, warning= FALSE}
+
+model_sr_size_c_summary <- summary_final_size %>%
+  lm(sr~small + big, data = .) %>%               # Klasse 'medium' als Referenz-Kategorie
+  tidy()
+
+knitr::kable(model_sr_size_c_summary)
+
+```
+
+<!--SR-Regression Größe in Klassen nach Quantilen-->
+```{r SR-Regression Größe in Klassen nach Quantilen, echo=FALSE, warning= FALSE}
+
+model_sr_size_cq_summary <- summary_final_size %>%
+  lm(sr~Q_1 + Q_2 + Q_4 + Q_5, data = .) %>%               # Klasse 'Q_3' als Referenz-Kategorie
+  tidy()
+
+knitr::kable(model_sr_size_cq_summary)
+
+```
+
+
+
 
 ## Information Ratio
 
 Hier werden die Information Ratios berechnet und dargestellt.
 
 
-## Sortino Ratio
+<!--IR-Regression Alter in Jahren-->
+```{r IR-Regression Alter in Jahren, echo=FALSE, warning= FALSE}
+
+model_ir_age_y_summary <- summary_final_age %>%
+  lm(ir~age_y, data = .) %>%
+  tidy()
+
+knitr::kable(model_ir_age_y_summary)
+
+```
+
+<!--IR-Regression Alter in Klassen-->
+```{r IR-Regression Alter in Klassen, echo=FALSE, warning= FALSE}
+
+model_ir_age_c_summary <- summary_final_age %>%
+  lm(ir~young + old, data = .) %>%               # Klasse 'medium' als Referenz-Kategorie
+  tidy()
+
+knitr::kable(model_ir_age_c_summary)
+
+```
+
+<!--IR-Regression Größe in USD-->
+```{r IR-Regression Größe in USD, echo=FALSE, warning= FALSE}
+
+model_ir_size_usd_summary <- summary_final_size %>%
+  lm(ir~size, data = .) %>%
+  tidy()
+
+knitr::kable(model_ir_size_usd_summary)
+
+# Regression nicht aussagekräftig
+
+```
+
+<!--IR-Regression Größe in Klassen nach Jones-->
+```{r IR-Regression Größe in Klassen nach Jones, echo=FALSE, warning= FALSE}
+
+model_ir_size_c_summary <- summary_final_size %>%
+  lm(ir~small + big, data = .) %>%               # Klasse 'medium' als Referenz-Kategorie
+  tidy()
+
+knitr::kable(model_ir_size_c_summary)
+
+```
+
+<!--IR-Regression Größe in Klassen nach Quantilen-->
+```{r IR-Regression Größe in Klassen nach Quantilen, echo=FALSE, warning= FALSE}
+
+model_ir_size_cq_summary <- summary_final_size %>%
+  lm(ir~Q_1 + Q_2 + Q_4 + Q_5, data = .) %>%               # Klasse 'Q_3' als Referenz-Kategorie
+  tidy()
+
+knitr::kable(model_ir_size_cq_summary)
+
+```
+
+
+
+
+## Sortino Ratio (optional)
 
 Hier werden die Sortino Ratios berechnet und dargestellt.
 
 
 ## Coherence
 
-Hier wird etwas zur Kohärenz geschrieben stehen, wobei noch nicht klar ist was damit gemeint ist.
+Hier wird erläutert, inwieweit identifizierte "Top-Fonds" Beständigkeit über mehrere Performance-Maße hinweg aufweisen.
 
 
 ## Persistence

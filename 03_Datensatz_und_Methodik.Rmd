@@ -171,7 +171,7 @@ tidy_return_size <- tidy_return_size %>%
 
 
 <!--Durchführen des Jarque-Bera Tests auf Normalverteilung der Returns-->
-```{r, include=FALSE, warning= FALSE}
+```{r, echo=FALSE, warning= FALSE}
 
 
 # Für Age:
@@ -183,7 +183,12 @@ DescTools::JarqueBeraTest(x = tidy_return_age$prc,
 
 ggplot(data = tidy_return_age, aes(x=ret)) +
   geom_histogram(binwidth = 0.001)
-  
+```  
+
+
+
+<!--Durchführen des Jarque-Bera Tests auf Normalverteilung der Returns-->
+```{r, echo=FALSE, warning= FALSE}
 
 # Für Size:
 DescTools::JarqueBeraTest(x = tidy_return_size$prc,
@@ -232,12 +237,14 @@ summary_final_age <- final_data_age %>%
   summarise(idiosyncratic_risk = sd(.resid, na.rm = TRUE), #.resid sind die Residuale
             mean = 12*mean(retrf, na.rm = TRUE),
             volatility = sqrt(12)*sd(retrf, na.rm = TRUE),
-            sr = mean/volatility) %>% 
+            sr = mean/volatility) %>%
   left_join(alphas_final_age, by = "secid") %>% # Hinzufügen der Alphas zum Datensatz
   mutate(ir = sqrt(12)*alpha/idiosyncratic_risk,
          alpha = 12*alpha) %>% 
   left_join(base_data_age, by = "secid") %>%  # Hinzufügen der Variablen Name, Alter und Alters-Klasse
   select(name, secid, mean, volatility, sr, alpha, ir, age_y, age_class)
+
+# Pi: hier könnte man auch noch die Sortino Ratio mit aufnehmen
 
 ```
 
@@ -276,7 +283,7 @@ Im Anschluss wird ein Zeitintervall für die Analyse bestimmt. In der vorliegend
 Um Größenvergleiche durchzuführen,werden aus dem Set alle Funds mit einem Wert für size oder Net Asset Value von unter einer Million USD gelöscht. Im Anschluss wird das Interval für alle Funds aktiv ab 2010 gebildet und die Klasseneinteilung nach Jones(2007) vorgenommen.
 Im Anschluss wurden die weiteren Datensätze eingearbeitet und benannt. Zuerst der mri für den Zeitraum 2005-2015 zur Analyse des Alters und für 2010-2020 für die Größe.
 
-```{r, echo=FALSE, warning= FALSE}
+```{r, include=FALSE, warning= FALSE}
 
 #sortieren nach Klassen
 summary_final_age <- summary_final_age%>%
@@ -292,7 +299,7 @@ ggplot(summary_final_age)+geom_bar(aes(x=age_class,y = ..prop.., group = 1), sta
 
 Nach Filtern und Bestimmen der Klassen mit den Größen jung als unter zwei Jahre, medium als zwischen zwei und vier und alt als alle funds über vier ergibt sich die in Figure () dargestellte Verteilung. Insgesamt werden ... Funds berücksichtigt. Auch wenn alte Funds mit einer Anzahl von ... ca. ...% der Verteilung stellen, ist die Anzahl für junge () und mittlere () Funds ausreichend groß für eine weitere Analyse. Hier folgt die Arbeit der Einteilung von Jones(2007).
 
-```{r, echo=FALSE, warning= FALSE}
+```{r, include=FALSE, warning= FALSE}
 
 #sortieren nach Klassen
 summary_final_size <- summary_final_size%>%
@@ -328,7 +335,7 @@ ggplot(data=tidy_return_age) + aes(x=date, y = ret) + geom_line()
 
 Eine einfache Darstellung der returns ist nicht hilfreich, erst nach Klassifizierung und Bearbeitung der Daten ergeben sich die Zusammenhänge.
 
-```{r, echo=FALSE, warning= FALSE}
+```{r, include=FALSE, warning= FALSE}
 
 # plot aller funds mit mean und volatility, sortiert nach Klassen für Alter mit summary_final_age
 
@@ -339,7 +346,7 @@ ggplot(summary_final_age,
 
 ```
 
-```{r, echo=FALSE, warning= FALSE}
+```{r, include=FALSE, warning= FALSE}
 
 # plot aller funds mit mean und volatility, sortiert nach Klassen für Size mit summary_final_size
 
@@ -501,7 +508,7 @@ class_summary_final_size_jones <- bind_rows(class_small,class_medium_size,class_
 
 ```
 
-```{r, echo=FALSE, warning= FALSE}
+```{r, include=FALSE, warning= FALSE}
 
 #Darstellung Zshg. Volatility/Mean für Alter nur der drei Klassen class_summary_final_age
 
@@ -513,7 +520,7 @@ ggplot(class_summary_final_age,
 
 ```
 
-```{r, echo=FALSE, warning= FALSE}
+```{r, include=FALSE, warning= FALSE}
 
 #Darstellung Zshg. Volatility/Mean für Size nur der fünf Klassen
 
@@ -525,7 +532,7 @@ ggplot(class_summary_final_size,
 
 ```
 
-```{r, echo=FALSE, warning= FALSE}
+```{r, include=FALSE, warning= FALSE}
 
 #Darstellung Zshg. Volatility/Mean für Size nur der drei Klassen 
 
