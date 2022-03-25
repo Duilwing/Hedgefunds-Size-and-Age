@@ -171,7 +171,7 @@ tidy_return_size <- tidy_return_size %>%
 
 
 <!--Durchführen des Jarque-Bera Tests auf Normalverteilung der Returns-->
-```{r, echo=FALSE, warning= FALSE}
+```{r echo=FALSE, warning=FALSE}
 
 
 # Für Age:
@@ -182,8 +182,16 @@ DescTools::JarqueBeraTest(x = tidy_return_age$prc,
                           na.rm = FALSE)
 
 ggplot(data = tidy_return_age, aes(x=ret)) +
-  geom_histogram(binwidth = 0.001)
+  geom_histogram(aes(y =..density..),fill="#440154FF",alpha=0.95,binwidth = 0.001)+theme_minimal()+
+scale_x_continuous(limits =c(-0.4,0.4))+ 
+stat_function(fun = dnorm,args = list(mean = mean(tidy_return_age$ret, na.rm = TRUE), sd = sd(tidy_return_age$ret, na.rm = TRUE)),aes(colour = "normal distribution"), size=0.7)+
+geom_density(aes(color="distribution for age"),size=0.7)+ scale_colour_manual("distributions", values = c("#287D8EFF","#FDE725FF"))
+
+
+
+
 ```  
+
 
 
 
@@ -198,7 +206,10 @@ DescTools::JarqueBeraTest(x = tidy_return_size$prc,
                           na.rm = FALSE)
 
 ggplot(data = tidy_return_size, aes(x=ret)) +
-  geom_histogram(binwidth = 0.001)
+  geom_histogram(aes(y =..density..),fill="#440154FF",alpha=0.95,binwidth = 0.001)+theme_minimal()+
+scale_x_continuous(limits =c(-0.4,0.4))+ 
+stat_function(fun = dnorm,args = list(mean = mean(tidy_return_age$ret, na.rm = TRUE), sd = sd(tidy_return_age$ret, na.rm = TRUE)),aes(colour = "normal distribution"), size=0.7)+
+geom_density(aes(color="distribution for size"),size=0.7)+ scale_colour_manual("distributions", values = c("#287D8EFF","#FDE725FF"))
 
 
 ```
