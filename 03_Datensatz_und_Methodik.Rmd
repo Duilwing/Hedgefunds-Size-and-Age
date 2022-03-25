@@ -346,7 +346,7 @@ ggplot(data=tidy_return_age) + aes(x=date, y = ret) + geom_line()
 
 Eine einfache Darstellung der returns ist nicht hilfreich, erst nach Klassifizierung und Bearbeitung der Daten ergeben sich die Zusammenhänge.
 
-```{r, include=FALSE, warning= FALSE}
+```{r, warning= FALSE}
 
 # plot aller funds mit mean und volatility, sortiert nach Klassen für Alter mit summary_final_age
 
@@ -543,7 +543,7 @@ ggplot(class_summary_final_size,
 
 ```
 
-```{r, include=FALSE, warning= FALSE}
+```{r, warning= FALSE}
 
 #Darstellung Zshg. Volatility/Mean für Size nur der drei Klassen 
 
@@ -553,6 +553,44 @@ ggplot(class_summary_final_size_jones,
   aes(x=mean_c, y=volatility_c, color=class)) +
   geom_point(size=3, alpha=1)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
 
+```
+
+```{r}
+#density für sharpe ratios bei alter
+
+ggplot(data=summary_final_age, aes(x=sr, group=age_class, fill=age_class)) +
+    geom_density(adjust=0.8, alpha=0.75) + scale_fill_viridis(discrete=TRUE) +
+    scale_color_viridis(discrete=TRUE) +
+    theme_minimal()
+
+#values = c("#287D8EFF","#FDE725FF"))
+
+```
+```{r}
+#density für sharpe ratios bei size mit 5 Klassen
+
+ggplot(data=summary_final_size, aes(x=sr, group=Quantile_Class, fill=Quantile_Class)) +
+    geom_density(adjust=0.8, alpha=0.75) + scale_fill_viridis(discrete=TRUE) +
+    scale_color_viridis(discrete=TRUE) +
+    theme_minimal()
+```
+```{r}
+#density für information ratio bei size
+
+
+ggplot(data=summary_final_size, aes(x=ir, group=Quantile_Class, fill=Quantile_Class)) +
+    geom_density(adjust=0.8, alpha=0.75) + scale_fill_viridis(discrete=TRUE) +
+    scale_color_viridis(discrete=TRUE) +
+    theme_minimal()
+```
+```{r}
+#density für information ratio bei age
+
+
+ggplot(data=summary_final_age, aes(x=ir, group=age_class, fill=age_class)) +
+    geom_density(adjust=0.8, alpha=0.75) + scale_fill_viridis(discrete=TRUE) +
+    scale_color_viridis(discrete=TRUE) +
+    theme_minimal()
 ```
 
 
