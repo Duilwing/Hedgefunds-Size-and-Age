@@ -593,6 +593,26 @@ ggplot(data=summary_final_age, aes(x=ir, group=age_class, fill=age_class)) +
     theme_minimal()
 ```
 
+```{r}
+
+#plots von mean und vola und sr nach altersgruppen plus alle zusammen
+
+y <- ggplot(data=summary_final_age[summary_final_age$age_y < 2,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)
+
+m <- ggplot(data=summary_final_age[summary_final_age$age_y <= 2 & summary_final_age$age_y <= 4,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)
+  
+o <- ggplot(data=summary_final_age[summary_final_age$age_y > 4 ,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)
+
+a <- ggplot(summary_final_age,
+  aes(x=volatility, y=mean, color=age_class)) +
+  geom_point(size=1.75, alpha=0.8)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
+
+library(gridExtra)
+grid.arrange(y, m, o, a, ncol=2, nrow=2)
+```
+
+
+
 
 ## Performancemaße
 
