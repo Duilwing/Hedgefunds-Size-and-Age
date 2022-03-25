@@ -250,6 +250,18 @@ Hier werden die Sortino Ratios berechnet und dargestellt.
 
 Hier wird erläutert, inwieweit identifizierte "Top-Fonds" Beständigkeit über mehrere Performance-Maße hinweg aufweisen.
 
+<!--Vergleichendes Ranking nach Risk adjusted Returns-->
+```{r, echo=FALSE, warning= FALSE}
+
+Ranking <- summary_final_age %>%
+  mutate(sr_ranking = rank(sr, ties.method = 'first')) %>%
+  arrange(sr_ranking, .by_group = FALSE)
+
+
+```
+
+
+
 
 ## Persistence
 

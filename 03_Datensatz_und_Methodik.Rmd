@@ -169,6 +169,8 @@ tidy_return_size <- tidy_return_size %>%
 
 ```
 
+Um die Normalverteilung der Returns zu testen, wurden pro Stichprobe jeweils der Jarque-Bera-Test durchgeführt.^[@Jarque.1980, @Jarque.1987]
+
 
 <!--Durchführen des Jarque-Bera Tests auf Normalverteilung der Returns-->
 ```{r echo=FALSE, warning=FALSE}

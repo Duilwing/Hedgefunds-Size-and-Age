@@ -1,5 +1,5 @@
 ---
-title: "Jung gegen Alt: Einfluss von Alter und Größe auf die Performance von Hedgefunds"
+title: "Hedge Fund Performance and Fund Age and Size"
 author1: "Luca"
 adress_street_and_no1: "Königsworther Platz 1"
 postcode1: "30167"
