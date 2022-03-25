@@ -15,6 +15,7 @@ library(tinytex)
 library(broom)
 library(viridis)
 library(DescTools) # Zum Durchführen des Jarque-Bera Tests auf Normalverteilung der Returns
+library(knitr)
 
 
 ```

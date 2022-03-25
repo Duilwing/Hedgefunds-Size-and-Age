@@ -39,19 +39,6 @@ knitr::kable(model_alpha_age_c_summary)
 
 ```
 
-<!--Alpha-Regression Größe in USD-->
-```{r Alpha-Regression Größe in USD, include=FALSE, warning= FALSE}
-
-model_alpha_size_usd_summary <- summary_final_size %>%
-  lm(alpha~size, data = .) %>%
-  tidy()
-
-knitr::kable(model_alpha_size_usd_summary)
-
-# Regressions-Koeffizient ist nicht aussagekräftig
-
-```
-
 <!--Alpha-Regression Größe in Klassen nach Jones-->
 ```{r Alpha-Regression Größe in Klassen nach Jones, echo=FALSE, warning= FALSE}
 
@@ -98,7 +85,7 @@ summary_final_size <- summary_final_size %>%
 # 2. Durchführen der Regression
 
 model_alpha_size_cq_summary <- summary_final_size %>%
-  lm(alpha~Q_1 + Q_2 + Q_4 + Q_5, data = .) %>%               # Klasse 'Q_3' als Referenz-Kategorie
+  lm(alpha~Q_2 + Q_3 + Q_4 + Q_5, data = .) %>%               # Klasse 'Q_1' als Referenz-Kategorie
   tidy()
 
 knitr::kable(model_alpha_size_cq_summary)
@@ -138,19 +125,6 @@ knitr::kable(model_sr_age_c_summary)
 
 ```
 
-<!--SR-Regression Größe in USD-->
-```{r SR-Regression Größe in USD, echo=FALSE, warning= FALSE}
-
-model_sr_size_usd_summary <- summary_final_size %>%
-  lm(sr~size, data = .) %>%
-  tidy()
-
-knitr::kable(model_sr_size_usd_summary)
-
-# Regression nicht aussagekräftig
-
-```
-
 <!--SR-Regression Größe in Klassen nach Jones-->
 ```{r SR-Regression Größe in Klassen nach Jones, echo=FALSE, warning= FALSE}
 
@@ -166,7 +140,7 @@ knitr::kable(model_sr_size_c_summary)
 ```{r SR-Regression Größe in Klassen nach Quantilen, echo=FALSE, warning= FALSE}
 
 model_sr_size_cq_summary <- summary_final_size %>%
-  lm(sr~Q_1 + Q_2 + Q_4 + Q_5, data = .) %>%               # Klasse 'Q_3' als Referenz-Kategorie
+  lm(sr~ Q_2 + Q_3 + Q_4 + Q_5, data = .) %>%               # Klasse 'Q_1' als Referenz-Kategorie
   tidy()
 
 knitr::kable(model_sr_size_cq_summary)
@@ -203,19 +177,6 @@ knitr::kable(model_ir_age_c_summary)
 
 ```
 
-<!--IR-Regression Größe in USD-->
-```{r IR-Regression Größe in USD, echo=FALSE, warning= FALSE}
-
-model_ir_size_usd_summary <- summary_final_size %>%
-  lm(ir~size, data = .) %>%
-  tidy()
-
-knitr::kable(model_ir_size_usd_summary)
-
-# Regression nicht aussagekräftig
-
-```
-
 <!--IR-Regression Größe in Klassen nach Jones-->
 ```{r IR-Regression Größe in Klassen nach Jones, echo=FALSE, warning= FALSE}
 
@@ -231,13 +192,12 @@ knitr::kable(model_ir_size_c_summary)
 ```{r IR-Regression Größe in Klassen nach Quantilen, echo=FALSE, warning= FALSE}
 
 model_ir_size_cq_summary <- summary_final_size %>%
-  lm(ir~Q_1 + Q_2 + Q_4 + Q_5, data = .) %>%               # Klasse 'Q_3' als Referenz-Kategorie
+  lm(ir~ Q_2 + Q_3 + Q_4 + Q_5, data = .) %>%               # Klasse 'Q_1' als Referenz-Kategorie
   tidy()
 
 knitr::kable(model_ir_size_cq_summary)
 
 ```
-
 
 
 
@@ -250,16 +210,44 @@ Hier werden die Sortino Ratios berechnet und dargestellt.
 
 Hier wird erläutert, inwieweit identifizierte "Top-Fonds" Beständigkeit über mehrere Performance-Maße hinweg aufweisen.
 
-<!--Vergleichendes Ranking nach Risk adjusted Returns-->
-```{r, echo=FALSE, warning= FALSE}
+<!--Vergleichendes Ranking nach Risk adjusted Returns Age-->
+```{r Ranking-Table Age, echo=FALSE, warning=FALSE}
 
-Ranking <- summary_final_age %>%
-  mutate(sr_ranking = rank(sr, ties.method = 'first')) %>%
-  arrange(sr_ranking, .by_group = FALSE)
+Ranking_age <- summary_final_age %>%
+  mutate(sr_rank = dense_rank(desc(sr)),
+         ir_rank = dense_rank(desc(ir)),
+         alpha_rank = dense_rank(desc(alpha))) %>%
+  mutate(coherence = case_when(`alpha_rank` < 4 | `sr_rank` < 4 | `ir_rank` < 4 ~ "top",
+                               TRUE ~ "NA")) %>%
+  filter(coherence == "top") %>%
+  arrange(sr_rank) %>%
+  select(name, sr_rank, ir_rank, alpha_rank) %>%
+  rename(Name = name, `SR Rank` = sr_rank, `IR Rank` = ir_rank, `Alpha Rank` = alpha_rank)
 
+
+kable(Ranking_age, booktabs = TRUE,
+        caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Alter, 2005-2015)")
 
 ```
 
+<!--Vergleichendes Ranking nach Risk adjusted Returns Size-->
+```{r Ranking-Table Size, echo=FALSE, warning=FALSE}
+
+Ranking_size <- summary_final_size %>%
+  mutate(sr_rank = dense_rank(desc(sr)),
+         ir_rank = dense_rank(desc(ir)),
+         alpha_rank = dense_rank(desc(alpha))) %>%
+  mutate(coherence = case_when(`alpha_rank` < 4 | `sr_rank` < 4 | `ir_rank` < 4 ~ "top",
+                               TRUE ~ "NA")) %>%
+  filter(coherence == "top") %>%
+  arrange(sr_rank) %>%
+  select(name, sr_rank, ir_rank, alpha_rank) %>%
+  rename(Name = name, `SR Rank` = sr_rank, `IR Rank` = ir_rank, `Alpha Rank` = alpha_rank)
+
+kable(Ranking_size, booktabs = TRUE,
+        caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Größe, 2010-2020)") 
+
+```
 
 
 
