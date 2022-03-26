@@ -1,13 +1,10 @@
 ## Literaturüberblick
 
-Hier wird es um die Motivation der Forschungsfrage gehen:
+Der Einfluss von Alter und Größe auf die Performance von Hedgefonds ist bereits Gegenstand vielfältiger Untersuchungen gewesen. @Stafylas.2016 gaben einen ersten Überblick über die bestehende Literatur. Die Autoren konstatierten, dass der überwiegende Teil bisheriger Studien eine negative Beziehung zwischen Alter und Performance feststellt. So untersuchte @Howell.2001 3.733 Hedgefonds im Zeitraum 1994 - 2000, wobei nur solche Hegdefonds als 'jung' eingestuft wurden, die ein maximales Alter von drei Jahren aufwiesen. Der Autor ermittelte für das jüngste Dezil eine durchschnittliche Rendite von 21,5 % und für das älteste Dezil eine durchschnittliche Rendite von 11,8 % bei einer Median-Rendite von 13,9 % - eine Outperformance junger Hedgefonds von 760 Basispunkten.^[siehe @Howell.2001, S. 59] @Amenc.2003 definierten ein Alter von bis zu zwei Jahren als 'jung' und berechneten auf Basis von 10 Modellen das Alpha für junge und alte Fonds. Neun Modelle ergaben hierbei signifikant höhere Alphas für junge Fonds - allerdings zum Preis einer ebenfalls höheren Volatilität.^[siehe @Amenc.2003, S. 22] @Frumkin.2009 hingegen untersuchten die Überrenditen von Hedgefonds im Vergleich zum S&P 500 im Zeitraum 2005 - 2007 unter Nutzung von drei Regressions-Modellen. Sie stellten fest, dass über alle Modelle hinweg das Alter einen signifikanten negativen Einfluss auf die Überrendite hat. Stieg das Alter um einen Monat, sank die Überrendite um bis zu 130 Basispunkten, wobei die Autoren dies auf einen sich mit der Zeit ändernden Investitionsstil der Fondsmanager zurückführten.^[siehe @Frumkin.2009, S. 249-250] \newline
 
-Motivation:
-"Not only manager characteristics, also fund characteristics are important to explain differences in their performance."
 
-Research question:
-"Do younger, smaller funds perform better than older and larger funds?
-If so, which of the characteristics is more important?"
+
+Hinsichtlich der Beziehung zwischen Größe und Performance ist die Literatur jedoch uneinheitlicher - positive wie negative Beziehungen wurden gleichermaßen wissenschaftlich festgestellt.
 
 
 ## Herleitung der Hypothesen
@@ -15,8 +12,8 @@ If so, which of the characteristics is more important?"
 Auf Basis der Literatur wurden nachfolgende Hypothesen aufgestellt:
 
 \begin{itemize}
-  \item \(H_1:\) Kleine Fonds outperformen große Fonds.
-  \item \(H_2:\) Junge Fonds outperformen alte Fonds.
+  \item \(H_1:\) Kleine Hedgefonds outperformen große Hedgefonds.
+  \item \(H_2:\) Junge Hedgefonds outperformen alte Hedgefonds.
 \end{itemize}
 
 \newpage

@@ -1,11 +1,19 @@
 
-| Section | Student            |
-|--------:|--------------------|
-|       1 | Melissa Musterfrau |
-|     2.1 | Maxi Musterperson  |
-|     2.2 | Maxi Musterperson  |
-|     3.1 | Max Mustermann     |
-|     ... | ...                |
+| Abschnitt | Student           |
+|----------:|-------------------|
+|         1 | Sebastian Pinne   |
+|         2 | Sebastian Pinne   |
+|       3.1 |                   |
+|       3.2 |                   |
+|       4.1 |                   |
+|       4.2 |                   |
+|       4.3 |                   |
+|       4.4 |                   |
+|       4.5 |                   |
+|       4.6 |                   |
+|       4.7 |                   |
+|         5 |                   |
+|         6 |                   |
 
 
-We decided for a joint evaluation of the thesis.
+Wir bitten um eine gemeinsame Benotung der Hausarbeit.
