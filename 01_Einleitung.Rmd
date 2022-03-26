@@ -3,4 +3,6 @@
 - Wie gehen wir unsere Forschungsfrage an?
 - Kurzer Einblick in Ergebnisse
 
+dies ist ein Test, ob der Push vom iPad funktioniert.
+
 \newpage 
