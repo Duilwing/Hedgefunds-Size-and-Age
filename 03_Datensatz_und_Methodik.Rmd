@@ -1,10 +1,11 @@
 
 ## Selektion des Datensatzes
 
-Hier werden wir beschreiben, wie wir die Daten ausgesucht haben.
+Der zur Verfügung stehende Datensatz enthielt Daten über 979 Fonds für den Zeitraum 01/1990-08/2020.
 
-Ammann und Moerth (2005):
-"The data prior to 1994 have been backfilled by hedge fund managers starting to report in 1994 or later. Therefore, data prior to 1994 contain a number of biases and have not been used for this analysis."
+Im Einklang mit den Studien von @Koh.2003, @Agarwal.2004 sowie @Ammann.2005 enthält der in dieser Studie analysierte Datensatz sowohl durchgängig laufende Fonds, als auch solche die im betrachteten Zeitraum die Geschäftstätigkeit eingestellt haben. Dadurch kann der survivorship bias verhindert werden, also eine Überschätzung der Rendite aufgrund der fehlenden Berücksichtigung eingestellter Fonds.^[zum survivorship bias siehe u.a. @Brown.1992 oder @Elton.1996]
+
+Hinsichtlich der weiteren Bereinigung des Datensatzes haben beispielsweise @Jones.2007, @Ammann.2005 sogenannte 'Funds of Funds (FoF)' aus der Analyse ausgeschlossen. Um eine potentielle Verzerrung der Ergebnisse zu vermeiden, folgt die vorliegende Studie diesem Ansatz und berücksichtigt in der Analyse keine FoF.
 
 
 <!--Laden der benötigten Packages-->
