@@ -19,6 +19,18 @@ a question that arises is whether indeed there is any point in comparing hedge f
 
 - Durchführen der Regressionen mit Carhart's Alpha
 - Durchführen der Regressionen mit dem Modell von Fung and Hsieh (1997)
+- Logistic Regression der Charakteristika auf die Chance, oberhalb des Median (Winner) zu sein
+- Einschränkung des Datensatzes auf bestimmte Strategien
+  - HF Asia/Pacific Long/Short Equity
+  - HF Bear Market Equity
+  - HF Emerging Markets Long/Short Equity
+  - HF Equity Market Neutral
+  - HF Europe Long/Short Equity
+  - HF Funds of Funds - Equity
+  - HF Global Long/Short Equity
+  - HF Long-Only Equity
+  - HF U.S. Long/Short Equity
+  - HF U.S. Small Cap Long/Short Equity
 
 
 \newpage

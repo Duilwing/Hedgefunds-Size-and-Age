@@ -176,11 +176,11 @@ tidy_return_size <- tidy_return_size %>%
 ```{r, include=FALSE, warning=FALSE}
 
 # Für Age:
-DescTools::JarqueBeraTest(x = tidy_return_age$ret,
-                          robust = TRUE,
-                          method = c("chisq", "mc"),
-                          N = 0,
-                          na.rm = TRUE)
+#DescTools::JarqueBeraTest(x = tidy_return_age$ret,
+#                          robust = TRUE,
+#                          method = c("chisq", "mc"),
+#                          N = 0,
+#                          na.rm = TRUE)
 
 ```  
 
@@ -188,11 +188,11 @@ DescTools::JarqueBeraTest(x = tidy_return_age$ret,
 ```{r, include=FALSE, warning= FALSE}
 
 # Für Size:
-DescTools::JarqueBeraTest(x = tidy_return_size$ret,
-                          robust = FALSE,
-                          method = c("chisq", "mc"),
-                          N = 0,
-                          na.rm = TRUE)
+#DescTools::JarqueBeraTest(x = tidy_return_size$ret,
+#                          robust = FALSE,
+#                          method = c("chisq", "mc"),
+#                          N = 0,
+#                          na.rm = TRUE)
 
 
 ```
