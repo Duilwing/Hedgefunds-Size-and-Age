@@ -203,7 +203,6 @@ Um das Testen von Hypothesen betreffend der Modell-Parameter durchführen zu kö
 <!--Histogramm zur Prüfung auf Normalverteilung der Returns für Alter-->
 ```{r echo=FALSE, warning=FALSE}
 
-
 # Für Age:
 
 ggplot(data = tidy_return_age, aes(x=ret)) +
@@ -211,6 +210,9 @@ ggplot(data = tidy_return_age, aes(x=ret)) +
 scale_x_continuous(limits =c(-0.4,0.4))+ 
 stat_function(fun = dnorm,args = list(mean = mean(tidy_return_age$ret, na.rm = TRUE), sd = sd(tidy_return_age$ret, na.rm = TRUE)),aes(colour = "normal distribution"), size=0.7)+
 geom_density(aes(color="distribution for age"),size=0.7)+ scale_colour_manual("distributions", values = c("#287D8EFF","#FDE725FF"))
+
+
+
 
 ```  
 

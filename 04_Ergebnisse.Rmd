@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 
 ## Alpha
 
@@ -7,13 +12,12 @@ Hier werden die Ergebnisse für Alpha dargestellt.
 <!--Alpha-Regression Alter in Jahren-->
 ```{r Alpha-Regression Alter in Jahren, echo=FALSE, warning= FALSE}
 
-model_alpha_age_y_summary <- summary_final_age %>%
-  lm(alpha~age_y, data = .) %>%
-  tidy()
+#model_alpha_age_y_summary <- summary_final_age %>%lm(alpha~age_y, data = .) %>%tidy()knitr::kable(model_alpha_age_y_summary)
 
-knitr::kable(model_alpha_age_y_summary)
-
+attach(summary_final_age)
+model1 <- lm(alpha~age_y)
 ```
+
 
 <!--Alpha-Regression Alter in Klassen-->
 ```{r Alpha-Regression Alter in Klassen, echo=FALSE, warning= FALSE}
@@ -31,11 +35,11 @@ summary_final_age <- summary_final_age %>%
 
 # 2. Durchführen der Regression
 
-model_alpha_age_c_summary <- summary_final_age %>%
-  lm(alpha~young + old, data = .) %>%               # Klasse 'medium' als Referenz-Kategorie
-  tidy()
+#model_alpha_age_c_summary <- summary_final_age %>%lm(alpha~young + old, data = .) %>%               # Klasse 'medium' als Referenz-Kategorietidy()knitr::kable(model_alpha_age_c_summary)
 
-knitr::kable(model_alpha_age_c_summary)
+
+attach(summary_final_age)
+model2 <- lm(alpha~young + old)
 
 ```
 
@@ -55,11 +59,13 @@ summary_final_size <- summary_final_size %>%
 
 # 2. Durchführen der Regression
 
-model_alpha_size_c_summary <- summary_final_size %>%
-  lm(alpha~small + big, data = .) %>%               # Klasse 'medium' als Referenz-Kategorie
-  tidy()
+#model_alpha_size_c_summary <- summary_final_size %>%lm(alpha~small + big, data = .) %>%               # Klasse 'medium' als Referenz-Kategorietidy()knitr::kable(model_alpha_size_c_summary)
 
-knitr::kable(model_alpha_size_c_summary)
+
+attach(summary_final_size)
+model3 <- lm(alpha~small + big)
+
+
 
 ```
 
@@ -84,14 +90,33 @@ summary_final_size <- summary_final_size %>%
 
 # 2. Durchführen der Regression
 
-model_alpha_size_cq_summary <- summary_final_size %>%
-  lm(alpha~Q_2 + Q_3 + Q_4 + Q_5, data = .) %>%               # Klasse 'Q_1' als Referenz-Kategorie
-  tidy()
+#model_alpha_size_cq_summary <- summary_final_size %>%lm(alpha~Q_2 + Q_3 + Q_4 + Q_5, data = .) %>%               # Klasse 'Q_1' als Referenz-Kategorietidy()knitr::kable(model_alpha_size_cq_summary)
 
-knitr::kable(model_alpha_size_cq_summary)
+attach(summary_final_size)
+model4 <- lm(alpha~Q_2 + Q_3 + Q_4 + Q_5)
 
 ```
 
+
+```{r,echo=FALSE, results='asis'}
+library(stargazer)
+#luca: würde das noch in literatur aufnehmen
+#Hlavac, Marek (2022). stargazer: Well-Formatted Regression and Summary Statistics Tables. R package version 5.2.3. https://CRAN.R-project.org/package=stargazer
+
+
+stargazer(model1,model2, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Alpha Part 1",  column.labels = c("Age", "Age Classes"),omit.stat = c("rsq", "f")
+)
+```
+Zweiter Teil für Size sieht so aus
+
+\newpage
+
+
+```{r,echo=FALSE, results='asis'} 
+
+stargazer(model3,model4, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Alpha Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
+)
+```
 
 
 ## Carhart's alpha (optional)
@@ -106,45 +131,55 @@ Hier werden die Sharpe Ratios der Fonds berechnet und dargestellt.
 <!--SR-Regression Alter in Jahren-->
 ```{r SR-Regression Alter in Jahren, echo=FALSE, warning= FALSE}
 
-model_sr_age_y_summary <- summary_final_age %>%
-  lm(sr~age_y, data = .) %>%
-  tidy()
+#model_sr_age_y_summary <- summary_final_age %>%lm(sr~age_y, data = .) %>%tidy()
 
-knitr::kable(model_sr_age_y_summary)
+attach(summary_final_age)
+model1_SR <- lm(sr~age_y)
 
 ```
 
 <!--SR-Regression Alter in Klassen-->
 ```{r SR-Regression Alter in Klassen, echo=FALSE, warning= FALSE}
 
-model_sr_age_c_summary <- summary_final_age %>%
-  lm(sr~young + old, data = .) %>%               # Klasse 'medium' als Referenz-Kategorie
-  tidy()
+#model_sr_age_c_summary <- summary_final_age %>%lm(sr~young + old, data = .) %>%               # Klasse 'medium' als Referenz-Kategorietidy()
 
-knitr::kable(model_sr_age_c_summary)
+attach(summary_final_age)
+model2_SR <- lm(sr~young + old)
 
 ```
 
 <!--SR-Regression Größe in Klassen nach Jones-->
 ```{r SR-Regression Größe in Klassen nach Jones, echo=FALSE, warning= FALSE}
 
-model_sr_size_c_summary <- summary_final_size %>%
-  lm(sr~small + big, data = .) %>%               # Klasse 'medium' als Referenz-Kategorie
-  tidy()
+#model_sr_size_c_summary <- summary_final_size %>%lm(sr~small + big, data = .) %>%               # Klasse 'medium' als Referenz-Kategorietidy()
 
-knitr::kable(model_sr_size_c_summary)
-
+attach(summary_final_size)
+model3_SR <- lm(sr~small + big)
 ```
 
 <!--SR-Regression Größe in Klassen nach Quantilen-->
 ```{r SR-Regression Größe in Klassen nach Quantilen, echo=FALSE, warning= FALSE}
 
-model_sr_size_cq_summary <- summary_final_size %>%
-  lm(sr~ Q_2 + Q_3 + Q_4 + Q_5, data = .) %>%               # Klasse 'Q_1' als Referenz-Kategorie
-  tidy()
+#model_sr_size_cq_summary <- summary_final_size %>%lm(sr~ Q_2 + Q_3 + Q_4 + Q_5, data = .) %>%               # Klasse 'Q_1' als Referenz-Kategorietidy()
 
-knitr::kable(model_sr_size_cq_summary)
+attach(summary_final_size)
+model4_SR <- lm(sr~Q_2 + Q_3 + Q_4 + Q_5)
 
+```
+
+
+```{r,echo=FALSE, results='asis'} 
+
+stargazer(model1_SR,model2_SR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Sharpe Ratio Part 1",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
+)
+```
+Erläuterung der Ergebnisse
+
+\newpage
+```{r,echo=FALSE, results='asis'} 
+
+stargazer(model3_SR,model4_SR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Sharp Ratio Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
+)
 ```
 
 
@@ -158,46 +193,60 @@ Hier werden die Information Ratios berechnet und dargestellt.
 <!--IR-Regression Alter in Jahren-->
 ```{r IR-Regression Alter in Jahren, echo=FALSE, warning= FALSE}
 
-model_ir_age_y_summary <- summary_final_age %>%
-  lm(ir~age_y, data = .) %>%
-  tidy()
+#model_ir_age_y_summary <- summary_final_age %>%lm(ir~age_y, data = .) %>%tidy()
 
-knitr::kable(model_ir_age_y_summary)
+attach(summary_final_age)
+model1_IR <- lm(ir~age_y)
 
 ```
 
 <!--IR-Regression Alter in Klassen-->
 ```{r IR-Regression Alter in Klassen, echo=FALSE, warning= FALSE}
 
-model_ir_age_c_summary <- summary_final_age %>%
-  lm(ir~young + old, data = .) %>%               # Klasse 'medium' als Referenz-Kategorie
-  tidy()
+#model_ir_age_c_summary <- summary_final_age %>%lm(ir~young + old, data = .) %>%               # Klasse 'medium' als Referenz-Kategorietidy()
 
-knitr::kable(model_ir_age_c_summary)
+attach(summary_final_age)
+model2_IR <- lm(ir~young + old)
 
 ```
 
 <!--IR-Regression Größe in Klassen nach Jones-->
 ```{r IR-Regression Größe in Klassen nach Jones, echo=FALSE, warning= FALSE}
 
-model_ir_size_c_summary <- summary_final_size %>%
-  lm(ir~small + big, data = .) %>%               # Klasse 'medium' als Referenz-Kategorie
-  tidy()
+#model_ir_size_c_summary <- summary_final_size %>%lm(ir~small + big, data = .) %>%               # Klasse 'medium' als Referenz-Kategorietidy()
 
-knitr::kable(model_ir_size_c_summary)
+attach(summary_final_size)
+model3_IR <- lm(ir~small + big)
 
 ```
 
 <!--IR-Regression Größe in Klassen nach Quantilen-->
 ```{r IR-Regression Größe in Klassen nach Quantilen, echo=FALSE, warning= FALSE}
 
-model_ir_size_cq_summary <- summary_final_size %>%
-  lm(ir~ Q_2 + Q_3 + Q_4 + Q_5, data = .) %>%               # Klasse 'Q_1' als Referenz-Kategorie
-  tidy()
+#model_ir_size_cq_summary <- summary_final_size %>%lm(ir~ Q_2 + Q_3 + Q_4 + Q_5, data = .) %>%               # Klasse 'Q_1' als Referenz-Kategorietidy()
 
-knitr::kable(model_ir_size_cq_summary)
+attach(summary_final_size)
+model4_IR <- lm(ir~Q_2 + Q_3 + Q_4 + Q_5)
 
 ```
+
+
+
+
+```{r,echo=FALSE, results='asis'} 
+
+stargazer(model1_IR,model2_IR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Information Ratio Part 1",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
+)
+```
+Erläuterung der Ergebnisse
+
+\newpage
+```{r,echo=FALSE, results='asis'} 
+
+stargazer(model3_IR,model4_IR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Information Ratio Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
+)
+```
+
 
 
 
