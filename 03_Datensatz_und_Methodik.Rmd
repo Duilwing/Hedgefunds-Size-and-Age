@@ -14,7 +14,7 @@ Hinsichtlich der weiteren Bereinigung des Datensatzes haben beispielsweise @Jone
 library(tidyverse)
 library(tinytex)
 library(broom)
-library(viridis)
+library(viridis) # für color-schemes
 library(DescTools) # Zum Durchführen des Jarque-Bera Tests auf Normalverteilung der Returns
 library(knitr)
 
@@ -226,7 +226,7 @@ stat_function(fun = dnorm,args = list(mean = mean(tidy_return_age$ret, na.rm = T
 geom_density(aes(color="distribution for size"),size=0.7)+ scale_colour_manual("distributions", values = c("#287D8EFF","#FDE725FF"))
 
 ```
-
+Erläuterung Histogramme
 
 
 <!--Mergen von tidy_data und factor_data-->

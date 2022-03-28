@@ -221,14 +221,76 @@ Ranking_age <- summary_final_age %>%
                                TRUE ~ "NA")) %>%
   filter(coherence == "top") %>%
   arrange(sr_rank) %>%
-  select(name, sr_rank, ir_rank, alpha_rank) %>%
-  rename(Name = name, `SR Rank` = sr_rank, `IR Rank` = ir_rank, `Alpha Rank` = alpha_rank)
+  select(name,age_class, sr_rank, ir_rank, alpha_rank) %>%
+  rename(Name = name,Class=age_class, `SR Rank` = sr_rank, `IR Rank` = ir_rank, `Alpha Rank` = alpha_rank)
 
 
 kable(Ranking_age, booktabs = TRUE,
         caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Alter, 2005-2015)")
 
 ```
+
+```{r}
+
+#kumuierte returns für jeden fund in subset
+
+tidy_return_age_sub <- tidy_return_age
+tidy_return_age_sub[is.na(tidy_return_age_sub)] <- 0
+
+
+tidy_return_age_sub <- tidy_return_age_sub%>%
+  group_by(secid)%>%
+  mutate(cum_ret=cumsum(ret))
+
+
+#erstellen eines sub-sets
+factor_data_age_sub <- factor_data_age %>%
+    pivot_longer(cols = mktrf,
+                  names_to = "secid",
+                  values_to = "ret")%>%
+  mutate(cum_ret=cumsum(ret))%>%
+  select(date,secid,cum_ret)
+
+#alle secids:"FOUSA08N44","FHUSA04BLA","FOUSA08ZJV","FHUSA04AHN","FOUSA0883N","FHUSA04ADN","FHUSA04BAI"
+
+#liste der funds mit vorauswahl                    
+list_age_sub <- c("mktrf","FOUSA08N44","FHUSA04BLA","FOUSA0883N","FHUSA04ADN","FHUSA04BAI")   
+
+#merge, auswahl für die funds und market
+final_data_age_sub <- bind_rows(tidy_return_age_sub, factor_data_age_sub)%>%
+  select(date,secid,cum_ret)%>%
+  filter(secid %in% list_age_sub)%>%
+  rename(Name=secid)
+
+#%>%filter(date>= "2005-02-28") wenn man nicht mit cum return=0, sondern Wert anfangen möchte
+
+#umbenennung der secid in die Namen der Funds
+final_data_age_sub[,2][final_data_age_sub[,2] == "mktrf"] <- "Market Rate"
+final_data_age_sub[,2][final_data_age_sub[,2] == "FOUSA08N44"] <- "Artorius Partners II"
+final_data_age_sub[,2][final_data_age_sub[,2] == "FHUSA04BLA"] <- "AJW Partners II LLC Class B"
+final_data_age_sub[,2][final_data_age_sub[,2] == "FOUSA0883N"] <- "CCM S&P 500 Long Short"
+final_data_age_sub[,2][final_data_age_sub[,2] == "FHUSA04ADN"] <- "Strand US Fund"
+final_data_age_sub[,2][final_data_age_sub[,2] == "FHUSA04BAI"] <- "LIM China Index Limited B"
+
+#aussortierte funds
+#final_data_age_sub[,2][final_data_age_sub[,2] == "FOUSA08ZJV"] <- "Gladwyne Capital, L.P."
+#final_data_age_sub[,2][final_data_age_sub[,2] == "FHUSA04AHN"] <- "Loch Capital I LP"
+
+```
+
+
+```{r}
+#plot der returns, reihenfolge nach alpha für Age
+
+final_data_age_sub$Name <- factor(final_data_age_sub$Name, levels = c("LIM China Index Limited B", "Strand US Fund","CCM S&P 500 Long Short","AJW Partners II LLC Class B","Artorius Partners II", "Market Rate"))
+
+
+
+ggplot(data=final_data_age_sub) + aes(x=date, y = cum_ret, color = Name) + geom_line(size=0.8)+scale_color_viridis(discrete = TRUE)+ theme_minimal()
+
+```
+
+
 
 <!--Vergleichendes Ranking nach Risk adjusted Returns Size-->
 ```{r Ranking-Table Size, echo=FALSE, warning=FALSE}
@@ -241,13 +303,70 @@ Ranking_size <- summary_final_size %>%
                                TRUE ~ "NA")) %>%
   filter(coherence == "top") %>%
   arrange(sr_rank) %>%
-  select(name, sr_rank, ir_rank, alpha_rank) %>%
+  select(name,Quantile_Class, sr_rank, ir_rank, alpha_rank) %>%
   rename(Name = name, `SR Rank` = sr_rank, `IR Rank` = ir_rank, `Alpha Rank` = alpha_rank)
 
 kable(Ranking_size, booktabs = TRUE,
         caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Größe, 2010-2020)") 
 
 ```
+
+```{r}
+
+#kumuierte returns für jeden fund in subset
+
+tidy_return_size_sub <- tidy_return_size
+tidy_return_size_sub[is.na(tidy_return_size_sub)] <- 0
+
+
+tidy_return_size_sub <- tidy_return_size_sub%>%
+  group_by(secid)%>%
+  mutate(cum_ret=cumsum(ret))
+
+
+#erstellen eines sub-sets
+factor_data_size_sub <- factor_data_size %>%
+    pivot_longer(cols = mktrf,
+                  names_to = "secid",
+                  values_to = "ret")%>%
+  mutate(cum_ret=cumsum(ret))%>%
+  select(date,secid,cum_ret)
+
+#alle secids: "FHUSA04FL4","FOUSA08N44", "FOUSA088YN","FOUSA06V3X", "FOUSA06UI4", "FOUSA06A67"
+
+
+#liste der funds                   
+list_size_sub <- c("mktrf","FHUSA04FL4","FOUSA08N44", "FOUSA088YN","FOUSA06V3X", "FOUSA06UI4", "FOUSA06A67")   
+
+#merge, auswahl für die funds und market
+final_data_size_sub <- bind_rows(tidy_return_size_sub, factor_data_size_sub)%>%
+  select(date,secid,cum_ret)%>%
+  filter(secid %in% list_size_sub)%>%
+  rename(Name=secid)
+
+#%>%filter(date>= "2010-02-28") wenn man nicht mit cum return=0, sondern Wert anfangen möchte
+
+#umbenennung der secid in die Namen der Funds
+final_data_size_sub[,2][final_data_size_sub[,2] == "mktrf"] <- "Market Rate"
+final_data_size_sub[,2][final_data_size_sub[,2] == "FOUSA08N44"] <- "Artorius Partners II"
+final_data_size_sub[,2][final_data_size_sub[,2] == "FHUSA04FL4"] <- "Echo Street Capital Partners LP"
+final_data_size_sub[,2][final_data_size_sub[,2] == "FOUSA088YN"] <- "Aristides Fund LP"
+final_data_size_sub[,2][final_data_size_sub[,2] == "FOUSA06V3X"] <- "Dendrich Fund"
+final_data_size_sub[,2][final_data_size_sub[,2] == "FOUSA06UI4"] <- "SYW LP"
+final_data_size_sub[,2][final_data_size_sub[,2] == "FOUSA06A67"] <- "PharmaInvest Fund"
+
+```
+
+```{r}
+#plot der returns, reihenfolge nach alpha für Size
+
+final_data_size_sub$Name <- factor(final_data_size_sub$Name, levels = c("Dendrich Fund","SYW LP","PharmaInvest Fund","Echo Street Capital Partners LP","Aristides Fund LP","Artorius Partners II", "Market Rate"))
+
+
+
+ggplot(data=final_data_size_sub) + aes(x=date, y = cum_ret, color = Name) + geom_line(size=0.8)+scale_color_viridis(discrete = TRUE)+ theme_minimal()
+```
+
 
 
 
