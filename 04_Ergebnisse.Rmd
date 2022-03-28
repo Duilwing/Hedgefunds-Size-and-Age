@@ -98,7 +98,7 @@ model4 <- lm(alpha~Q_2 + Q_3 + Q_4 + Q_5)
 ```
 
 
-```{r,echo=FALSE, results='asis'}
+```{r, echo=FALSE, warning=FALSE, results='asis'}
 library(stargazer)
 #luca: würde das noch in literatur aufnehmen
 #Hlavac, Marek (2022). stargazer: Well-Formatted Regression and Summary Statistics Tables. R package version 5.2.3. https://CRAN.R-project.org/package=stargazer
@@ -279,7 +279,7 @@ kable(Ranking_age, booktabs = TRUE,
 
 ```
 
-```{r}
+```{r, echo=FALSE, warning=FALSE}
 
 #kumuierte returns für jeden fund in subset
 
@@ -328,7 +328,7 @@ final_data_age_sub[,2][final_data_age_sub[,2] == "FHUSA04BAI"] <- "LIM China Ind
 ```
 
 
-```{r}
+```{r, echo=FALSE, warning=FALSE}
 #plot der returns, reihenfolge nach alpha für Age
 
 final_data_age_sub$Name <- factor(final_data_age_sub$Name, levels = c("LIM China Index Limited B", "Strand US Fund","CCM S&P 500 Long Short","AJW Partners II LLC Class B","Artorius Partners II", "Market Rate"))
@@ -360,7 +360,7 @@ kable(Ranking_size, booktabs = TRUE,
 
 ```
 
-```{r}
+```{r, echo=FALSE, warning=FALSE}
 
 #kumuierte returns für jeden fund in subset
 
@@ -406,7 +406,7 @@ final_data_size_sub[,2][final_data_size_sub[,2] == "FOUSA06A67"] <- "PharmaInves
 
 ```
 
-```{r}
+```{r, echo=FALSE, warning=FALSE}
 #plot der returns, reihenfolge nach alpha für Size
 
 final_data_size_sub$Name <- factor(final_data_size_sub$Name, levels = c("Dendrich Fund","SYW LP","PharmaInvest Fund","Echo Street Capital Partners LP","Aristides Fund LP","Artorius Partners II", "Market Rate"))
