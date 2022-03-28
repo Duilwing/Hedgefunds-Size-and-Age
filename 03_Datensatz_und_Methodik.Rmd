@@ -171,19 +171,40 @@ tidy_return_size <- tidy_return_size %>%
 
 ```
 
-Um die Normalverteilung der Returns zu testen, wurden pro Stichprobe jeweils der Jarque-Bera-Test durchgeführt.^[@Jarque.1980, @Jarque.1987]
+
+<!--Durchführen des Jarque-Bera Tests auf Normalverteilung der Returns für Alter-->
+```{r, include=FALSE, warning=FALSE}
+
+# Für Age:
+DescTools::JarqueBeraTest(x = tidy_return_age$ret,
+                          robust = TRUE,
+                          method = c("chisq", "mc"),
+                          N = 0,
+                          na.rm = TRUE)
+
+```  
+
+<!--Durchführen des Jarque-Bera Tests auf Normalverteilung der Returns für Größe-->
+```{r, include=FALSE, warning= FALSE}
+
+# Für Size:
+DescTools::JarqueBeraTest(x = tidy_return_size$ret,
+                          robust = FALSE,
+                          method = c("chisq", "mc"),
+                          N = 0,
+                          na.rm = TRUE)
 
 
-<!--Durchführen des Jarque-Bera Tests auf Normalverteilung der Returns-->
+```
+
+
+Um das Testen von Hypothesen betreffend der Modell-Parameter durchführen zu können, muss zunächst die Annahme der Normalverteilung geprüft werden [@Brooks.2019, S. 209]. Hierfür eignet sich beispielsweise der bekannte Jarque-Bera-Test.^[@Jarque.1980, @Jarque.1987] Dieser wurde daher auf beide Datensätze angewandt und kommt zu dem Ergebnis, dass hinsichtlich der betrachteten Renditen die Verteilung statistisch signifikant von der Normalverteilung abweicht. Allerdings haben analytische Tests auf Normalverteilung, wie bspw. auch der Kolmogorov-Smirnov Test oder der Shapiro-Wilk Test, die Eigenschaft, bei sehr kleinen Stichproben eine geringe Power und bei sehr großen Stichproben einen automatisch signifikanten p-Wert aufzuweisen.^[siehe bspw. @AldorNoiman.2013, @Field.2018] Aufgrunddessen wird ein weiterer, optischer Test auf Normalverteilung anhand von Histogrammen vorgenommen, die die Verteilung der Renditen beider Stichproben darstellen:
+
+<!--Histogramm zur Prüfung auf Normalverteilung der Returns für Alter-->
 ```{r echo=FALSE, warning=FALSE}
 
 
 # Für Age:
-DescTools::JarqueBeraTest(x = tidy_return_age$prc,
-                          robust = TRUE,
-                          method = c("chisq", "mc"),
-                          N = 0,
-                          na.rm = FALSE)
 
 ggplot(data = tidy_return_age, aes(x=ret)) +
   geom_histogram(aes(y =..density..),fill="#440154FF",alpha=0.95,binwidth = 0.001)+theme_minimal()+
@@ -191,30 +212,18 @@ scale_x_continuous(limits =c(-0.4,0.4))+
 stat_function(fun = dnorm,args = list(mean = mean(tidy_return_age$ret, na.rm = TRUE), sd = sd(tidy_return_age$ret, na.rm = TRUE)),aes(colour = "normal distribution"), size=0.7)+
 geom_density(aes(color="distribution for age"),size=0.7)+ scale_colour_manual("distributions", values = c("#287D8EFF","#FDE725FF"))
 
-
-
-
 ```  
 
-
-
-
-<!--Durchführen des Jarque-Bera Tests auf Normalverteilung der Returns-->
+<!--Histogramm zur Prüfung auf Normalverteilung der Returns für Größe-->
 ```{r, echo=FALSE, warning= FALSE}
 
 # Für Size:
-DescTools::JarqueBeraTest(x = tidy_return_size$prc,
-                          robust = TRUE,
-                          method = c("chisq", "mc"),
-                          N = 0,
-                          na.rm = FALSE)
 
 ggplot(data = tidy_return_size, aes(x=ret)) +
   geom_histogram(aes(y =..density..),fill="#440154FF",alpha=0.95,binwidth = 0.001)+theme_minimal()+
 scale_x_continuous(limits =c(-0.4,0.4))+ 
 stat_function(fun = dnorm,args = list(mean = mean(tidy_return_age$ret, na.rm = TRUE), sd = sd(tidy_return_age$ret, na.rm = TRUE)),aes(colour = "normal distribution"), size=0.7)+
 geom_density(aes(color="distribution for size"),size=0.7)+ scale_colour_manual("distributions", values = c("#287D8EFF","#FDE725FF"))
-
 
 ```
 
