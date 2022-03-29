@@ -1,11 +1,191 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 
 ## Robustness checks
 
-
-
 - Durchführen der Regressionen mit Carhart's Alpha
-- Durchführen der Regressionen mit dem Modell von Fung and Hsieh (1997)
+
+<!--Berechnen von Carhart's Alpha-->
+```{r, include=FALSE, warning=FALSE}
+
+# Für age
+
+c_alphas_final_age <- final_data_age %>%
+  group_by(secid) %>%
+  do(tidy(lm(retrf~mktrf + smb + hml + umd, data = .)))  %>% 
+  filter(term == "(Intercept)") %>% 
+  select(secid, estimate) %>% 
+  rename(c_alpha = estimate)
+
+
+# Für size
+
+c_alphas_final_size <- final_data_size %>%
+  group_by(secid) %>%
+  do(tidy(lm(retrf~mktrf + smb + hml + umd, data = .)))  %>% 
+  filter(term == "(Intercept)") %>% 
+  select(secid, estimate) %>% 
+  rename(c_alpha = estimate)
+
+```
+
+<!--Berechnen der IR mit Carhart's Alpha-->
+```{r, include=FALSE, warning=FALSE}
+
+# Für age:
+
+c_summary_final_age <- final_data_age %>%
+  group_by(secid) %>%
+  do(augment(lm(retrf~mktrf + smb + hml + umd, data = .)))  %>% 
+  summarise(idiosyncratic_risk = sd(.resid, na.rm = TRUE)) %>% #.resid sind die Residuale
+  left_join(c_alphas_final_age, by = "secid") %>% # Hinzufügen der Alphas zum Datensatz
+  mutate(c_ir = sqrt(12)*c_alpha/idiosyncratic_risk,
+         c_alpha = 12*c_alpha) %>% 
+  left_join(base_data_age, by = "secid") %>%  # Hinzufügen der Variablen Name, Alter und Alters-Klasse
+  select(name, secid, c_alpha, c_ir, age_y, age_class)
+
+# Für size:
+
+c_summary_final_size <- final_data_size %>%
+  group_by(secid) %>%
+  do(augment(lm(retrf~mktrf + smb + hml + umd, data = .)))  %>% 
+  summarise(idiosyncratic_risk = sd(.resid, na.rm = TRUE)) %>% #.resid sind die Residuale
+  left_join(c_alphas_final_size, by = "secid") %>% # Hinzufügen der Alphas zum Datensatz
+  mutate(c_ir = sqrt(12)*c_alpha/idiosyncratic_risk,
+         c_alpha = 12*c_alpha) %>% 
+  left_join(base_data_size, by = "secid") %>%  # Hinzufügen der Variablen Name, Alter und Alters-Klasse
+  mutate(Quantile_Class = ntile(`size`, 5)) %>%
+  mutate(Class_Jones= case_when(`size` <= 100000000 ~ "small",
+                                `size` > 100000000  & `size` <= 500000000 ~ "medium",
+                                `size` > 500000000 ~ "big"))%>%   # Einstufung nach Klassen nach Jones
+  select(name, secid, c_alpha, c_ir, size, Quantile_Class, Class_Jones)
+
+```
+
+
+<!--Regression: Alter nach Jahren auf Carhart's Alpha-->
+```{r, include=FALSE, warning=FALSE}
+
+attach(c_summary_final_age)
+model1_c <- lm(c_alpha~age_y)
+
+# Ergebnis identisch zu Jensen's Alpha
+
+```
+
+<!--Regression: Alter nach Klassen auf Carharts' Alpha-->
+```{r, include=FALSE, warning=FALSE}
+
+c_summary_final_age <- c_summary_final_age %>%
+  mutate(young = case_when(`age_y` <= 1 ~ 1,
+                           `age_y` > 1 ~ 0),
+         medium = case_when(`age_y` >= 2 & `age_y` <= 4 ~ 1,
+                            `age_y` < 2 | `age_y` > 4 ~ 0),
+         old = case_when(`age_y` > 4 ~ 1,
+                         `age_y` <= 4 ~ 0))
+
+attach(c_summary_final_age)
+model2_c <- lm(c_alpha~young + old)
+
+# Ergebnis identisch zu Jansen's Alpha
+
+```
+
+<!--Regression: Größe in Klassen nach Jones auf Carhart's Alpha-->
+```{r, include=FALSE, warning= FALSE}
+
+c_summary_final_size <- c_summary_final_size %>%
+  mutate(small = case_when(`size` <= 100000000 ~ 1,
+                           `size` > 100000000 ~ 0),
+         medium = case_when(`size` > 100000000 & `size` <= 500000000 ~ 1,
+                            `size` <= 100000000 | `size` > 500000000 ~ 0),
+         big = case_when(`size` > 500000000 ~ 1,
+                         `size` <= 500000000 ~ 0))
+
+
+attach(c_summary_final_size)
+model3_c <- lm(c_alpha~small + big)
+
+# Ergebnis identisch zu Jensen's Alpha, wenn auch geringere Werte für die Koeffizienten
+
+```
+
+<!--Regression: Größe in Klassen nach Quantilen auf Carhart's Alpha-->
+```{r, include=FALSE, warning= FALSE}
+
+c_summary_final_size <- c_summary_final_size %>%
+  mutate(Q_1 = case_when(`Quantile_Class` == "1" ~ 1,
+                         `Quantile_Class` != "1" ~ 0),
+         Q_2 = case_when(`Quantile_Class` == "2" ~ 1,
+                         `Quantile_Class` != "2" ~ 0),
+         Q_3 = case_when(`Quantile_Class` == "3" ~ 1,
+                         `Quantile_Class` != "3" ~ 0),
+         Q_4 = case_when(`Quantile_Class` == "4" ~ 1,
+                         `Quantile_Class` != "4" ~ 0),
+         Q_5 = case_when(`Quantile_Class` == "5" ~ 1,
+                         `Quantile_Class` != "5" ~ 0))
+
+
+attach(c_summary_final_size)
+model4_c <- lm(c_alpha~Q_2 + Q_3 + Q_4 + Q_5)
+
+# Ergebnis identisch zu Jensen's Alpha, wenn auch geringere Werte für die Koeffizienten
+
+```
+
+
+<!--Regression: Alter nach Jahren auf IR (Carhart's Alpha)-->
+```{r, echo=FALSE, warning= FALSE}
+
+attach(c_summary_final_age)
+model1_c_IR <- lm(c_ir~age_y)
+
+# Ergebnis identisch zu Jensen's Alpha
+
+```
+
+<!--Regression: Alter in Klassen auf IR (Carhart's Alpha)-->
+```{r, echo=FALSE, warning= FALSE}
+
+attach(c_summary_final_age)
+model2_c_IR <- lm(c_ir~young + old)
+
+# Ergebnis identisch zu Jensen's Alpha
+
+```
+
+<!--Regression: Größe in Klassen nach Jones auf IR (Carhart's Alpha)-->
+```{r, echo=FALSE, warning= FALSE}
+
+attach(c_summary_final_size)
+model3_c_IR <- lm(c_ir~small + big)
+
+# Ergebnis identisch zu Jensen's Alpha
+# Größere Werte der Koeffizienten, wobei 'big' nun insignifikant
+
+```
+
+<!--Regression: Größe in Klassen nach Quantilen auf IR (Carhart's Alpha)-->
+```{r, echo=FALSE, warning= FALSE}
+
+attach(c_summary_final_size)
+model4_c_IR <- lm(c_ir~Q_2 + Q_3 + Q_4 + Q_5)
+
+# Ergebnis identisch zu Jensen's Alpha
+# 'Q_2' nun insignifikant
+
+```
+
+
+
+
+
+
 - Logistic Regression der Charakteristika auf die Chance, oberhalb des Median (Winner) zu sein
+- Durchführung der Untersuchungen mit Zeitraum 2005-2020
 - Einschränkung des Datensatzes auf bestimmte Strategien
   - HF Asia/Pacific Long/Short Equity
   - HF Bear Market Equity

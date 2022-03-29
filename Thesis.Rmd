@@ -97,6 +97,14 @@ library(tinytex)
 ```{r child='A1_Mitwirkung.Rmd'}
 ```
 
+\newpage
+
+# Tabellen
+
+```{r child='A2_Tabellen.Rmd'}
+```
+
+
 <!-- Makes sure to have a new page for your literature -->
 
 
