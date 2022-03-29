@@ -1,12 +1,11 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
+
+Um die Validität der vorgestellten Ergebnisse einordnen zu können, werden durchgeführte Robustness Checks nachfolgend vorgestellt. Anschließend werden die Grenzen der Studie thematisiert.
 
 ## Robustness checks
 
-- Durchführen der Regressionen mit Carhart's Alpha
+### Carhart's Alpha
+
+Als erster Check wurden Alphas nicht nur nach dem CAPM, sondern auch mit dem Multi-Faktoren-Modell von @Carhart.1997 auf Basis des Modells von @Fama.1993 berechnet. Anschließend wurden die Regressionen in Kapitel 4 auch mit Carhart's Alpha durchgeführt - die SR-Regressionen ausgenommen, da sich hier nichts verändert. Die Ergebnisse stimmen mit denen der CAPM-Alpha-Regressionen überein. Hinsichtlich der Rangfolge ist festzustellen, dass sich für die besten Fonds nach Information Ratio keine Änderungen ergeben, außer, dass deren Alpha-Rang sich um 3-8 Plätze verbessern. Auch die besten Fonds nach Alpha sind dieselben, wenn auch in ggf. anderer Reihenfolge. Somit bestätigt eine Analyse unter Verwendung des Carhart's Alpha die Ergebnisse in Kapitel 4.
 
 <!--Berechnen von Carhart's Alpha-->
 ```{r, include=FALSE, warning=FALSE}
@@ -179,9 +178,376 @@ model4_c_IR <- lm(c_ir~Q_2 + Q_3 + Q_4 + Q_5)
 
 ```
 
+<!--Vergleichendes Ranking nach Risk adjusted Returns mit Carhart's Alpha Age-->
+```{r, echo=FALSE, warning=FALSE}
+
+c_ranking_age <- c_summary_final_age %>%
+  mutate(c_ir_rank = dense_rank(desc(c_ir)),
+         c_alpha_rank = dense_rank(desc(c_alpha))) %>%
+  mutate(coherence = case_when(`c_alpha_rank` < 4 | `c_ir_rank` < 4 ~ "top",
+                               TRUE ~ "NA")) %>%
+  filter(coherence == "top") %>%
+  arrange(c_ir_rank) %>%
+  select(name,age_class, c_ir_rank, c_alpha_rank) %>%
+  rename(Name = name,Class=age_class, `C-IR Rank` = c_ir_rank, `C-Alpha Rank` = c_alpha_rank)
+
+```
+
+<!--Vergleichendes Ranking nach Risk adjusted Returns mit Carhart's Alpha Size-->
+```{r, echo=FALSE, warning=FALSE}
+
+c_ranking_size <- c_summary_final_size %>%
+  mutate(c_ir_rank = dense_rank(desc(c_ir)),
+         c_alpha_rank = dense_rank(desc(c_alpha))) %>%
+  mutate(coherence = case_when(`c_alpha_rank` < 4 | `c_ir_rank` < 4 ~ "top",
+                               TRUE ~ "NA")) %>%
+  filter(coherence == "top") %>%
+  arrange(c_ir_rank) %>%
+  select(name, Quantile_Class, c_ir_rank, c_alpha_rank) %>%
+  rename(Name = name, `C-IR Rank` = c_ir_rank, `C-Alpha Rank` = c_alpha_rank)
+
+```
+
+### Gemeinsamer Zeitraum 2005-2020
+
+<!--Laden der Informationen zu den einzelnen Hedgefonds-->
+```{r, include=FALSE, warning=FALSE}
+
+# Leeren der Umgebung
+behalten <- list("model1_c", "model1_c_IR",
+             "model2_c", "model2_c_IR",
+             "model3_c", "model3_c_IR",
+             "model4_c", "model4_c_IR",
+             "c_ranking_age", "c_ranking_size")
+rm(list = setdiff(ls(), behalten))
+
+
+# Einlesen der Daten
+
+base_data <- read_csv("./DATA/basedata.csv") %>%
+  filter(`Morningstar Category` != "HF Fund of Funds - Equity") %>%
+  filter(`Inception Date` <= "2005-01-01") %>% #Nur Fonds die vor/am 2005-01-01 gegründet wurden
+  mutate(age_y = as.numeric(round((as.Date("2005-01-01") - `Inception Date`)/365))) %>% #Berechnung Alter
+  mutate(age_class = case_when(                # Erstellung der Altersklassen
+    age_y < 2 ~ "young",
+    age_y >= 2 & age_y <=4 ~ "medium",
+    age_y > 4 ~ "old")) %>%
+  mutate(`size` = coalesce(`Fund Size USD`, `Net Assets - Share Class USD`)) %>% # Gemergte Variable 'size'
+  mutate(`size_date` = coalesce(`Fund Size Date`, `Net Assets Date`)) %>% # Gemergte Variable 'size date'
+  filter(`size` >= 1000000 & `size_date` >= "2005-01-01") %>% # Nur Fonds mit Mindestgröße & akt. Size-Date
+  arrange(secid, .by_group = FALSE) %>%
+  select(`name`, `secid`,`age_y`, `age_class`, `size`)
+
+```
+
+<!--Laden der Faktor-Daten-->
+```{r, include=FALSE, warning= FALSE}
+
+factor_data <- read_csv("./DATA/factordata.csv",
+  col_types = cols(
+  date = col_date(format = "%d%.%m%.%Y"))) %>%
+  filter(date >= "2005-01-01") %>% # Einschränken auf den Zeitraum 01/2005-08/2020
+  select(date, mktrf, smb, hml, umd, rf)
+
+```
+
+<!--Laden des raw_data Datensatzes-->
+```{r, include=FALSE, warning= FALSE}
+
+raw_data <- read_csv("./DATA/mri.csv",
+                    col_types = cols(
+                    date = col_date(format = "%d%.%m%.%Y"))) %>%
+  filter(date >= "2005-01-01") %>% # Einschränken auf den Zeitraum 01/2005-08/2020
+  keep(~ (sum(. >= 0) / length(.)) >= 0.5)
+
+raw_data[,2:396][raw_data[,2:396] == "-NA"] <- NA
+
+```
+
+<!--Eingrenzen von raw_data entsprechend der Selektion in base_data-->
+```{r, include=FALSE, warning= FALSE}
+
+list <- base_data$secid %>%    # Liste mit Fonds aus dem base_data Datensatz
+  c(., "date")
+
+raw_data_funds <- raw_data %>% # Erstellen eines Subsets von raw_data, welches nur die Fonds aus
+  select(any_of(list)) %>%     # der zuvor erstellten Liste enthält
+  relocate(date)
+
+```
+
+<!--Aufräumen (tidy) und Return-Berechnung raw_data Datensatzes-->
+```{r, include=FALSE, warning= FALSE}
+
+raw_data_funds$FHUSA04B6U <- as.character(raw_data_funds$FHUSA04B6U)
+raw_data_funds$F00000GUU3 <- as.character(raw_data_funds$F00000GUU3)
+
+tidy_return <- raw_data_funds %>%
+      pivot_longer(cols = !date,
+      names_to = "secid",
+      values_to = "prc")
+
+tidy_return$prc <- as.numeric(tidy_return$prc)
+
+tidy_return <- tidy_return %>%
+      group_by(secid) %>%
+      mutate(ret = prc/lag(prc, n = 1)-1) %>%
+      ungroup() %>%
+      arrange(secid, date) %>%
+      filter(!is.na(prc))
+
+```
+
+<!--Durchführen des Jarque-Bera Tests auf Normalverteilung der Returns für Alter
+```{r, include=FALSE, warning=FALSE}
+
+DescTools::JarqueBeraTest(x = tidy_return$ret,
+                          robust = TRUE,
+                          method = c("chisq", "mc"),
+                          N = 0,
+                          na.rm = TRUE)
+
+```  
+-->
+
+<!--Histogramm zur Prüfung auf Normalverteilung der Returns-->
+```{r, include=FALSE, warning=FALSE}
+
+ggplot(data = tidy_return, aes(x=ret)) +
+  geom_histogram(aes(y =..density..),fill="#440154FF",alpha=0.95,binwidth = 0.001)+theme_minimal()+
+scale_x_continuous(limits =c(-0.4,0.4))+ 
+stat_function(fun = dnorm,args = list(mean = mean(tidy_return$ret, na.rm = TRUE), sd = sd(tidy_return$ret, na.rm = TRUE)),aes(colour = "normal distribution"), size=0.7)+
+geom_density(aes(color="distribution"),size=0.7)+ scale_colour_manual("distributions", values = c("#287D8EFF","#FDE725FF"))
+
+```  
+
+<!--Mergen von tidy_data und factor_data-->
+```{r, include=FALSE, warning= FALSE}
+
+final_data <- left_join(tidy_return, factor_data, by = "date") %>%
+      mutate(retrf = ret - rf)
+
+```
+
+<!--IR und SR in einem Schritt-->
+```{r, include=FALSE, warning= FALSE}
+
+alphas_final <- final_data %>%
+  group_by(secid) %>%
+  do(tidy(lm(retrf~mktrf, data = .)))  %>% 
+  filter(term == "(Intercept)") %>% 
+  select(secid, estimate) %>% 
+  rename(alpha = estimate)
+
+
+summary_final <- final_data %>%
+  group_by(secid) %>%
+  do(augment(lm(retrf~mktrf, data = .)))  %>% 
+  summarise(idiosyncratic_risk = sd(.resid, na.rm = TRUE), #.resid sind die Residuale
+            mean = 12*mean(retrf, na.rm = TRUE),
+            volatility = sqrt(12)*sd(retrf, na.rm = TRUE),
+            sr = mean/volatility) %>%
+  left_join(alphas_final, by = "secid") %>% # Hinzufügen der Alphas zum Datensatz
+  mutate(ir = sqrt(12)*alpha/idiosyncratic_risk,
+         alpha = 12*alpha) %>% 
+  left_join(base_data, by = "secid") %>%  # Hinzufügen der Variablen Name, Alter und Alters-Klasse
+  mutate(Quantile_Class = ntile(`size`, 5)) %>%
+  mutate(Class_Jones= case_when(`size`
+ <= 100000000 ~ "small", `size` > 100000000  & `size` <= 500000000 ~ "medium", `size` > 500000000 ~ "big"))%>%              # Einstufung nach Klassen nach Jones
+  select(name, secid, mean, volatility, sr, alpha, ir, age_y, age_class, size, Quantile_Class)
+
+```
+
+
+<!--Alpha-Regression Alter in Jahren-->
+```{r, echo=FALSE, warning= FALSE}
+
+attach(summary_final)
+compl_model1 <- lm(alpha~age_y)
+```
+
+
+<!--Alpha-Regression Alter in Klassen-->
+```{r, echo=FALSE, warning= FALSE}
+
+# 1. Erstellen von Dummy-Variablen für die Altersklassen
+
+summary_final <- summary_final %>%
+  mutate(young = case_when(`age_y` <= 1 ~ 1,
+                           `age_y` > 1 ~ 0),
+         medium = case_when(`age_y` >= 2 & `age_y` <= 4 ~ 1,
+                            `age_y` < 2 | `age_y` > 4 ~ 0),
+         old = case_when(`age_y` > 4 ~ 1,
+                         `age_y` <= 4 ~ 0))
+
+
+# 2. Durchführen der Regression
+
+attach(summary_final)
+compl_model2 <- lm(alpha~young + old)
+
+```
+
+<!--Alpha-Regression Größe in Klassen nach Jones-->
+```{r, echo=FALSE, warning= FALSE}
+
+# 1. Erstellen von Dummy-Variablen für die Altersklassen
+
+summary_final <- summary_final %>%
+  mutate(small = case_when(`size` <= 100000000 ~ 1,
+                           `size` > 100000000 ~ 0),
+         medium_s = case_when(`size` > 100000000 & `size` <= 500000000 ~ 1,
+                            `size` <= 100000000 | `size` > 500000000 ~ 0),
+         big = case_when(`size` > 500000000 ~ 1,
+                         `size` <= 500000000 ~ 0))
+
+
+# 2. Durchführen der Regression
+
+attach(summary_final)
+compl_model3 <- lm(alpha~small + big)
+
+```
+
+<!--Alpha-Regression Größe in Klassen nach Quantilen-->
+```{r, echo=FALSE, warning= FALSE}
+
+# 1. Erstellen von Dummy-Variablen für die Size-Klassen
+
+
+summary_final <- summary_final %>%
+  mutate(Q_1 = case_when(`Quantile_Class` == "1" ~ 1,
+                         `Quantile_Class` != "1" ~ 0),
+         Q_2 = case_when(`Quantile_Class` == "2" ~ 1,
+                         `Quantile_Class` != "2" ~ 0),
+         Q_3 = case_when(`Quantile_Class` == "3" ~ 1,
+                         `Quantile_Class` != "3" ~ 0),
+         Q_4 = case_when(`Quantile_Class` == "4" ~ 1,
+                         `Quantile_Class` != "4" ~ 0),
+         Q_5 = case_when(`Quantile_Class` == "5" ~ 1,
+                         `Quantile_Class` != "5" ~ 0))
+
+
+# 2. Durchführen der Regression
+
+attach(summary_final)
+compl_model4 <- lm(alpha~Q_2 + Q_3 + Q_4 + Q_5)
+
+```
+
+
+```{r, echo=FALSE, warning=FALSE, results='asis'}
+
+stargazer(compl_model1, compl_model2, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Alpha (2005-2020) Part 1",  column.labels = c("Age", "Age Classes"),omit.stat = c("rsq", "f")
+)
+```
+
+```{r, echo=FALSE, warning=FALSE, results='asis'} 
+
+stargazer(compl_model3, compl_model4, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Alpha (2005-2020) Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
+)
+```
+
+<!--SR-Regression Alter in Jahren-->
+```{r, echo=FALSE, warning= FALSE}
+
+attach(summary_final)
+compl_model1_SR <- lm(sr~age_y)
+
+```
+
+<!--SR-Regression Alter in Klassen-->
+```{r, echo=FALSE, warning= FALSE}
+
+attach(summary_final)
+compl_model2_SR <- lm(sr~young + old)
+
+```
+
+<!--SR-Regression Größe in Klassen nach Jones-->
+```{r, echo=FALSE, warning= FALSE}
+
+attach(summary_final)
+compl_model3_SR <- lm(sr~small + big)
+
+```
+
+<!--SR-Regression Größe in Klassen nach Quantilen-->
+```{r, echo=FALSE, warning= FALSE}
+
+attach(summary_final)
+compl_model4_SR <- lm(sr~Q_2 + Q_3 + Q_4 + Q_5)
+
+```
+
+
+```{r, echo=FALSE, results='asis'} 
+
+stargazer(compl_model1_SR, compl_model2_SR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Sharpe Ratio (2005-2020) Part 1",  column.labels = c("Age", "Age Classes"),omit.stat = c("rsq", "f")
+)
+```
+
+```{r, echo=FALSE, results='asis'} 
+
+stargazer(compl_model3_SR, compl_model4_SR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Sharp Ratio Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
+)
+```
+
+<!--IR-Regression Alter in Jahren-->
+```{r, echo=FALSE, warning= FALSE}
+
+attach(summary_final)
+compl_model1_IR <- lm(ir~age_y)
+
+```
+
+<!--IR-Regression Alter in Klassen-->
+```{r, echo=FALSE, warning= FALSE}
+
+attach(summary_final)
+compl_model2_IR <- lm(ir~young + old)
+
+```
+
+<!--IR-Regression Größe in Klassen nach Jones-->
+```{r, echo=FALSE, warning= FALSE}
+
+attach(summary_final)
+compl_model3_IR <- lm(ir~small + big)
+
+```
+
+<!--IR-Regression Größe in Klassen nach Quantilen-->
+```{r, echo=FALSE, warning= FALSE}
+
+attach(summary_final)
+compl_model4_IR <- lm(ir~Q_2 + Q_3 + Q_4 + Q_5)
+
+```
+
+
+```{r, echo=FALSE, results='asis'} 
+
+stargazer(compl_model1_IR, compl_model2_IR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Information Ratio (2005-2020) Part 1",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
+)
+```
+
+```{r, echo=FALSE, results='asis'} 
+
+stargazer(compl_model3_IR, compl_model4_IR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Information Ratio (2005-2020) Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
+)
+```
 
 
 
+
+
+
+
+
+
+
+In der Hauptuntersuchung wurde für die Untersuchung des Alters-Faktors der Zeitraum 2005-2015 und für die Untersuchung des Größen-Faktors der Zeitraum 2010-2020 gewählt. Als weiterer Robustness Check wurde die Analyse der vorangegangenen Kapitel für einen gemeinsamen Zeitraum 2005-2020 durchgeführt um zu prüfen, ob dies ggf. zu abweichenden Ergebnissen führt.
 
 
 - Logistic Regression der Charakteristika auf die Chance, oberhalb des Median (Winner) zu sein
