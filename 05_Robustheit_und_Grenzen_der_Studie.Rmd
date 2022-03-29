@@ -3,8 +3,6 @@ Um die Validität der vorgestellten Ergebnisse einordnen zu können, werden durc
 
 ## Robustness checks
 
-### Carhart's Alpha
-
 Als erster Check wurden Alphas nicht nur nach dem CAPM, sondern auch mit dem Multi-Faktoren-Modell von @Carhart.1997 auf Basis des Modells von @Fama.1993 berechnet. Anschließend wurden die Regressionen in Kapitel 4 auch mit Carhart's Alpha durchgeführt - die SR-Regressionen ausgenommen, da sich hier nichts verändert. Die Ergebnisse stimmen mit denen der CAPM-Alpha-Regressionen überein. Hinsichtlich der Rangfolge ist festzustellen, dass sich für die besten Fonds nach Information Ratio keine Änderungen ergeben, außer, dass deren Alpha-Rang sich um 3-8 Plätze verbessern. Auch die besten Fonds nach Alpha sind dieselben, wenn auch in ggf. anderer Reihenfolge. Somit bestätigt eine Analyse unter Verwendung des Carhart's Alpha die Ergebnisse in Kapitel 4.
 
 <!--Berechnen von Carhart's Alpha-->
@@ -208,7 +206,7 @@ c_ranking_size <- c_summary_final_size %>%
 
 ```
 
-### Gemeinsamer Zeitraum 2005-2020
+<!------------------------Gemeinsamer Zeitraum 2005-2020----------------------->
 
 <!--Laden der Informationen zu den einzelnen Hedgefonds-->
 ```{r, include=FALSE, warning=FALSE}
@@ -358,14 +356,12 @@ summary_final <- final_data %>%
 
 ```
 
-
 <!--Alpha-Regression Alter in Jahren-->
 ```{r, echo=FALSE, warning= FALSE}
 
 attach(summary_final)
 compl_model1 <- lm(alpha~age_y)
 ```
-
 
 <!--Alpha-Regression Alter in Klassen-->
 ```{r, echo=FALSE, warning= FALSE}
@@ -435,19 +431,6 @@ compl_model4 <- lm(alpha~Q_2 + Q_3 + Q_4 + Q_5)
 
 ```
 
-
-```{r, echo=FALSE, warning=FALSE, results='asis'}
-
-stargazer(compl_model1, compl_model2, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Alpha (2005-2020) Part 1",  column.labels = c("Age", "Age Classes"),omit.stat = c("rsq", "f")
-)
-```
-
-```{r, echo=FALSE, warning=FALSE, results='asis'} 
-
-stargazer(compl_model3, compl_model4, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Alpha (2005-2020) Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
-)
-```
-
 <!--SR-Regression Alter in Jahren-->
 ```{r, echo=FALSE, warning= FALSE}
 
@@ -478,19 +461,6 @@ compl_model3_SR <- lm(sr~small + big)
 attach(summary_final)
 compl_model4_SR <- lm(sr~Q_2 + Q_3 + Q_4 + Q_5)
 
-```
-
-
-```{r, echo=FALSE, results='asis'} 
-
-stargazer(compl_model1_SR, compl_model2_SR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Sharpe Ratio (2005-2020) Part 1",  column.labels = c("Age", "Age Classes"),omit.stat = c("rsq", "f")
-)
-```
-
-```{r, echo=FALSE, results='asis'} 
-
-stargazer(compl_model3_SR, compl_model4_SR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Sharp Ratio Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
-)
 ```
 
 <!--IR-Regression Alter in Jahren-->
@@ -525,33 +495,27 @@ compl_model4_IR <- lm(ir~Q_2 + Q_3 + Q_4 + Q_5)
 
 ```
 
+<!--Vergleichendes Ranking nach Risk adjusted Returns-->
+```{r, echo=FALSE, warning=FALSE}
 
-```{r, echo=FALSE, results='asis'} 
+Ranking <- summary_final %>%
+  mutate(sr_rank = dense_rank(desc(sr)),
+         ir_rank = dense_rank(desc(ir)),
+         alpha_rank = dense_rank(desc(alpha))) %>%
+  mutate(coherence = case_when(`alpha_rank` < 4 | `sr_rank` < 4 | `ir_rank` < 4 ~ "top",
+                               TRUE ~ "NA")) %>%
+  filter(coherence == "top") %>%
+  arrange(sr_rank) %>%
+  select(name, age_class, Quantile_Class, sr_rank, ir_rank, alpha_rank) %>%
+  rename(Name = name, `Age` = age_class, Size = Quantile_Class, `SR Rank` = sr_rank, `IR Rank` = ir_rank, `Alpha Rank` = alpha_rank)
 
-stargazer(compl_model1_IR, compl_model2_IR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Information Ratio (2005-2020) Part 1",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
-)
 ```
 
-```{r, echo=FALSE, results='asis'} 
 
-stargazer(compl_model3_IR, compl_model4_IR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Information Ratio (2005-2020) Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
-)
-```
+In der vorliegenden Studie wurde für die Untersuchung des Alters-Faktors der Zeitraum 2005-2015 und für die Untersuchung des Größen-Faktors der Zeitraum 2010-2020 gewählt. Als weiterer Robustness Check wurde die Analyse der vorangegangenen Kapitel für einen gemeinsamen Zeitraum 2005-2020 durchgeführt um zu prüfen, ob dies ggf. zu abweichenden Ergebnissen führt. Hierbei wurden 213 Fonds untersucht. Hinsichtlich der Regressionen auf Alpha, SR und IR kommt es zu identischen Ergebnissen. Für die Modelle, in denen die Faktoren für 'Größe' auf die abhängige Variable regressiert wird, steigt sogar der Wert für das adj. \(R^2\) und somit der Erklärungsgehalt des Modells. Hinsichtlich des Rankings nach Performance-Maßen fällt auch hier auf, dass bei SR und IR erneut Fonds im Alter zwischen 2 und 4 Jahren die Spitzenplätze belegen. Des Weiteren bestätigt sich die Overperformance großer Fonds (Quintil 4 und 5). Auffällig ist jedoch der junge und kleine Fonds 'CCM S&P 500 Long Short', welcher bei allen drei Performance-Maßen vorne mitspielt. Alles in allem also auch hier eine Bestätigung der Ergebnisse der Hauptuntersuchung.
 
-
-
-
-
-
-
-
-
-
-In der Hauptuntersuchung wurde für die Untersuchung des Alters-Faktors der Zeitraum 2005-2015 und für die Untersuchung des Größen-Faktors der Zeitraum 2010-2020 gewählt. Als weiterer Robustness Check wurde die Analyse der vorangegangenen Kapitel für einen gemeinsamen Zeitraum 2005-2020 durchgeführt um zu prüfen, ob dies ggf. zu abweichenden Ergebnissen führt.
-
-
+<!--
 - Logistic Regression der Charakteristika auf die Chance, oberhalb des Median (Winner) zu sein
-- Durchführung der Untersuchungen mit Zeitraum 2005-2020
 - Einschränkung des Datensatzes auf bestimmte Strategien
   - HF Asia/Pacific Long/Short Equity
   - HF Bear Market Equity
@@ -563,6 +527,7 @@ In der Hauptuntersuchung wurde für die Untersuchung des Alters-Faktors der Zeit
   - HF Long-Only Equity
   - HF U.S. Long/Short Equity
   - HF U.S. Small Cap Long/Short Equity
+-->
   
 
 ## Grenzen der Studie
