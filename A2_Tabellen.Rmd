@@ -1,0 +1,31 @@
+<!-- Regressionen auf Carhart's Alpha Teil 1-->
+```{r, echo=FALSE, warning=FALSE, results='asis'}
+
+library(stargazer)
+
+stargazer(model1_c,model2_c, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Alpha Part 1",  column.labels = c("Age", "Age Classes"),omit.stat = c("rsq", "f")
+)
+```
+
+<!-- Regressionen auf Carhart's Alpha Teil 2-->
+```{r, echo=FALSE, warning=FALSE, results='asis'}
+
+library(stargazer)
+
+stargazer(model3_c,model4_c, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Alpha Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
+)
+```
+
+<!-- Regressionen auf IR (Carhart's Alpha) Teil 1-->
+```{r,echo=FALSE, results='asis'} 
+
+stargazer(model1_c_IR,model2_c_IR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Information Ratio (Carhart's Alpha) Part 1",  column.labels = c("Age", "Age Classes"),omit.stat = c("rsq", "f")
+)
+```
+
+<!-- Regressionen auf IR (Carhart's Alpha) Teil 2-->
+```{r,echo=FALSE, results='asis'} 
+
+stargazer(model3_c_IR,model4_c_IR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Information Ratio (Carhart's Alpha) Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
+)
+```

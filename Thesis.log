@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.3) (preloaded format=pdflatex 2022.3.29)  29 MAR 2022 22:08
+=======
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2022.3.7)  29 MAR 2022 15:15
+>>>>>>> f505878829ed01da5ba7c79ec11a6de94c385aa9
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -640,6 +644,18 @@ LaTeX Warning: Label `' multiply defined.
 
 LaTeX Warning: Label `' multiply defined.
 
+
+LaTeX Warning: Label `' multiply defined.
+
+
+LaTeX Warning: Label `' multiply defined.
+
+
+LaTeX Warning: Label `' multiply defined.
+
+
+LaTeX Warning: Label `' multiply defined.
+
 )
 \openout1 = `Thesis.aux'.
 
@@ -867,6 +883,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
+<<<<<<< HEAD
 l.282 
        [1] [2] [3] [4]
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 4
@@ -965,6 +982,73 @@ File: Thesis_files/figure-latex/unnamed-chunk-40-1.pdf Graphic file (type pdf)
 <use Thesis_files/figure-latex/unnamed-chunk-40-1.pdf>
 Package pdftex.def Info: Thesis_files/figure-latex/unnamed-chunk-40-1.pdf  used
  on input line 1223.
+=======
+l.268 
+       [1] [2] [3] [4] [5]
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 422.
+(c:/Users/Bassie/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
+File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+Underfull \hbox (badness 1077) in paragraph at lines 456--464
+\T1/lmr/m/n/10.95 die Geschäft-stätigkeit eingestellt haben. Dadurch kann der sur-vivor-ship bias
+ []
+
+[6]
+<Thesis_files/figure-latex/unnamed-chunk-13-1.pdf, id=247, 469.755pt x 325.215pt>
+File: Thesis_files/figure-latex/unnamed-chunk-13-1.pdf Graphic file (type pdf)
+<use Thesis_files/figure-latex/unnamed-chunk-13-1.pdf>
+Package pdftex.def Info: Thesis_files/figure-latex/unnamed-chunk-13-1.pdf  used on input line 487.
+(pdftex.def)             Requested size: 398.34032pt x 275.77405pt.
+[7]
+<Thesis_files/figure-latex/unnamed-chunk-14-1.pdf, id=255, 469.755pt x 325.215pt>
+File: Thesis_files/figure-latex/unnamed-chunk-14-1.pdf Graphic file (type pdf)
+<use Thesis_files/figure-latex/unnamed-chunk-14-1.pdf>
+Package pdftex.def Info: Thesis_files/figure-latex/unnamed-chunk-14-1.pdf  used on input line 489.
+(pdftex.def)             Requested size: 398.34032pt x 275.77405pt.
+[8 <./Thesis_files/figure-latex/unnamed-chunk-13-1.pdf> <./Thesis_files/figure-latex/unnamed-chunk-14-1.pdf>]
+<Thesis_files/figure-latex/unnamed-chunk-21-1.pdf, id=276, 469.755pt x 325.215pt>
+File: Thesis_files/figure-latex/unnamed-chunk-21-1.pdf Graphic file (type pdf)
+<use Thesis_files/figure-latex/unnamed-chunk-21-1.pdf>
+Package pdftex.def Info: Thesis_files/figure-latex/unnamed-chunk-21-1.pdf  used on input line 542.
+(pdftex.def)             Requested size: 398.34032pt x 275.77405pt.
+[9]
+<Thesis_files/figure-latex/unnamed-chunk-28-1.pdf, id=282, 469.755pt x 325.215pt>
+File: Thesis_files/figure-latex/unnamed-chunk-28-1.pdf Graphic file (type pdf)
+<use Thesis_files/figure-latex/unnamed-chunk-28-1.pdf>
+Package pdftex.def Info: Thesis_files/figure-latex/unnamed-chunk-28-1.pdf  used on input line 544.
+(pdftex.def)             Requested size: 398.34032pt x 275.77405pt.
+<Thesis_files/figure-latex/unnamed-chunk-29-1.pdf, id=283, 469.755pt x 325.215pt>
+File: Thesis_files/figure-latex/unnamed-chunk-29-1.pdf Graphic file (type pdf)
+<use Thesis_files/figure-latex/unnamed-chunk-29-1.pdf>
+Package pdftex.def Info: Thesis_files/figure-latex/unnamed-chunk-29-1.pdf  used on input line 546.
+(pdftex.def)             Requested size: 398.34032pt x 275.77405pt.
+<Thesis_files/figure-latex/unnamed-chunk-30-1.pdf, id=284, 469.755pt x 325.215pt>
+File: Thesis_files/figure-latex/unnamed-chunk-30-1.pdf Graphic file (type pdf)
+<use Thesis_files/figure-latex/unnamed-chunk-30-1.pdf>
+Package pdftex.def Info: Thesis_files/figure-latex/unnamed-chunk-30-1.pdf  used on input line 547.
+(pdftex.def)             Requested size: 398.34032pt x 275.77405pt.
+<Thesis_files/figure-latex/unnamed-chunk-31-1.pdf, id=285, 469.755pt x 325.215pt>
+File: Thesis_files/figure-latex/unnamed-chunk-31-1.pdf Graphic file (type pdf)
+<use Thesis_files/figure-latex/unnamed-chunk-31-1.pdf>
+Package pdftex.def Info: Thesis_files/figure-latex/unnamed-chunk-31-1.pdf  used on input line 548.
+(pdftex.def)             Requested size: 398.34032pt x 275.77405pt.
+<Thesis_files/figure-latex/unnamed-chunk-32-1.pdf, id=286, 469.755pt x 325.215pt>
+File: Thesis_files/figure-latex/unnamed-chunk-32-1.pdf Graphic file (type pdf)
+<use Thesis_files/figure-latex/unnamed-chunk-32-1.pdf>
+Package pdftex.def Info: Thesis_files/figure-latex/unnamed-chunk-32-1.pdf  used on input line 549.
+(pdftex.def)             Requested size: 398.34032pt x 275.77405pt.
+[10 <./Thesis_files/figure-latex/unnamed-chunk-21-1.pdf> <./Thesis_files/figure-latex/unnamed-chunk-28-1.pdf>] [11 <./Thesis_files/figure-latex/unnamed-chunk-29-1.pdf> <./Thesis_files/figure-latex/unnamed-chunk-30-1.pdf>]
+<Thesis_files/figure-latex/unnamed-chunk-33-1.pdf, id=326, 469.755pt x 325.215pt>
+File: Thesis_files/figure-latex/unnamed-chunk-33-1.pdf Graphic file (type pdf)
+<use Thesis_files/figure-latex/unnamed-chunk-33-1.pdf>
+Package pdftex.def Info: Thesis_files/figure-latex/unnamed-chunk-33-1.pdf  used on input line 551.
+(pdftex.def)             Requested size: 398.34032pt x 275.77405pt.
+[12 <./Thesis_files/figure-latex/unnamed-chunk-31-1.pdf> <./Thesis_files/figure-latex/unnamed-chunk-32-1.pdf>] [13 <./Thesis_files/figure-latex/unnamed-chunk-33-1.pdf>] [14] [15] [16] [17] [18]
+<Thesis_files/figure-latex/unnamed-chunk-41-1.pdf, id=395, 469.755pt x 325.215pt>
+File: Thesis_files/figure-latex/unnamed-chunk-41-1.pdf Graphic file (type pdf)
+<use Thesis_files/figure-latex/unnamed-chunk-41-1.pdf>
+Package pdftex.def Info: Thesis_files/figure-latex/unnamed-chunk-41-1.pdf  used on input line 852.
+>>>>>>> f505878829ed01da5ba7c79ec11a6de94c385aa9
 (pdftex.def)             Requested size: 398.34032pt x 275.77405pt.
 [24 <./Thesis_files/figure-latex/unnamed-chunk-38-1.pdf>] [25 <./Thesis_files/f
 igure-latex/unnamed-chunk-40-1.pdf>] [26] [27] [28] [29]
@@ -974,6 +1058,7 @@ ows, Per-for-man-ce,
  []
 
 
+<<<<<<< HEAD
 Underfull \hbox (badness 2865) in paragraph at lines 1373--1378
 \T1/lmr/m/n/10.95 (+20) and Ma-na-ge-ri-al In-cen-ti-ves in Hed-ge Funds. \T1/l
 mr/m/it/10.95 (+20) SSRN Elec-tro-nic Jour-nal\T1/lmr/m/n/10.95 (+20) .
@@ -1042,4 +1127,87 @@ PDF statistics:
  674 PDF objects out of 1000 (max. 8388607)
  169 named destinations out of 1000 (max. 500000)
  39144 words of extra memory for PDF output out of 42996 (max. 10000000)
+=======
+Overfull \hbox (3.32547pt too wide) in paragraph at lines 880--881
+[]\T1/lmr/m/n/10.95 Quantile_Class  
+ []
+
+<Thesis_files/figure-latex/unnamed-chunk-43-1.pdf, id=396, 469.755pt x 325.215pt>
+File: Thesis_files/figure-latex/unnamed-chunk-43-1.pdf Graphic file (type pdf)
+<use Thesis_files/figure-latex/unnamed-chunk-43-1.pdf>
+Package pdftex.def Info: Thesis_files/figure-latex/unnamed-chunk-43-1.pdf  used on input line 899.
+(pdftex.def)             Requested size: 398.34032pt x 275.77405pt.
+[19 <./Thesis_files/figure-latex/unnamed-chunk-41-1.pdf>] [20] [21 <./Thesis_files/figure-latex/unnamed-chunk-43-1.pdf>] [22] [23] [24] [25] [26] [27]
+Underfull \hbox (badness 2418) in paragraph at lines 1210--1215
+[]\T1/lmr/m/n/10.95 Agarwal, V., Daniel, N. D., & Naik, N. Y. (2004). Flows, Per-for-mance,
+ []
+
+
+Underfull \hbox (badness 3724) in paragraph at lines 1210--1215
+\T1/lmr/m/n/10.95 and Man-age-ri-al In-cen-tives in Hedge Funds. \T1/lmr/m/it/10.95 SS-RN Elec-tron-ic Jour-nal\T1/lmr/m/n/10.95 .
+ []
+
+
+Overfull \hbox (50.21465pt too wide) in paragraph at lines 1227--1231
+\T1/lmr/m/it/10.95 Jour-nal of As-set Man-age-ment\T1/lmr/m/n/10.95 , \T1/lmr/m/it/10.95 6\T1/lmr/m/n/10.95 (3), 219--238. http://doi.org/[]10.1057/palgrave.jam.2240177[] 
+ []
+
+
+Underfull \hbox (badness 2088) in paragraph at lines 1232--1236
+[]\T1/lmr/m/n/10.95 Backstop So-lu-tions Group LLC. (2021). Hedge Fund In-dus-try: As-sets un-
+ []
+
+
+Underfull \hbox (badness 2837) in paragraph at lines 1232--1236
+\T1/lmr/m/n/10.95 der Man-age-ment - His-tor-i-cal Growth of As-sets. Abgerufen von []$https :
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1232--1236
+\T1/lmr/m/n/10.95 / / www . barclayhedge . com / solutions / assets -[] under -[] management / hedge -[] fund -[]
+ []
+
+[28] [29]
+Overfull \hbox (1.66899pt too wide) in paragraph at lines 1284--1288
+\T1/lmr/m/it/10.95 Fi-nan-cial An-a-lysts Jour-nal\T1/lmr/m/n/10.95 , \T1/lmr/m/it/10.95 60\T1/lmr/m/n/10.95 (5), 65--80. http://doi.org/[]10.2469/faj.v60.n5.2657[] 
+ []
+
+[30]
+Underfull \hbox (badness 1231) in paragraph at lines 1344--1349
+[]\T1/lmr/m/n/10.95 Koh, F., Koh, W. T. H., & Teo, M. (2003). Asian Hedge Funds: Re-turn
+ []
+
+
+Underfull \hbox (badness 3557) in paragraph at lines 1344--1349
+\T1/lmr/m/n/10.95 Per-sis-tence, Style, and Fund Char-ac-ter-is-tics. \T1/lmr/m/it/10.95 SS-RN Elec-tron-ic Jour-nal\T1/lmr/m/n/10.95 .
+ []
+
+[31]
+Overfull \hbox (33.5488pt too wide) in paragraph at lines 1366--1372
+\T1/lmr/m/it/10.95 tion-al Re-view of Fi-nan-cial Anal-y-sis\T1/lmr/m/n/10.95 , \T1/lmr/m/it/10.95 43\T1/lmr/m/n/10.95 , 48--61. http://doi.org/[]10.1016/j.irfa.2015.11.001[] 
+ []
+
+[32] [33] (./Thesis.aux)
+
+LaTeX Warning: There were multiply-defined labels.
+
+Package rerunfilecheck Info: File `Thesis.out' has not changed.
+(rerunfilecheck)             Checksum: 5F55AFE7EA6CC1A546E07BF3E66CA997;3274.
+ ) 
+Here is how much of TeX's memory you used:
+ 13965 strings out of 480236
+ 229997 string characters out of 5893969
+ 531142 words of memory out of 5000000
+ 31508 multiletter control sequences out of 15000+600000
+ 529750 words of font info for 69 fonts, out of 8000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 60i,10n,63p,420b,481s stack positions out of 5000i,500n,10000p,200000b,80000s
+{c:/Users/Bassie/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{c:/Users/Bassie/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{c:/Users/Bassie/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{c:/Users/Bassie/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{c:/Users/Bassie/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}<c:/Users/Bassie/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb><c:/Users/Bassie/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb><c:/Users/Bassie/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb><c:/Users/Bassie/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb><c:/Users/Bassie/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr6.pfb><c:/Users/Bassie/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr8.pfb><c:/Users/Bassie/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr9.pfb><c:/Users/Bassie/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri10.pfb><c:/Users/Bassie/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmss10.pfb><c:/Users/Bassie/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmss12.pfb><c:/Users/Bassie/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb><c:/Users/Bassie/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy8.pfb>
+Output written on Thesis.pdf (36 pages, 511874 bytes).
+PDF statistics:
+ 656 PDF objects out of 1000 (max. 8388607)
+ 560 compressed objects within 6 object streams
+ 156 named destinations out of 1000 (max. 500000)
+ 240 words of extra memory for PDF output out of 10000 (max. 10000000)
+>>>>>>> f505878829ed01da5ba7c79ec11a6de94c385aa9
 
