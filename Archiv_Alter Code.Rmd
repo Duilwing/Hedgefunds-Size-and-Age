@@ -422,3 +422,44 @@ ggplot(summary_final_s,
   aes(x=Mean, y=Volatility, color=Quartile_Class)) +
   geom_point(size=3, alpha=1)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
 ```
+
+```{r, include=FALSE, warning= FALSE}
+
+#Darstellung Zshg. Volatility/Mean für Alter nur der drei Klassen class_summary_final_age
+
+class_summary_final_age$class <- factor(class_summary_final_age$class, levels = c("young", "medium", "old"))
+
+ggplot(class_summary_final_age,
+  aes(x=mean_c, y=volatility_c, color=class)) +
+  geom_point(size=3, alpha=1)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
+
+```
+
+
+
+
+```{r, include=FALSE, warning= FALSE}
+
+#Darstellung Zshg. Volatility/Mean für Size nur der fünf Klassen
+
+class_summary_final_size$class <- factor(class_summary_final_size$class, levels = c("1", "2", "3","4","5"))
+
+ggplot(class_summary_final_size,
+  aes(x=mean_c, y=volatility_c, color=class)) +
+  geom_point(size=3, alpha=1)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
+
+```
+
+```{r, echo=FALSE, warning= FALSE}
+
+#Darstellung Zshg. Volatility/Mean für Size nur der drei Klassen 
+
+class_summary_final_size_jones$class <- factor(class_summary_final_size_jones$class, levels = c("small", "medium", "big"))
+
+ggplot(class_summary_final_size_jones,
+  aes(x=mean_c, y=volatility_c, color=class)) +
+  geom_point(size=3, alpha=1)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
+
+```
+
+
