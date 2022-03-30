@@ -249,12 +249,7 @@ stargazer(model3_IR,model4_IR, header=FALSE, type='latex', model.numbers= FALSE,
 
 ## Coherence
 
-Hier noch theoretische Definition für Coherence
-
-Hier wird erläutert, inwieweit identifizierte "Top-Fonds" Beständigkeit über mehrere Performance-Maße hinweg aufweisen.
-
-Zur Analyse werden Ranking-Tabellen erstellt, die die jeweils drei besten Fonds für die Sharpe- und Information-Ratio und Alpha enthalten. So werden auch Fonds berücksichtigt, die womöglich schlechte Werte für eine der Kennziffern aufweisen, in anderen aber zu den höchsten drei gehören.
-
+Um die Bewertung der Hedgefonds-Performance über die gewählten Performance-Maße hinweg vergleichen zu können, wurde ein Ranking der jeweils besten drei Hedgefonds für Alpha, Sharpe Ratio und Information Ratio erstellt. Daraus ist ersichtlich, inwieweit eine Beständigkeit über die Performance-Maße hinweg gegeben ist:
 
 <!--Vergleichendes Ranking nach Risk adjusted Returns Age-->
 ```{r Ranking-Table Age, echo=FALSE, warning=FALSE}
@@ -309,11 +304,7 @@ Für die Beständigkeit kann aus beiden Tabellen ein ähnliches Fazit gezogen we
 
 ## Persistence
 
-'Performance Persistence' beschreibt, wie stetig die Performance eines Hedge Funds ist - also wie konstant ein Hedge Fund performt.[@Stafylas.2016, p. 15]
-
-Innerhalb dieser Arbeit werden die Returns der in den Rankings aufgeführten Fonds
-kumuliert und über die Dauer der Stichprobe in einer Zeitreihenanalyse verglichen. Als Referenz werden auch die kumulierten Returns des Marktportfolios dargestellt. Für die erste Abbildung werden die Fonds "Gladwyne Capital, L.P." und "Loch Capital I LP" nicht abgebildet, da diese für die Aussagekraft der Zeitreihe irrelevant sind.
-
+Ob eine gute Position im Ranking auch mit einer durchgehend guten Performance einhergeht, erfolgt durch die Betrachtung der sogenannten 'Performance Persistence'. Diese beschreibt, wie stetig die Performance eines Hedgefonds ist - also wie konstant ein Hedgefonds im Zeitverlauf performt [@Stafylas.2016, p. 15]. Hierfür werden für die Hedgefonds im Ranking die kumulierten Renditen berechnet, im Zeitverlauf dargestellt und verglichen. Als Referenz gilt die Entwicklung des Marktportfolios. Für die erste Abbildung werden die Fonds "Gladwyne Capital, L.P." und "Loch Capital I LP" nicht abgebildet, da diese für die Aussagekraft der Zeitreihe irrelevant sind.
 
 ```{r, echo=FALSE, warning=FALSE}
 
@@ -377,8 +368,6 @@ ggplot(data=final_data_age_sub) + aes(x=date, y = cum_ret, color = Name) + geom_
 
 Abbildung zeigt die kumulierten Returns des Marktportfolio und fünf der sieben Fonds aus Tabelle . Diese sind farblich nach ihrem Alpha-Rang sortiert mit dem Marktportfolio als letzten Wert. Es zeigt sich ein klarer Unterschied zwischen den drei besten Fonds nach Alpha und den zwei besten Fonds der beiden Ratios. Fonds mit einem hohen Alpha outperformen Fonds mit hohen Ratios über den gesamten Verlauf der Stichprobe.
 
-
-
 ```{r, echo=FALSE, warning=FALSE}
 
 #kumuierte returns für jeden fund aus Size in subset
@@ -424,7 +413,8 @@ final_data_size_sub[,2][final_data_size_sub[,2] == "FOUSA06UI4"] <- "SYW LP"
 final_data_size_sub[,2][final_data_size_sub[,2] == "FOUSA06A67"] <- "PharmaInvest Fund"
 
 ```
-\newpage
+
+
 ```{r, echo=FALSE, warning=FALSE}
 #plot der returns, reihenfolge nach alpha für Size
 
@@ -438,6 +428,3 @@ ggplot(data=final_data_size_sub) + aes(x=date, y = cum_ret, color = Name) + geom
 Abbildung kommt zu ähnlichen Ergebnissen für die Size-Stichprobe. Während vorher alle Fonds zumindest konsistent das Marktportfolio outperformen konnten, gelingt dies nun nur drei Fonds mit geringerer Abweichung von den kumulierten Returns des Marktportfolio. Die drei Fonds mit den höchsten Werten für Sharpe- oder Information-Ratio performen ähnlich, oder wie im Fall des Fonds "Artorius Partners II" deutlich schlechter.
 
 Generell lässt sich aus der graphischen Analyse erkennen, dass der Einfluss von Alpha für die durchgehende Performance entscheidend ist. Fonds mit hohem Alpha dominieren in beiden Stichproben gegenüber Funds mit kohärent stabilen Ratios.
-
-
-\newpage
