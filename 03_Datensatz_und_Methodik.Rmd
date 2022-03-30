@@ -251,7 +251,7 @@ geom_density(aes(color="distribution for size"),size=0.7)+ scale_colour_manual("
 
 ## Deskriptive Statistik
 
-Eine einfache Darstellung und Analyse der Returns ist nicht hilfreich, erst nach Klassifizierung und Bearbeitung der Daten ergeben sich interpretierbare Zusammenhänge.
+Eine einfache Darstellung und Analyse der Renditen ist nicht hilfreich, erst nach Klassifizierung und Bearbeitung der Daten ergeben sich interpretierbare Zusammenhänge.
 <!--
 ```{r,echo=FALSE, warning= FALSE,fig.cap = "Returns der Age-Stichprobe"}
 
