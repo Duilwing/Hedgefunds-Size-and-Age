@@ -4,9 +4,9 @@ output:
   html_document: default
 ---
 
-Im folgenden Kapitel Ergebnisse werden zuerst Regressionen für Alpha, Sharpe-Ratio und Information-Ratio durchgeführt. Diese werden auf mehrere Modelle der beiden Stichproben regressiert und im Anschluss die Ergebnisse auf ihre statistische Signifikanz untersucht und daraus folgende Implikationen erläutert. 
-Im Unterkapitel Coherence wird dargestellt inwieweit identifizierte "Top-Fonds" Beständigkeit über mehrere Performance-Maße hinweg aufweisen. Hierfür werden Rankings erstellt und deren Ergebnisse besprochen. 
-Zuletzt wird im letzen Abschnitt Persistence mittels einer graphischen Analyse die stetige Performance der gerankten Fonds und der Einfluss bestimmter Kennzahlen auf diese kritisch hinterfragt.
+Im folgenden Kapitel Ergebnisse werden zuerst Regressionen für Alpha, Sharpe-Ratio und Information-Ratio durchgeführt. Diese werden auf die vier Modelle der beiden Stichproben regressiert und im Anschluss die Ergebnisse auf ihre statistische Signifikanz untersucht und die daraus folgenden Implikationen erläutert. 
+Im Unterkapitel Coherence wird dargestellt inwieweit identifizierte "Top-Fonds" Beständigkeit über mehrere Performance-Maße hinweg aufweisen. Hierfür werden Rankings erstellt und besprochen. 
+Zuletzt wird im Abschnitt Persistence mittels einer graphischen Analyse die stetige Performance der gerankten Fonds und der Einfluss der Kennzahlen auf diese kritisch hinterfragt.
 
 
 ## Regressionen
@@ -252,7 +252,8 @@ Hier noch theoretische Definition für Coherence
 
 Hier wird erläutert, inwieweit identifizierte "Top-Fonds" Beständigkeit über mehrere Performance-Maße hinweg aufweisen.
 
-Zur Analyse werden Ranking-Tabellen erstellt, die die jeweils drei besten Fonds für die Sharpe- und Information-Ratio und Alpha enthalten. So werden auch Fonds berücksichtigt, die womöglich schlechte Werte für eine der beiden Ratios aufweisen, dafür aber sich durch eines der drei höchsten Alphas auszeichnen. 
+Zur Analyse werden Ranking-Tabellen erstellt, die die jeweils drei besten Fonds für die Sharpe- und Information-Ratio und Alpha enthalten. So werden auch Fonds berücksichtigt, die womöglich schlechte Werte für eine der Kennziffern aufweisen, in anderen aber zu den höchsten drei gehören.
+
 
 <!--Vergleichendes Ranking nach Risk adjusted Returns Age-->
 ```{r Ranking-Table Age, echo=FALSE, warning=FALSE}
@@ -278,6 +279,10 @@ knitr::kable(Ranking_age, col.names = c("Name","Age Class","SR Rank","IR Rank","
 
 ```
 
+
+Tabelle stellt die sieben am höchsten gerankten Funds innerhalb der Age-Stichprobe dar. Wie erwähnt weisen Fonds wie "Gladwyne Capital, L.P." den dritt besten Wert für Sharp-Ratio auf, dieser Fond gehört mit einem Alpha-Rank von 102 nur zu den oberen 25% der Stichprobe. Generell ist ein negativer Zusammenhang zwischen Ratios und Alpha zu beobachten. So weisen die drei nach alpha sortiert besten Fonds die schlechtesten Rangnummern für die Ratios auf, was wiederum durch den Zusammenhang von idiosynchratischen Risiko und der Bildung der Kennziffern bzw. Alpha geschuldet ist. 
+
+
 <!--Vergleichendes Ranking nach Risk adjusted Returns Size-->
 ```{r Ranking-Table Size, echo=FALSE, warning=FALSE}
 
@@ -298,14 +303,15 @@ knitr::kable(Ranking_size, col.names = c("Name","Quintile Class","SR Rank","IR R
 
 ```
 
-
+Auch die Darstellung der Rankings für Size in Tabelle kommt zu ähnlichen Schlussfolgerungen. Allerdings ist die negative Beziehung zwischen Ratios und Alpha innerhalb der zweiten Stichprobe geringer ausgeprägt. So sind alle Werte für Alpha zwischen 1 und 27, im Gegensatz zu 1 bis 102 für die Rankings der Altersverteilung. 
+Für die Beständigkeit kann aus beiden Tabellen ein ähnliches Fazit gezogen werden. Fonds sind entweder über beide Ratios beständig und erreichen ähnlich bis gleich hohe Werte bei gleichzeitig geringen Werten für Alpha, oder zeichnen sich durch ein hohes Alpha und niedrige Ratios aus. Die Auswirkungen dieser Eigenschaften auf die Performance werden im nun folgenden Kapitel analysiert.
 
 ## Persistence
 
 'Performance Persistence' beschreibt, wie stetig die Performance eines Hedge Funds ist - also wie konstant ein Hedge Fund performt.[@Stafylas.2016, p. 15]
 
-
-
+Innerhalb dieser Arbeit werden die Returns der in den Rankings aufgeführten Fonds
+kumuliert und über die Dauer der Stichprobe in einer Zeitreihenanalyse verglichen. Als Referenz werden auch die kumulierten Returns des Marktportfolios dargestellt. Für die erste Abbildung werden die Fonds "Gladwyne Capital, L.P." und "Loch Capital I LP" nicht abgebildet, da diese für die Aussagekraft der Zeitreihe irrelevant sind.
 
 
 ```{r, echo=FALSE, warning=FALSE}
@@ -368,6 +374,8 @@ ggplot(data=final_data_age_sub) + aes(x=date, y = cum_ret, color = Name) + geom_
 
 ```
 
+Abbildung zeigt die kumulierten Returns des Marktportfolio und fünf der sieben Fonds aus Tabelle . Diese sind farblich nach ihrem Alpha-Rang sortiert mit dem Marktportfolio als letzten Wert. Es zeigt sich ein klarer Unterschied zwischen den drei besten Fonds nach Alpha und den zwei besten Fonds der beiden Ratios. Fonds mit einem hohen Alpha outperformen Fonds mit hohen Ratios über den gesamten Verlauf der Stichprobe.
+
 
 
 ```{r, echo=FALSE, warning=FALSE}
@@ -426,8 +434,9 @@ final_data_size_sub$Name <- factor(final_data_size_sub$Name, levels = c("Dendric
 ggplot(data=final_data_size_sub) + aes(x=date, y = cum_ret, color = Name) + geom_line(size=0.8)+scale_color_viridis(discrete = TRUE)+ theme_minimal()
 ```
 
+Abbildung kommt zu ähnlichen Ergebnissen für die Size-Stichprobe. Während vorher alle Fonds zumindest konsistent das Marktportfolio outperformen konnten, gelingt dies nun nur drei Fonds mit geringerer Abweichung von den kumulierten Returns des Marktportfolio. Die drei Fonds mit den höchsten Werten für Sharpe- oder Information-Ratio performen ähnlich, oder wie im Fall des Fonds "Artorius Partners II" deutlich schlechter.
 
-
+Generell lässt sich aus der graphischen Analyse erkennen, dass der Einfluss von Alpha für die durchgehende Performance entscheidend ist. Fonds mit hohem Alpha dominieren in beiden Stichproben gegenüber Funds mit kohärent stabilen Ratios.
 
 
 \newpage
