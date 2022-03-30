@@ -1,6 +1,18 @@
+Die vorliegende Arbeit beschäftigt sich mit den Auswirkungen von Alter und Größe auf die Performance von Hedgefunds über einen Zeitraum von jeweils zehn Jahren. Hierbei wurden zwei Stichproben mit 405 bzw. 228 Fonds gebildet, arithmetische Returns, Volatilität, Sharpe-Ratio, Information-Ratio und Alphas für alle einzelnen Fonds und deren zugehörigen Klassen bestimmt. Nach anfangs deskriptiver Analyse der Kennziffern wurden diese anschließend regressiert und zur Analyse von Coherence und Peristence der Fonds verwendet. Im Anschluss wurde ein Robustnesscheck des Alpha anhand des Modells von Fama & French (1993) durchgeführt und eine Regression für Alter und Größe in einer gemeinsamen Stichprobe (2005-2020) vorgenommen. Grenzen der Studie und ihre Auswirkungen auf die externe Validität der Arbeit wurden kritisch diskutiert. 
 
- - Darstellung der Ergebnisse
- - Was gab es für Probleme/Einschränkungen der Ergebnisse
- - Ausblick auf zukünftige Anknüpfungspunkte
+Die vorliegende Arbeit kann die von u. a. @Jones.2007 gewonnenen Erkenntnisse eines negativen Zusammenhangs zwischen Alter und Performance bestätigen. Jüngere Fonds outperformen ältere Fonds, sei es durch eine höhere Rendite, niedrigere Volatilität oder bessere Werte für Alpha. Alle durchgeführten Regressionen liefern für die behandelten Maße statistisch signifikante Ergebnisse und werden durch die visuelle Analyse, zum Beispiel der Darstellung von Volatilität und Returns, untermauert.
+
+Für Größe werden von @Jones.2007 abweichende Effekte ähnlich den Beobachtungen von @Getmansky.2005  festgestellt. Hier outperformen größere Funds kleine Funds, was ebenfalls durch alle Methoden zu beobachten ist. Für die Validität der Schlussfolgerungen zu Größe müssen allerdings erhebliche Einschränkungen berücksichtigt werden, da die vorliegende Arbeit einzelne Größenwerte auf eine Zeitreihe von 10 Jahren projiziert. In welche Richtung sich Größe und Performance beeinflussen, kann daher nur sehr eingeschränkt prognostiziert werden. 
+
+Für beide Merkmale wurden auch nach Anwendung von Robustnesschecks und der erneuten Regression in einer gemeinsamen Stchprobe die Ergebnisse grundsätzlich bestätigt. Allerdings unterliegt diese 15-jährige Stichprobe einer größeren Ungewissheit bezüglich der Auswirkungen des Merkmals Größe.
+
+Es ist dem Umfang der Arbeit geschuldet, dass nicht alle Aspekte der Beziehung zwischen Alter, Größe und Performance beleuchtet werden konnten.
+So wurden beispielsweise keine Untersuchungen zum möglichen Vorliegen des backfill-bias oder anderer Verzerrungen durchgeführt. 
+
+(Quelle und Erklärung)
+
+So kann die Performance junger Fonds auch dadurch beeinflusst sein, dass nur Fonds mit in der Vergangenheit guter Performance diese das erste mal innerhalb einer Datenbasis implementieren und somit junge, aber unerfolgreiche Fonds nicht in verfügbaren Datensätzen auftauchen. Für eine gemeinsame Analyse beider Merkmale mit einem Datensatz kontinuierlicher Größenwerte existieren somit noch weitere Forschungsmöglichkeiten, die sich stärker auf bestehende Verzerrungen innerhalb der Daten fokussieren sollten.
+
+
 
 \newpage
