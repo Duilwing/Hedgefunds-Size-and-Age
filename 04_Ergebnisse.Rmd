@@ -235,6 +235,7 @@ stargazer(model1_IR,model2_IR, header=FALSE, type='latex', model.numbers= FALSE,
 ```
 Die Regression der Information-Ratio liefert für die allgemeine Variable Alter und für die Klasse der alten Fonds statistsich signifikante negative Werte. Dies stimmt mit den Beobachtungen für Alpha überein, was aufgrund der Abhängigkeit von IR als Verhältnis von Returns und Alpha nicht verwundert. Auch zur Größe werden Effekte analog zu den vorherigen Regressionen beobachtet. Big und Q_5 als jeweils höchste Klassen wirken sich positiv aus. 
 Für alle Regressionen kann daher der Eindruck der Analyse in Kapitel 3 bestätigt werden. Kleine Fonds erzielen höhere Returns bei gleichzeitig niedriger Volatilität als ältere Fonds. Size matters, so erzielen nur die größten Fonds ein positives Alpha bzw. hohe Werte für die berechneten Ratios.
+\newline
 
 ```{r,echo=FALSE, results='asis'} 
 
@@ -270,7 +271,7 @@ Ranking_age <- summary_final_age %>%
   rename(Name = name,Class=age_class, `SR Rank` = sr_rank, `IR Rank` = ir_rank, `Alpha Rank` = alpha_rank)
 
 
-knitr::kable(Ranking_age, col.names = c("Name","Age Class","SR Rank","IR Rank","Alpha Rank"), caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Alter, 2005-2015)")%>%
+kable(Ranking_age, col.names = c("Name","Age Class","SR Rank","IR Rank","Alpha Rank"), caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Alter, 2005-2015)")%>%
     kable_styling(latex_options = c("striped", "hover"))
 
 
@@ -297,7 +298,7 @@ Ranking_size <- summary_final_size %>%
   select(name,Quantile_Class, sr_rank, ir_rank, alpha_rank) %>%
   rename(Name = name, `SR Rank` = sr_rank, `IR Rank` = ir_rank, `Alpha Rank` = alpha_rank)
 
-knitr::kable(Ranking_size, col.names = c("Name","Quintile Class","SR Rank","IR Rank","Alpha Rank"),caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Größe, 2010-2020)")%>%
+kable(Ranking_size, col.names = c("Name","Quintile Class","SR Rank","IR Rank","Alpha Rank"),caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Größe, 2010-2020)")%>%
     kable_styling(latex_options = c("striped", "hover"))
 
 
@@ -423,7 +424,7 @@ final_data_size_sub[,2][final_data_size_sub[,2] == "FOUSA06UI4"] <- "SYW LP"
 final_data_size_sub[,2][final_data_size_sub[,2] == "FOUSA06A67"] <- "PharmaInvest Fund"
 
 ```
-
+\newpage
 ```{r, echo=FALSE, warning=FALSE}
 #plot der returns, reihenfolge nach alpha für Size
 
