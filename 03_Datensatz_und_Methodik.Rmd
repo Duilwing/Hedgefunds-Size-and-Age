@@ -1,15 +1,7 @@
 
 ## Selektion des Datensatzes
 
-Die zur Verfügung stehenden Datensätze enthielten Daten von 979 Fonds für den Zeitraum 01/1990-08/2020. Der Datensatz basedata enthielt eine Darstellung aller Fonds mit Merkmalen wie Name, Secid und weiteren für die vorliegende Analyse verwendete Analyse wie Inception/Obsolete Date, also Gründung und Einstellung des Fonds. Der Datensatz factordata enthielt die für die spätere Analyse wichtigen Faktordaten wie die monatlichen Returns des Marktportfolio. Der dritte Datensatz enthielt die monatlichen Return-Indizes aller Fonds. 
-
-Zuerst wurden die Daten des Datensatzes basedata geladen und auf die benötigten Merkmale selektiert. Hinsichtlich der weiteren Bereinigung des Datensatzes haben beispielsweise @Jones.2007, @Ammann.2005 sogenannte 'Funds of Funds (FoF)' aus der Analyse ausgeschlossen. Um eine potentielle Verzerrung der Ergebnisse zu vermeiden, folgt die vorliegende Studie diesem Ansatz und berücksichtigt daher ebenfalls in der Analyse keine FoF.
-
-Im Anschluss wurde ein Zeitintervall für die Analyse bestimmt. Aufgrund der speziellen Situation des Datensatzes, der zwar eine Analyse des Einflusses von Alter auf Performance wie bei @Jones.2007 zulässt, allerdings keine kontinuierlichen daten über die Größe enthält, wurden die vorliegenden Daten in zwei getrennte Stichproben mit unterschiedlichen Zeiträumen separiert. So wird der Einfluss von Alter in einer Stichprobe zwischen 01/2005-01/2015 untersucht, während der Einfluss der Größe eines Funds auf die Performance für die Stichprobe 01/2010-08/2020 analysiert wird.
-
-Um Altersvergleiche zu bestimmen, müssen das Alter bzw. die vorherige Lebensspanne der Fonds bestimmt werden. Daher werden nur Fonds behalten, die ab Januar 2005 aktiv waren, um Alter als das Alter zum Beginn des Intervalls zu definieren. Liegt dieses nicht vor, werden diese Funds nicht berücksichtigt.
-
-In der weiteren Analyse für Größe werden die Werte für Size verwendet. Da diese bei einigen Fonds nicht vorliegen, wird in diesem Fall der Wert für Net Asset Value verwendet. Um Größenvergleiche durchzuführen,werden aus dem Set alle Funds mit einem Wert für Größe(Size) oder Net Asset Value von unter einer Million USD gefiltert, da der vorliegende Datensatz bspw. Fonds mit einer Größe von 0 USD, oder einem Net Asset Value von 2009 USD enthält, was unsere Analyse in Richtung kleine Fonds verzerren könnte.
+Die zur Verfügung stehenden Datensätze enthielten Daten von 979 Fonds für den Zeitraum 01/1990-08/2020. Der Datensatz basedata enthielt eine Darstellung aller Fonds mit Merkmalen wie Name, Secid und weiteren für die vorliegende Analyse verwendete Analyse wie Inception/Obsolete Date, also Gründung und Einstellung des Fonds. Der Datensatz factordata enthielt die für die spätere Analyse wichtigen Faktordaten wie die monatlichen Returns des Marktportfolio. Der dritte Datensatz enthielt die monatlichen Return-Indizes aller Fonds. Zuerst wurden die Daten des Datensatzes basedata geladen und auf die benötigten Merkmale selektiert. Hinsichtlich der weiteren Bereinigung des Datensatzes haben beispielsweise @Jones.2007, @Ammann.2005 sogenannte 'Funds of Funds (FoF)' aus der Analyse ausgeschlossen. Um eine potentielle Verzerrung der Ergebnisse zu vermeiden, folgt die vorliegende Studie diesem Ansatz und berücksichtigt daher ebenfalls in der Analyse keine FoF. Im Anschluss wurde ein Zeitintervall für die Analyse bestimmt. Aufgrund der speziellen Situation des Datensatzes, der zwar eine Analyse des Einflusses von Alter auf Performance wie bei @Jones.2007 zulässt, allerdings keine kontinuierlichen daten über die Größe enthält, wurden die vorliegenden Daten in zwei getrennte Stichproben mit unterschiedlichen Zeiträumen separiert. So wird der Einfluss von Alter in einer Stichprobe zwischen 01/2005-01/2015 untersucht, während der Einfluss der Größe eines Funds auf die Performance für die Stichprobe 01/2010-08/2020 analysiert wird. Um Altersvergleiche zu bestimmen, müssen das Alter bzw. die vorherige Lebensspanne der Fonds bestimmt werden. Daher werden nur Fonds behalten, die ab Januar 2005 aktiv waren, um Alter als das Alter zum Beginn des Intervalls zu definieren. Liegt dieses nicht vor, werden diese Funds nicht berücksichtigt. In der weiteren Analyse für Größe werden die Werte für Size verwendet. Da diese bei einigen Fonds nicht vorliegen, wird in diesem Fall der Wert für Net Asset Value verwendet. Um Größenvergleiche durchzuführen,werden aus dem Set alle Funds mit einem Wert für Größe(Size) oder Net Asset Value von unter einer Million USD gefiltert, da der vorliegende Datensatz bspw. Fonds mit einer Größe von 0 USD, oder einem Net Asset Value von 2009 USD enthält, was unsere Analyse in Richtung kleine Fonds verzerren könnte.
 
 Im Anschluss wurden die weiteren Datensätze eingearbeitet und benannt. So werden auch die beiden Datensätze mri und factordata in Stichproben für die untersuchten Intervalle aufgeteilt und gefiltert. Im Einklang mit den Studien von @Koh.2003, @Agarwal.2004 sowie @Ammann.2005 enthalten die in dieser Studie analysierten Datensätze sowohl durchgängig laufende Fonds, als auch solche die im betrachteten Zeitraum die Geschäftstätigkeit eingestellt haben. Dadurch kann der survivorship bias verhindert werden, also eine Überschätzung der Rendite aufgrund der fehlenden Berücksichtigung eingestellter Fonds.^[zum survivorship bias siehe u.a. @Brown.1992 oder @Elton.1996]Als Kriterium wird eine Laufzeit von mindestens 50% der Monate innerhalb der gebildeten Stichproben festgelegt. Nach Abgleich mit den in factordata selektierten Fonds kann für beide Stichproben ein Datensatz aller monatlichen Return-Indizes der aktiven Fonds erstellt werden.
 
@@ -225,13 +217,7 @@ JB_summary <- bind_rows(JB_age,JB_size)%>%
 
 ```
 
-
-
-
-Dieser wurde daher auf beide Datensätze angewandt und kommt zu dem Ergebnis, dass hinsichtlich der betrachteten Renditen die Verteilung statistisch signifikant von der Normalverteilung abweicht.
-
-Allerdings haben analytische Tests auf Normalverteilung, wie bspw. auch der Kolmogorov-Smirnov Test oder der Shapiro-Wilk Test, die Eigenschaft, bei sehr kleinen Stichproben eine geringe Power und bei sehr großen Stichproben einen automatisch signifikanten p-Wert aufzuweisen.^[siehe bspw. @AldorNoiman.2013, @Field.2018]
-Aufgrunddessen wird ein weiterer, optischer Test auf Normalverteilung anhand von Histogrammen vorgenommen, die die Verteilung der Renditen beider Stichproben darstellen.
+Dieser wurde daher auf beide Datensätze angewandt und kommt zu dem Ergebnis, dass hinsichtlich der betrachteten Renditen die Verteilung statistisch signifikant von der Normalverteilung abweicht. Allerdings haben analytische Tests auf Normalverteilung, wie bspw. auch der Kolmogorov-Smirnov Test oder der Shapiro-Wilk Test, die Eigenschaft, bei sehr kleinen Stichproben eine geringe Power und bei sehr großen Stichproben einen automatisch signifikanten p-Wert aufzuweisen.^[siehe bspw. @AldorNoiman.2013, @Field.2018] Aufgrunddessen wird ein weiterer, optischer Test auf Normalverteilung anhand von Histogrammen vorgenommen, die die Verteilung der Renditen beider Stichproben darstellen.
 
 <!--Histogramm zur Prüfung auf Normalverteilung der Returns für Alter-->
 ```{r, echo=FALSE, warning=FALSE,fig.cap = "Histogramm für Returns der Size-Stichprobe"}
@@ -265,9 +251,8 @@ geom_density(aes(color="distribution for size"),size=0.7)+ scale_colour_manual("
 
 ## Deskriptive Statistik
 
-
 Eine einfache Darstellung und Analyse der Returns ist nicht hilfreich, erst nach Klassifizierung und Bearbeitung der Daten ergeben sich interpretierbare Zusammenhänge.
-
+<!--
 ```{r,echo=FALSE, warning= FALSE,fig.cap = "Returns der Age-Stichprobe"}
 
 #kleine darstellung für alle Funds bei Age, white noise
@@ -275,7 +260,7 @@ Eine einfache Darstellung und Analyse der Returns ist nicht hilfreich, erst nach
 ggplot(data=tidy_return_age) + aes(x=date, y = ret) + geom_line()
 
 ```
-
+-->
 
 <!--Mergen von tidy_data und factor_data-->
 ```{r,echo=FALSE, include=FALSE, warning= FALSE}
@@ -351,7 +336,6 @@ summary_final_size <- final_data_size %>%
 
 Daher werden werden alle Kennziffern für Klassen zu Alters-und Größenverteilung bestimmt. Nach Bestimmen der Klassen mit den Größen jung als unter zwei Jahre, medium als zwischen zwei und vier und alt als alle Fonds über vier Jahre ergibt sich die in Abbildung 3 dargestellte Verteilung. Insgesamt werden 405 Fonds berücksichtigt. Auch wenn alte Funds mit einer Anzahl von 194 ca. 50% der Verteilung stellen, ist die Anzahl für junge (79) und mittlere (132) Fonds ausreichend groß für eine weitere Analyse. Hier folgt die Arbeit der Einteilung von @Jones.2007.
 
-
 ```{r, echo=FALSE, warning=FALSE,fig.cap = "Klassenverteilung innerhalb der Age-Stichprobe"}
 
 #sortieren nach Klassen
@@ -365,8 +349,8 @@ summary_final_age$age_class <- factor(summary_final_age$age_class, levels = c("y
 ggplot(summary_final_age)+geom_bar(aes(x=age_class,y = ..prop.., group = 1), stat = "count", fill=(values=viridis(3)))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()
 
 ```
-Für die Size-Stichprobe zeigt die Darstellung der Verteilung mit Klassenbildung nach Jones eine klare Verzerrung hin zu kleinen Funds. So bilden die kleinen Funds mit 175 Vertretern fast 80% der Verteilung, während große Funds mit 10 Vetretern (4,5%) unterrepräsentiert sind. Somit ist keine Analyse für Funds ausserhalb der Kategorie klein gegeben.
-Um diesem Umstand gerecht zu werden, wird ein anderer Ansatz, die Einteilung in Quintile ähnlich der Analyse von @Howell.2001 vorgenommen.
+
+Für die Size-Stichprobe zeigt die Darstellung der Verteilung mit Klassenbildung nach Jones eine klare Verzerrung hin zu kleinen Funds. So bilden die kleinen Funds mit 175 Vertretern fast 80% der Verteilung, während große Funds mit 10 Vetretern (4,5%) unterrepräsentiert sind. Somit ist keine Analyse für Funds ausserhalb der Kategorie klein gegeben. Um diesem Umstand gerecht zu werden, wird ein anderer Ansatz, die Einteilung in Quintile ähnlich der Analyse von @Howell.2001 vorgenommen.
 
 ```{r,echo=FALSE, warning= FALSE, fig.cap = "Klassenverteilung innerhalb der Size-Stichprobe"}
 
@@ -383,7 +367,6 @@ ggplot(summary_final_size)+geom_bar(aes(x=Class_Jones,y = ..prop.., group = 1), 
 ```
 
 Abbildung 5 stellt die Zusammenhänge von Volatilität und Arithmetischer Rendite (Returns) für die gesamte Age-Stichprobe und die drei Klassen dar. Zusätzlich ist eine Regression eingefügt, die den positiven Zusammenhang von Returns und Volatilität aufzeigt. Die Farbgebungsskala ist der jeweiligen Spannweite der Sharp-Ratio angepasst und zeigt dadurch deutliche Unterschiede innerhalb der Sharp-Ratios für die einzelnen Klassen auf. Auf diese und andere Kennziffern wird im späteren Verlauf der Arbeit genauer eingegangen.
-
 
 ```{r, echo=FALSE, warning=FALSE,fig.cap = "Zusammenhang von Volatilität und Mean innerhalb der Age-Stichprobe"}
 
@@ -432,9 +415,7 @@ grid.arrange(plot_size_all,plot_size_Q1,plot_size_Q3,plot_size_Q5, ncol=2, nrow=
 
 ```
 
-
-
-Nach Erstellung einer Gesamtübersicht aller verwendeten Kennziffern für beide Stichproben werden die einzelnen Ergebnisse für Rendite und Volatilität in den drei folgenden Tabellen präsentiert.\\
+Nach Erstellung einer Gesamtübersicht aller verwendeten Kennziffern für beide Stichproben werden die einzelnen Ergebnisse für Rendite und Volatilität in den drei folgenden Tabellen präsentiert.
 
 ```{r, echo=FALSE}
 
@@ -482,9 +463,8 @@ class_summary_final_age <- bind_rows(class_young,class_medium_age,class_old, .id
     kable_styling(latex_options = c("striped", "hover"))
 
 ```
-Tabelle zeigt die durchschnittlichen Renditen und Volatilitäten der Age-Stichprobe. Fonds der Klasse young, also zu Beginn der Untersuchung jünger als zwei Jahre, weisen die höchste Rendite bei gleichzeitig niedrigster Volatilität auf. Für alle Klassen ist ein negativer Zusammenhang zwischen Alter und Performance zu erkennen. Jüngere Fonds zeichnen sich durch höhere Renditen bei gleichzeitig geringeren Schwankungen gegenüber älteren Fonds aus. Diese Analyse deckt sich mit den findings von @Jones.2007. 
-\\
 
+Tabelle zeigt die durchschnittlichen Renditen und Volatilitäten der Age-Stichprobe. Fonds der Klasse young, also zu Beginn der Untersuchung jünger als zwei Jahre, weisen die höchste Rendite bei gleichzeitig niedrigster Volatilität auf. Für alle Klassen ist ein negativer Zusammenhang zwischen Alter und Performance zu erkennen. Jüngere Fonds zeichnen sich durch höhere Renditen bei gleichzeitig geringeren Schwankungen gegenüber älteren Fonds aus. Diese Analyse deckt sich mit den findings von @Jones.2007.
 
 ```{r, echo=FALSE}
 
@@ -553,8 +533,9 @@ class_summary_final_size <- bind_rows(class_01,class_02,class_03,class_04,class_
     kable_styling(latex_options = c("striped", "hover"))
 
 ```
+
 Tabelle zeigt die durchschnittlichen Renditen und Volatilitäten der Size-Stichprobe aufgeteilt in Quintile. Auch hier ist bis auf Quintil-Klasse 4 ein negativer Zusammenhang zwischen Returns und Volatilität zu erkennen. Anders als für die erste Stichprobe zeichnen sich größere Fonds gegenüber kleinen Fonds in ihrer Performance aus. Konträr zu @Jones.2007 performen in diesem Setting größere Fonds mit höherer Rendite bei gleichzeitig geringerer Schwankung. Am schlechtesten stehen kleine Fonds da, dies konnte auch schon aus der visuellen Darstellung in Abbildung 7 geschlussfolgert werden. 
-\\
+
 ```{r, echo=FALSE}
 
 #Summary für alles nach Klassen für Size nach Jones
@@ -606,54 +587,24 @@ class_summary_final_size_jones <- bind_rows(class_small,class_medium_size,class_
 
 Tabelle liefert ähnliche Ergebnisse wie die vorherige Tabelle zur Quintil-Einteilung. Auch für die Klassenbestimmung nach @Jones.2007 kann trotz der Verzerrung in Richtung kleine Fonds der schon beobachtete Effekt untermauert werden. Auch hier performen größere Fonds besser mit gleichzeitig geringerer Volatilität. Dies deckt sich mit den eingangs vorgestellten Erkenntnissen von @Gregoriou.2002 und @Liang.1999.
 
-
 ## Performancemaße
 
-Im folgenden Kapitel der Arbeit werden die durchschnittlichen Werte für Performancemaße wie Sharp-Ratio, Information-Ratio und Alpha interpretiert.
-
-
-
-
-Sharpe Ratio:
-
--   Die erwartete Überschussrendite in Relation zur Volatilität
--   Weniger anfällig für Leverage
-
+Die vorgestellten Datensätze wurden nun dazu genutzt, die bekannten Performance-Maße Jensen's Alpha, Sharpe Ratio (SR) und Information Ratio (IR) zu berechnen. Hierbei ist das Alpha nach @Jensen.1968 eines der bekanntesten Maße,^[siehe @Pedersen.2019, S. 28: "It is the Holy Grail all active managers seek."] und stellt die Konstante einer CAPM-Regression dar:
+\begin{equation}
+  \label{CAPM_Regression}
+  r_t^e = \alpha + \beta r_{M,t}^e + \epsilon_t,
+\end{equation}
+wobei $r_t^e$ die Rendite des Assets und $r_{M,t}^e$ die Marktrendite abzgl. des risikofreien Zinssatzes darstellen, sowie $\alpha$ die marktneutrale Rendite-Komponente und $\beta$ das Markt-Exposure der Rendite. Da das Alpha durch Leverage skaliert werden kann, wurde darüber hinaus die Sharpe Ratio berechnet, welche die erwartete Überschussrendite ins Verhältnis zur Volatilität setzt und damit immun gegenüber Leverage ist [@Sharpe.1966]:
 \begin{equation} 
   \label{Sharpe_Ratio}
-  SR = \frac{E(r - r_f)}{\sigma(r - r_f)} := \frac{\overline{r}^e}{\sigma(r^e)}
+  SR = \frac{E(r - r_f)}{\sigma(r - r_f)} := \frac{\overline{r}^e}{\sigma(r^e)},
 \end{equation}
-
-
-Information Ratio:
-
-- Das $\alpha$ in Relation zum idiosyncratischen Risiko des Hedge Funds
-
+wobei $\overline{r}^e$ das arithmetische Mittel und $\sigma(r^e)$ die Standardabweichung der Überschussrendite darstellen. Letztlich wurde auch die Information Ratio in die Untersuchung mit einbezogen, welche das Alpha eines Hedgefonds ins Verhältnis zu dessen idiosynkratischem Risiko setzt:
 \begin{equation}
   \label{Information_Ratio_1}
-  IR = \frac{\alpha}{\sigma(\epsilon)}
+  IR = \frac{\alpha}{\sigma(\epsilon)},
 \end{equation}
-
-3. Jensen's alpha
-Pederson bezeichnet es als "Heiligen Grahl" <- Zitat belegen
-- Entspricht der marktneutralen Komponente der Rendite
-- CAPM-Regression:
-
-\begin{equation} 
-  \label{CAPM_Regression}
-  r_t^e = \alpha + \beta r_{M,t}^e + \epsilon_t
-\end{equation}
-
-- Durch Umstellung ergibt sich:
-
-\begin{equation} 
-  \label{Jensen's_Alpha}
-  E(r_t^e - \beta r_{M,t}^e) = \alpha
-\end{equation}
-
-\\
-
-Die Ergebnisse der vorliegenden Arbeit bezüglich Ratios und Alpha werden in den folgenden Tabellen dargestellt.\\
+wobei $\epsilon$ in der vorliegenden Arbeit dem Residuum einer CAPM-Regression entspricht und somit dem Tracking-Error. Die Ergebnisse der vorliegenden Arbeit bezüglich der Ratios und Alpha werden in den nachfolgenden Tabellen dargestellt.
 
 ```{r,echo=FALSE}
 #darstellung mit kableExtra
@@ -668,7 +619,6 @@ class_summary_final_age <- class_summary_final_age%>%
 
 Für die Klassen der Age-Stichprobe lassen sich bei Sharpe- und Information-Ratio keine allgemeinen Trends ablesen. Beide Ratios sind für mittelalte Fonds zwischen zwei und vier Jahren am höchsten. Allerdings sind beide Ratios für jüngere Fonds höher. Dies ergibt sich aus dem bereits dargestellten negativen Zusammenhang von Returns und Volatilität, da eine höhere Sharp-Ratio durch eine geringere Volatilität bedingt sein kann. Da die Information-Ratio das Verhältnis von alpha zu Volatilität darstellt, ist auch hier der kleinste Wert mit dem geringsten Alpha verbunden. Alpha verstanden als Erfolgsmesser der Fonds erzielt den höchsten wert für junge Fonds. Die Analyse der Ratios und Alpha untermauert somit für die Age-Stichprobe den negativen Zusammenhang zwischen Alter und Performance.
 
-
 ```{r,echo=FALSE}
 #darstellung mit kableExtra
 class_summary_final_size <- class_summary_final_size%>%
@@ -679,6 +629,7 @@ class_summary_final_size <- class_summary_final_size%>%
     kable_styling(latex_options = c("striped", "hover"))
 
 ```
+
 Tabelle und Tabelle zur Size-Stichprobe untermauern ebenfalls die schon erläuterten Erkenntnisse eines positiven Zusammenhangs zwischen Größe und Performance. Für beide Klassifizierungen werden die besten Werte für alle drei Kennziffern von den größten Fonds erzielt.
 
 ```{r,echo=FALSE}
@@ -691,8 +642,8 @@ class_summary_final_size_jones <- class_summary_final_size_jones%>%
     kable_styling(latex_options = c("striped", "hover"))
 
 ```
-Sowohl für Sharp- als auch für Informatio-Ratio liefern die folgenden Abbildungen für beide Stichproben die Verteilungen der einzelnen durchschnittlichen Ratios nach Klassen als Dichtefunktionen.
 
+Sowohl für Sharpe- als auch für Information-Ratio liefern die folgenden Abbildungen für beide Stichproben die Verteilungen der einzelnen durchschnittlichen Ratios nach Klassen als Dichtefunktionen.
 
 ```{r, echo=FALSE, warning=FALSE,fig.cap = "Densitiy für Ratios der Age-Stichprobe"}
 #density für ratios bei alter
@@ -715,7 +666,6 @@ grid.arrange(plot_sr_a,plot_ir_a, ncol=1, nrow=2,heights=c(12, 12))
 
 Aus den Dichtefunktionen der Klassen für Alter in Abbildung lassen sich sowohl für Sharpe-, als auch Information-Ratio eine höhere Konzentration der Werte um das Zentrum für junge und alte Fonds erkennen, während die mittlere Klasse aufgrund häufigerer Extremwerte bzw. Streeung innerhalb der Dichtefunktion flacher ausfällt. Für die Sharpe-Ratio sind die Wölbungen der Klassen jung und alt fast identisch, in der Verteilung der Information-Ratio besitzt die Klasse der jungen Fonds ein klar höhere Kurtosis.
 
-
 ```{r, echo=FALSE, warning=FALSE,fig.cap = "Densitiy für Ratios der Size-Stichprobe"}
 #density für sharpe ratios bei size mit 5 Klassen
 
@@ -733,6 +683,4 @@ grid.arrange(plot_sr_s,plot_ir_s, ncol=1, nrow=2, heights=c(12, 12))
 
 ```
 
-Abbildung zeigt für die Größe ein völlig anderes Bild. Hier ist die Verteilung der Klasse Q5, also der 20% größten Fonds, die mit Abstand flachste verteilung (Ausgenommen Q2 für die IR). Generell befinden sich sehr viel mehr Werte in den Extremen der Dichtefunktionen, die Wölbung ist daher allgemein geringer, was wiederum eine höhere Streuung und Volatilität impliziert. Dies zeigte sich auch schon in der Darstellung der Kennziffern in Tabelle 6. Bis auf eine Ausnahme (Q5) kleine negative Werte könnten eine hohe Volatilität und damit idiosynchratisches Risiko in der zweiten Stichprobe widerspiegeln. 
-
-\newpage
+Abbildung zeigt für die Größe ein völlig anderes Bild. Hier ist die Verteilung der Klasse Q5, also der 20% größten Fonds, die mit Abstand flachste verteilung (Ausgenommen Q2 für die IR). Generell befinden sich sehr viel mehr Werte in den Extremen der Dichtefunktionen, die Wölbung ist daher allgemein geringer, was wiederum eine höhere Streuung und Volatilität impliziert. Dies zeigte sich auch schon in der Darstellung der Kennziffern in Tabelle 6. Bis auf eine Ausnahme (Q5) kleine negative Werte könnten eine hohe Volatilität und damit idiosynchratisches Risiko in der zweiten Stichprobe widerspiegeln.
