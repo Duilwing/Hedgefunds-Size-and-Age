@@ -125,11 +125,9 @@ stargazer(model3,model4, header=FALSE, type='latex', model.numbers= FALSE, title
 
 Tabelle 9 zeigt die Ergebnisse der Regressionen für die Größe. Diese bestätigen die Ergebnisse der deskriptiven Analyse. Größe ist negativ statistisch signifikant, alle Quintile weisen einen positiven Effekt auf, der wie vermutet einen höheres Signifikanz-Niveau von mindestens 5% ausweist. Für Alpha ergeben die vier Modelle identische Implikationen wie die vorherigen Analysen. Jüngere Fonds outperformen ältere, die Größe wirkt sich hingegen positiv auf Alpha aus.
 
-## Sharpe Ratios
+## Sharpe Ratio und Information Ratio
 
-Hier werden die Sharpe Ratios der Fonds berechnet und dargestellt.
-SR: je älter desto besser, medium am besten
-je größer desto besser
+Da die Ergebnisse und Berechnungen der beiden Ratios sich ähneln, werde diese in einem Unterkapitel erläutert. Da alle drei regressierten Kennziffern sich in ihrem Aufbau ähneln bzw. sich einander bedingen, sind die im folgenden dargestellten Ergebnisse denen des Kapitels zu Alpha ähnlich.
 
 <!--SR-Regression Alter in Jahren-->
 ```{r SR-Regression Alter in Jahren, echo=FALSE, warning= FALSE}
@@ -173,23 +171,18 @@ model4_SR <- lm(sr~Q_2 + Q_3 + Q_4 + Q_5) # 'Q_1' als Referenzkategorie
 
 ```{r,echo=FALSE, results='asis'} 
 
-stargazer(model1_SR,model2_SR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Sharpe Ratio Part 1",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
+stargazer(model1_SR,model2_SR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Sharpe Ratio Part 1",  column.labels = c("Age", "Age Classes"),omit.stat = c("rsq", "f")
 )
 ```
-Erläuterung der Ergebnisse
 
-\\
+Tabelle 10 zeigt im Gegensatz zur Regression mit Alpha keinen statistisch signifikanten Wert für Alter allgemein, bestätigt aber den negativen Zusammenhang zwischen alten Funds und Performance. Niedrigere Werte der SR für ältere Fonds weisen auf niedrigere Returns und höhere Volatilitäten im Vergleich zu jüngeren Fonds hin. 
 ```{r,echo=FALSE, results='asis'} 
 
 stargazer(model3_SR,model4_SR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Sharp Ratio Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
 )
 ```
 
-
-## Information Ratio
-
-Hier werden die Information Ratios berechnet und dargestellt.
-Ergebnisse analog zu SR
+Tabelle 11 unterstreicht mit durchgehend statistisch signifikanten Werten für beide Modelle den positiven Zusammenhang zwischen Größe und Performance. Alle Werte des Quintil-Ansatzes sind zum 1%-Niveau statistisch signifikant, der gemessene Effekt ist für die oberen 20% am stärksten.
 
 
 <!--IR-Regression Alter in Jahren-->
@@ -237,29 +230,29 @@ model4_IR <- lm(ir~Q_2 + Q_3 + Q_4 + Q_5) # 'Q_1' als Referenzkategorie
 
 ```{r,echo=FALSE, results='asis'} 
 
-stargazer(model1_IR,model2_IR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Information Ratio Part 1",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
+stargazer(model1_IR,model2_IR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Information Ratio Part 1",  column.labels = c("Age", "Age Classes"),omit.stat = c("rsq", "f")
 )
 ```
-Erläuterung der Ergebnisse
+Die Regression der Information-Ratio liefert für die allgemeine Variable Alter und für die Klasse der alten Fonds statistsich signifikante negative Werte. Dies stimmt mit den Beobachtungen für Alpha überein, was aufgrund der Abhängigkeit von IR als Verhältnis von Returns und Alpha nicht verwundert. Auch zur Größe werden Effekte analog zu den vorherigen Regressionen beobachtet. Big und Q_5 als jeweils höchste Klassen wirken sich positiv aus. 
+Für alle Regressionen kann daher der Eindruck der Analyse in Kapitel 3 bestätigt werden. Kleine Fonds erzielen höhere Returns bei gleichzeitig niedriger Volatilität als ältere Fonds. Size matters, so erzielen nur die größten Fonds ein positives Alpha bzw. hohe Werte für die berechneten Ratios.
 
-\newpage
 ```{r,echo=FALSE, results='asis'} 
 
 stargazer(model3_IR,model4_IR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Information Ratio Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
 )
 ```
 
+\newpage
 
-
-
-## Sortino Ratio (optional)
-
-Hier werden die Sortino Ratios berechnet und dargestellt.
 
 
 ## Coherence
 
+Hier noch theoretische Definition für Coherence
+
 Hier wird erläutert, inwieweit identifizierte "Top-Fonds" Beständigkeit über mehrere Performance-Maße hinweg aufweisen.
+
+Zur Analyse werden Ranking-Tabellen erstellt, die die jeweils drei besten Fonds für die Sharpe- und Information-Ratio und Alpha enthalten. So werden auch Fonds berücksichtigt, die womöglich schlechte Werte für eine der beiden Ratios aufweisen, dafür aber sich durch eines der drei höchsten Alphas auszeichnen. 
 
 <!--Vergleichendes Ranking nach Risk adjusted Returns Age-->
 ```{r Ranking-Table Age, echo=FALSE, warning=FALSE}
@@ -276,14 +269,48 @@ Ranking_age <- summary_final_age %>%
   rename(Name = name,Class=age_class, `SR Rank` = sr_rank, `IR Rank` = ir_rank, `Alpha Rank` = alpha_rank)
 
 
-kable(Ranking_age, booktabs = TRUE,
-        caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Alter, 2005-2015)")
+knitr::kable(Ranking_age, col.names = c("Name","Age Class","SR Rank","IR Rank","Alpha Rank"), caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Alter, 2005-2015)")%>%
+    kable_styling(latex_options = c("striped", "hover"))
+
+
+
+
 
 ```
 
+<!--Vergleichendes Ranking nach Risk adjusted Returns Size-->
+```{r Ranking-Table Size, echo=FALSE, warning=FALSE}
+
+Ranking_size <- summary_final_size %>%
+  mutate(sr_rank = dense_rank(desc(sr)),
+         ir_rank = dense_rank(desc(ir)),
+         alpha_rank = dense_rank(desc(alpha))) %>%
+  mutate(coherence = case_when(`alpha_rank` < 4 | `sr_rank` < 4 | `ir_rank` < 4 ~ "top",
+                               TRUE ~ "NA")) %>%
+  filter(coherence == "top") %>%
+  arrange(sr_rank) %>%
+  select(name,Quantile_Class, sr_rank, ir_rank, alpha_rank) %>%
+  rename(Name = name, `SR Rank` = sr_rank, `IR Rank` = ir_rank, `Alpha Rank` = alpha_rank)
+
+knitr::kable(Ranking_size, col.names = c("Name","Quintile Class","SR Rank","IR Rank","Alpha Rank"),caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Größe, 2010-2020)")%>%
+    kable_styling(latex_options = c("striped", "hover"))
+
+
+```
+
+
+
+## Persistence
+
+'Performance Persistence' beschreibt, wie stetig die Performance eines Hedge Funds ist - also wie konstant ein Hedge Fund performt.[@Stafylas.2016, p. 15]
+
+
+
+
+
 ```{r, echo=FALSE, warning=FALSE}
 
-#kumuierte returns für jeden fund in subset
+#kumulierte returns für jeden fund aus Age in subset 
 
 tidy_return_age_sub <- tidy_return_age
 tidy_return_age_sub[is.na(tidy_return_age_sub)] <- 0
@@ -323,7 +350,7 @@ final_data_age_sub[,2][final_data_age_sub[,2] == "FOUSA0883N"] <- "CCM S&P 500 L
 final_data_age_sub[,2][final_data_age_sub[,2] == "FHUSA04ADN"] <- "Strand US Fund"
 final_data_age_sub[,2][final_data_age_sub[,2] == "FHUSA04BAI"] <- "LIM China Index Limited B"
 
-#aussortierte funds
+#nicht dargestellte funds
 #final_data_age_sub[,2][final_data_age_sub[,2] == "FOUSA08ZJV"] <- "Gladwyne Capital, L.P."
 #final_data_age_sub[,2][final_data_age_sub[,2] == "FHUSA04AHN"] <- "Loch Capital I LP"
 
@@ -343,28 +370,9 @@ ggplot(data=final_data_age_sub) + aes(x=date, y = cum_ret, color = Name) + geom_
 
 
 
-<!--Vergleichendes Ranking nach Risk adjusted Returns Size-->
-```{r Ranking-Table Size, echo=FALSE, warning=FALSE}
-
-Ranking_size <- summary_final_size %>%
-  mutate(sr_rank = dense_rank(desc(sr)),
-         ir_rank = dense_rank(desc(ir)),
-         alpha_rank = dense_rank(desc(alpha))) %>%
-  mutate(coherence = case_when(`alpha_rank` < 4 | `sr_rank` < 4 | `ir_rank` < 4 ~ "top",
-                               TRUE ~ "NA")) %>%
-  filter(coherence == "top") %>%
-  arrange(sr_rank) %>%
-  select(name,Quantile_Class, sr_rank, ir_rank, alpha_rank) %>%
-  rename(Name = name, `SR Rank` = sr_rank, `IR Rank` = ir_rank, `Alpha Rank` = alpha_rank)
-
-kable(Ranking_size, booktabs = TRUE,
-        caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Größe, 2010-2020)") 
-
-```
-
 ```{r, echo=FALSE, warning=FALSE}
 
-#kumuierte returns für jeden fund in subset
+#kumuierte returns für jeden fund aus Size in subset
 
 tidy_return_size_sub <- tidy_return_size
 tidy_return_size_sub[is.na(tidy_return_size_sub)] <- 0
@@ -420,10 +428,6 @@ ggplot(data=final_data_size_sub) + aes(x=date, y = cum_ret, color = Name) + geom
 
 
 
-
-## Persistence
-
-'Performance Persistence' beschreibt, wie stetig die Performance eines Hedge Funds ist - also wie konstant ein Hedge Fund performt.[@Stafylas.2016, p. 15]
 
 
 \newpage
