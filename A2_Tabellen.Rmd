@@ -50,14 +50,71 @@ kable(c_ranking_size, booktabs = TRUE,
 
 ```
 
+\newpage
 
+<!-- Regressionen auf Carhart's Alpha (2005-2020) Teil 1-->
+```{r, echo=FALSE, warning=FALSE, results='asis'}
 
+stargazer(compl_model1, compl_model2, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Alpha (2005-2020) Part 1",  column.labels = c("Age", "Age Classes"),omit.stat = c("rsq", "f")
+)
+```
 
+\newpage
 
+<!-- Regressionen auf Carhart's Alpha (2005-2020) Teil 2-->
+```{r, echo=FALSE, warning=FALSE, results='asis'} 
 
+stargazer(compl_model3, compl_model4, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Alpha (2005-2020) Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
+)
+```
 
+\newpage
 
+<!-- Regressionen auf SR (2005-2020) Teil 1-->
+```{r, echo=FALSE, results='asis'} 
 
+stargazer(compl_model1_SR, compl_model2_SR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Sharpe Ratio (2005-2020) Part 1",  column.labels = c("Age", "Age Classes"),omit.stat = c("rsq", "f")
+)
+```
+
+\newpage
+
+<!-- Regressionen auf SR (2005-2020) Teil 1-->
+```{r, echo=FALSE, results='asis'} 
+
+stargazer(compl_model3_SR, compl_model4_SR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Sharp Ratio (2005-2020) Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
+)
+```
+
+\newpage
+
+<!-- Regressionen auf IR (2005-2020) Teil 1-->
+```{r, echo=FALSE, results='asis'} 
+
+stargazer(compl_model1_IR, compl_model2_IR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Information Ratio (2005-2020) Part 1",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
+)
+```
+
+\newpage
+
+<!-- Regressionen auf IR (2005-2020) Teil 2-->
+```{r, echo=FALSE, results='asis'} 
+
+stargazer(compl_model3_IR, compl_model4_IR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Information Ratio (2005-2020) Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
+)
+```
+
+\newpage
+
+<!--Vergleichendes Ranking nach Risk adjusted Returns (2005-2020)-->
+```{r, echo=FALSE, results='asis'}
+
+kable(Ranking, booktabs = TRUE,
+        caption = "Top 3 Hedge Fonds nach Alpha, SR und IR")
+
+```
+
+\newpage
 
 
 

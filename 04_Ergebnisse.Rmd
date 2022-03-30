@@ -45,7 +45,7 @@ summary_final_age <- summary_final_age %>%
 
 
 attach(summary_final_age)
-model2 <- lm(alpha~young + old)
+model2 <- lm(alpha~young + old) # 'medium' als Referenzkategorie
 
 ```
 
@@ -69,7 +69,7 @@ summary_final_size <- summary_final_size %>%
 
 
 attach(summary_final_size)
-model3 <- lm(alpha~small + big)
+model3 <- lm(alpha~small + big) # 'medium' als Referenzkategorie
 
 
 
@@ -99,7 +99,7 @@ summary_final_size <- summary_final_size %>%
 #model_alpha_size_cq_summary <- summary_final_size %>%lm(alpha~Q_2 + Q_3 + Q_4 + Q_5, data = .) %>%               # Klasse 'Q_1' als Referenz-Kategorietidy()knitr::kable(model_alpha_size_cq_summary)
 
 attach(summary_final_size)
-model4 <- lm(alpha~Q_2 + Q_3 + Q_4 + Q_5)
+model4 <- lm(alpha~Q_2 + Q_3 + Q_4 + Q_5) # 'Q_1' als Referenzkategorie
 
 ```
 
@@ -125,11 +125,6 @@ stargazer(model3,model4, header=FALSE, type='latex', model.numbers= FALSE, title
 
 Tabelle 9 zeigt die Ergebnisse der Regressionen für die Größe. Diese bestätigen die Ergebnisse der deskriptiven Analyse. Größe ist negativ statistisch signifikant, alle Quintile weisen einen positiven Effekt auf, der wie vermutet einen höheres Signifikanz-Niveau von mindestens 5% ausweist. Für Alpha ergeben die vier Modelle identische Implikationen wie die vorherigen Analysen. Jüngere Fonds outperformen ältere, die Größe wirkt sich hingegen positiv auf Alpha aus.
 
-## Carhart's alpha (optional)
-
-Hier werden die Ergebnisse für Carhart's alpha dargestellt.
-
-
 ## Sharpe Ratios
 
 Hier werden die Sharpe Ratios der Fonds berechnet und dargestellt.
@@ -152,7 +147,7 @@ model1_SR <- lm(sr~age_y)
 #model_sr_age_c_summary <- summary_final_age %>%lm(sr~young + old, data = .) %>%               # Klasse 'medium' als Referenz-Kategorietidy()
 
 attach(summary_final_age)
-model2_SR <- lm(sr~young + old)
+model2_SR <- lm(sr~young + old) # 'medium' als Referenzkategorie
 
 ```
 
@@ -162,7 +157,7 @@ model2_SR <- lm(sr~young + old)
 #model_sr_size_c_summary <- summary_final_size %>%lm(sr~small + big, data = .) %>%               # Klasse 'medium' als Referenz-Kategorietidy()
 
 attach(summary_final_size)
-model3_SR <- lm(sr~small + big)
+model3_SR <- lm(sr~small + big) # 'medium' als Referenzkategorie
 ```
 
 <!--SR-Regression Größe in Klassen nach Quantilen-->
@@ -171,7 +166,7 @@ model3_SR <- lm(sr~small + big)
 #model_sr_size_cq_summary <- summary_final_size %>%lm(sr~ Q_2 + Q_3 + Q_4 + Q_5, data = .) %>%               # Klasse 'Q_1' als Referenz-Kategorietidy()
 
 attach(summary_final_size)
-model4_SR <- lm(sr~Q_2 + Q_3 + Q_4 + Q_5)
+model4_SR <- lm(sr~Q_2 + Q_3 + Q_4 + Q_5) # 'Q_1' als Referenzkategorie
 
 ```
 
@@ -189,8 +184,6 @@ Erläuterung der Ergebnisse
 stargazer(model3_SR,model4_SR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Sharp Ratio Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
 )
 ```
-
-
 
 
 ## Information Ratio
@@ -215,7 +208,7 @@ model1_IR <- lm(ir~age_y)
 #model_ir_age_c_summary <- summary_final_age %>%lm(ir~young + old, data = .) %>%               # Klasse 'medium' als Referenz-Kategorietidy()
 
 attach(summary_final_age)
-model2_IR <- lm(ir~young + old)
+model2_IR <- lm(ir~young + old) # 'medium' als Referenzkategorie
 
 ```
 
@@ -225,7 +218,7 @@ model2_IR <- lm(ir~young + old)
 #model_ir_size_c_summary <- summary_final_size %>%lm(ir~small + big, data = .) %>%               # Klasse 'medium' als Referenz-Kategorietidy()
 
 attach(summary_final_size)
-model3_IR <- lm(ir~small + big)
+model3_IR <- lm(ir~small + big) # 'medium' als Referenzkategorie
 
 ```
 
@@ -235,7 +228,7 @@ model3_IR <- lm(ir~small + big)
 #model_ir_size_cq_summary <- summary_final_size %>%lm(ir~ Q_2 + Q_3 + Q_4 + Q_5, data = .) %>%               # Klasse 'Q_1' als Referenz-Kategorietidy()
 
 attach(summary_final_size)
-model4_IR <- lm(ir~Q_2 + Q_3 + Q_4 + Q_5)
+model4_IR <- lm(ir~Q_2 + Q_3 + Q_4 + Q_5) # 'Q_1' als Referenzkategorie
 
 ```
 
