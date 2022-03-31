@@ -684,3 +684,4 @@ grid.arrange(plot_sr_s,plot_ir_s, ncol=1, nrow=2, heights=c(12, 12))
 ```
 
 Abbildung zeigt für die Größe ein völlig anderes Bild. Hier ist die Verteilung der Klasse Q5, also der 20% größten Fonds, die mit Abstand flachste verteilung (Ausgenommen Q2 für die IR). Generell befinden sich sehr viel mehr Werte in den Extremen der Dichtefunktionen, die Wölbung ist daher allgemein geringer, was wiederum eine höhere Streuung und Volatilität impliziert. Dies zeigte sich auch schon in der Darstellung der Kennziffern in Tabelle 6. Bis auf eine Ausnahme (Q5) kleine negative Werte könnten eine hohe Volatilität und damit idiosynchratisches Risiko in der zweiten Stichprobe widerspiegeln.
+\newpage
