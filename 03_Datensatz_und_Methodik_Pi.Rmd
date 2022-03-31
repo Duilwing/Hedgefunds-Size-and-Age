@@ -210,7 +210,7 @@ JB_summary <- bind_rows(JB_age,JB_size)%>%
 
 ```
 
-Die Ergebnisse zeigen, dass sich die Verteilung der betrachteten Renditen beider Datensätze statistisch signifikant von der Normalverteilung unterscheiden. Allerdings haben analytische Tests auf Normalverteilung, wie bspw. auch der Kolmogorov-Smirnov Test oder der Shapiro-Wilk Test, die Eigenschaft, bei sehr kleinen Stichproben eine geringe Power und bei sehr großen Stichproben einen automatisch signifikanten p-Wert aufzuweisen.^[siehe bspw. @AldorNoiman.2013, @Field.2018] Aufgrunddessen wird ein weiterer, optischer Test auf Normalverteilung anhand von Histogrammen vorgenommen, die die Verteilung der Renditen beider Stichproben darstellen.
+Die Ergebnisse zeigen, dass sich die Verteilung der betrachteten Renditen beider Datensätze statistisch signifikant von der Normalverteilung unterscheiden. Allerdings haben analytische Tests auf Normalverteilung, wie bspw. auch der Kolmogorov-Smirnov Test oder der Shapiro-Wilk Test, die Eigenschaft, bei sehr kleinen Stichproben eine geringe Power und bei sehr großen Stichproben einen automatisch signifikanten p-Wert aufzuweisen.^[siehe bspw. @AldorNoiman.2013, @Field.2018] Aufgrunddessen wird ein optischer Test auf Normalverteilung vorgenommen.
 
 <!--Histogramm zur Prüfung auf Normalverteilung der Returns-->
 ```{r, echo=FALSE, warning=FALSE,fig.cap = "Histogramm der Renditen beider Stichproben"}
@@ -228,7 +228,7 @@ geom_density(aes(color="Alter/Größenverteilung"),size=0.7)+ scale_colour_manua
 ncol = 2, label.y = "Dichte", common.legend = TRUE)
 ```
 
-Abbildung 1 zeigt die Histogramme der Renditen beider Datensätze sowie in gelb die Normalverteilung und türkis die Verteilung der Datensätze. Beide Abbildungen bestätigen das Ergebnis der Tests. Es liegt bei beiden Abbildungen eine zu hohe Kurtosis vor, die Renditen sind leptokurtisch verteilt.
+Abbildung 1 zeigt die Histogramme der Renditen beider Datensätze sowie in gelb die Normalverteilung und türkis die Verteilung. Beide Abbildungen bestätigen das Ergebnis der Tests. Es liegt bei beiden Abbildungen eine zu hohe Kurtosis vor, die Renditen sind leptokurtisch verteilt. Beide Histogramme zeigen eine leptokurtische Verteilung der Renditen und bestätigen somit das Ergebnis des Jarque-Bera Tests.
 
 <!--Mergen von tidy_data und factor_data-->
 ```{r,echo=FALSE, include=FALSE, warning= FALSE}
@@ -300,7 +300,7 @@ summary_final_size <- final_data_size %>%
 
 ```
 
-Im Anschluss werden die Fonds ihrer Größe und Alter entsprechend in Klassen nach @Jones.2007 eingeteilt: 'jung' entspricht einem Alter von bis zu zwei Jahren, 'medium' zwischen 2 und 4 Jahren sowie 'alt' ab einem Alter von mindestens 5 Jahren. Hinsichtlich der Größe: klein (< 100 Mio. USD), medium (100 - 500 Mio. USD) und groß (> 500 Mio. USD). Die Verteilung beider Datensätze kann Abbildung 2 entnommen werden. 
+Im Anschluss werden die Fonds ihrer Alter und Größe entsprechend in Klassen nach @Jones.2007 eingeteilt: 'jung' entspricht einem Alter von bis zu zwei Jahren, 'mittel' zwischen 2 und 4 Jahren sowie 'alt' ab einem Alter von mindestens 5 Jahren. Hinsichtlich der Größe: klein (< 100 Mio. USD), mittel (100 - 500 Mio. USD) und groß (> 500 Mio. USD). Die Verteilung beider Stichproben kann Abbildung 2 entnommen werden. 
 
 ```{r, echo=FALSE, warning=FALSE, fig.cap="Klassenverteilung beider Stichproben"}
 
@@ -330,9 +330,9 @@ ncol = 2, label.y = "density", common.legend = TRUE)
 
 ```
 
-Auch wenn alte Fonds mit einer Anzahl von 194 ca. 50% der Verteilung stellen, ist die Anzahl für junge (79) und mittlere (132) Fonds ausreichend groß für eine weitere Analyse, sodass hier der Einteilung nach @Jones.2007 gefolgt wird. Hinsichtlich des Datensatzes für 'Alter' zeigt die Verteilung eine klare Verzerrung hin zu kleinen Fonds (80%), während große Fonds (4,5%) unterrepräsentiert sind. Daher erfolgt im weiteren Verlauf der Arbeit die Einteilung nach Größe in Quintile, ähnlich dem Ansatz von @Howell.2001.
+Auch wenn alte Fonds mit einer Anzahl von 194 ca. 50% der Verteilung stellen, ist die Anzahl für junge (79) und mittlere (132) Fonds ausreichend groß für eine weitere Analyse, sodass hier der Einteilung nach @Jones.2007 gefolgt wird. Hinsichtlich des Datensatzes für 'Größe' zeigt die Verteilung eine klare Verzerrung hin zu kleinen Fonds (80%), während große Fonds (4,5%) unterrepräsentiert sind. Daher erfolgt im weiteren Verlauf der Arbeit die Einteilung nach Größe in Quintile, ähnlich dem Ansatz von @Howell.2001.
 
-Abbildung 2 stellt die Zusammenhänge von Volatilität und Arithmetischer Rendite (Returns) für die gesamte Age-Stichprobe und die drei Klassen dar. Zusätzlich ist eine Regression eingefügt, die den positiven Zusammenhang von Returns und Volatilität aufzeigt. Die Farbgebungsskala ist der jeweiligen Spannweite der Sharp-Ratio angepasst und zeigt dadurch deutliche Unterschiede innerhalb der Sharp-Ratios für die einzelnen Klassen auf. Auf diese und andere Kennziffern wird im späteren Verlauf der Arbeit genauer eingegangen. Eine ähnliche Abbildung zur Size-Stichprobe ist im Anhang zu finden.
+Abbildung 3 stellt die Zusammenhänge von Volatilität und arithmetischer Rendite (Returns) für die gesamte Alters-Stichprobe und die drei Klassen dar. Zusätzlich ist eine Regression eingefügt, die den positiven Zusammenhang von Rendite und Volatilität aufzeigt. Die Farbskala ist der jeweiligen Spannweite der Sharp Ratio angepasst und zeigt dadurch deutliche Unterschiede innerhalb der Sharp Ratios für die einzelnen Klassen auf. Auf diese und andere Kennziffern wird im späteren Verlauf der Arbeit genauer eingegangen. Eine ähnliche Abbildung zur Größe-Stichprobe ist im Anhang zu finden.
 
 ```{r, echo=FALSE, warning=FALSE,fig.cap = "Zusammenhang von Volatilität und durchschn. Rendite innerhalb der Alters-Stichprobe"}
 
@@ -349,7 +349,7 @@ ncol = 2,nrow=2)
 
 ## Performancemaße
 
-Die vorgestellten Datensätze werden nun dazu genutzt, jeweils die bekannten Performance-Maße Jensen's Alpha, Sharpe Ratio (SR) und Information Ratio (IR) zu berechnen. Hierbei ist das Alpha nach @Jensen.1968 eines der bekanntesten Maße,^[siehe @Pedersen.2019, S. 28: "It is the Holy Grail all active managers seek."] und stellt die Konstante einer CAPM-Regression dar:
+Für die vorgestellten Stichproben werden nachfolgend die Performance-Maße Jensen's Alpha, Sharpe Ratio (SR) und Information Ratio (IR) berechnet. Hierbei ist das Alpha nach @Jensen.1968 eines der bekanntesten Maße,^[siehe @Pedersen.2019, S. 28: "It is the Holy Grail all active managers seek."] und stellt die Konstante einer CAPM-Regression dar:
 \begin{equation}
   \label{CAPM_Regression}
   r_t^e = \alpha + \beta r_{M,t}^e + \epsilon_t,
@@ -364,7 +364,8 @@ wobei $\overline{r}^e$ das arithmetische Mittel und $\sigma(r^e)$ die Standardab
   \label{Information_Ratio_1}
   IR = \frac{\alpha}{\sigma(\epsilon)},
 \end{equation}
-wobei $\epsilon$ in der vorliegenden Arbeit dem Residuum einer CAPM-Regression entspricht und somit dem Tracking-Error. Die errechneten Performancemaße werden getrennt nach Datensatz anhand der nachfolgenden Tabellen vorgestellt. Tabelle 2 zeigt den Durchschnitt der Rendite, Volatilität, Alpha, SR und IR nach Klassen getrennt für den Alters-Datensatz. Hierbei weist die Klasse der junge Fonds die höchste Rendite bei gleichzeitig niedrigster Volatilität auf. Dies deckt sich mit den Erkenntnissen von @Jones.2007. Auch hinsichtlich Jensen's Alpha bieten junge Fonds eine bessere Performance als alte Fonds. Allerdings könnte dies durch Leverage verursacht sein, da hinsichtlich Sharpe- und Information-Ratio die Klasse der mittelalten Fonds am besten abschneidet. Zusammenfassend unterliegt die Klasse der alten Fonds, was ein erstes Indiz für die Bestätigung der ersten Hypothese darstellt.
+wobei $\epsilon$ in der vorliegenden Arbeit dem Residuum einer CAPM-Regression entspricht und somit dem Tracking-Error. Die errechneten Performancemaße werden getrennt nach Datensatz anhand der nachfolgenden Tabellen vorgestellt. \newline
+Tabelle 2 zeigt den Durchschnitt der Rendite, Volatilität, Alpha, SR und IR nach Klassen getrennt für den Alters-Datensatz. Hierbei weist die Klasse der junge Fonds die höchste Rendite bei gleichzeitig niedrigster Volatilität auf. Dies deckt sich mit den Erkenntnissen von @Jones.2007. Auch hinsichtlich Jensen's Alpha bieten junge Fonds eine bessere Performance als alte Fonds. Allerdings könnte dies durch Leverage verursacht sein, da hinsichtlich Sharpe- und Information Ratio die Klasse der mittelalten Fonds am besten abschneidet. Zusammenfassend underperformt die Klasse der alten Fonds, was ein erstes Indiz für die Bestätigung der ersten Hypothese darstellt.
 
 ```{r, echo=FALSE}
 
@@ -413,8 +414,7 @@ class_summary_final_age <- bind_rows(class_young,class_medium_age,class_old, .id
 
 ```
 
-
-Tabelle 3 zeigt die durchschnittlichen Performance-Maße für den Größe-Datensatz, mit Klassen nach Quintilen. Das vierte Quintil ausgenommen, steigt mit der Größe der Fonds sowohl die durchschnittliche Rendite, als auch die Volatilität, was konträr zu den Ergebnissen von @Jones.2007 steht. Werden die Werte für Jensen's Alpha betrachtet, bieten kleine Fonds die beste Überrendite. Dieses Bild dreht sich jedoch, sobald der Fokus auf Sharpe- und Information-Ratio gerichtet wird. Diese bestätigen die anfangs genannte Overperformance von großen Fonds.
+Tabelle 3 zeigt die durchschnittlichen Performance-Maße für die Größe-Stichprobe, mit Klassen nach Quintilen. Das vierte Quintil ausgenommen, steigt mit der Größe der Fonds sowohl die durchschnittliche Rendite, als auch die Volatilität, was konträr zu den Ergebnissen von @Jones.2007 steht. Werden die Werte für Jensen's Alpha betrachtet, bieten kleine Fonds die beste Überrendite. Dieses Bild dreht sich jedoch, sobald der Fokus auf Sharpe- und Information Ratio gerichtet wird. Diese bestätigen die anfangs genannte Overperformance von großen Fonds.
 
 ```{r, echo=FALSE}
 
@@ -484,7 +484,7 @@ class_summary_final_size <- bind_rows(class_01,class_02,class_03,class_04,class_
 
 ```
 
-Tabelle 4 zeigt die durchschnittlichen Performance-Maße für den 'Größe'-Datensatz mit der Klasseneinteilung nach @Jones.2007. Trotz Verzerrung hin zu kleinen Fonds stimmen die Ergebnisse mit denen der Aufteilung nach Quintilen (Tabelle 3) überein. Dies deckt sich mit den eingangs vorgestellten Erkenntnissen von @Gregoriou.2002 und @Liang.1999. Somit ergeben sich hier erste Indizien, die für eine Ablehnung der zweiten Hypothese sprechen.
+Tabelle 4 zeigt die durchschnittlichen Performance-Maße für die Größe-Stichprobe mit der Klasseneinteilung nach @Jones.2007. Trotz Verzerrung hin zu kleinen Fonds stimmen die Ergebnisse mit denen der Aufteilung nach Quintilen überein. Dies deckt sich mit den eingangs vorgestellten Erkenntnissen von @Gregoriou.2002 und @Liang.1999. Somit ergeben sich hier erste Indizien, die für eine Ablehnung der zweiten Hypothese sprechen.
 
 ```{r, echo=FALSE}
 
@@ -538,7 +538,7 @@ class_summary_final_size_jones <- bind_rows(class_small,class_medium_size,class_
 
 ```
 
-Die folgenden Abbildungen stellen für beide Datensätze die Verteilungen der jeweiligen durchschnittlichen Sharpe- und Information-Ratios nach Klassen dar. Beginnend mit den Dichtefunktionen der Klassen nach Alter in Abbildung 3 lassen sich sowohl für Sharpe- als auch Information-Ratio eine höhere Konzentration der Werte um das Zentrum für junge und alte Fonds erkennen, während die mittlere Klasse aufgrund häufigerer Extremwerte bzw. Streuung innerhalb der Dichtefunktion flacher ausfällt. Für die Sharpe-Ratio sind die Wölbungen der Klassen 'jung' und 'alt' fast identisch, in der Verteilung der Information-Ratio besitzt die Klasse der jungen Fonds eine klar höhere Kurtosis.
+Die folgenden Abbildungen stellen für beide Datensätze die Verteilungen der jeweiligen durchschnittlichen Sharpe- und Information Ratios nach Klassen dar. Beginnend mit den Dichtefunktionen der Klassen nach Alter in Abbildung 4 lassen sich sowohl für Sharpe- als auch Information Ratio eine höhere Konzentration der Werte um das Zentrum für junge und alte Fonds erkennen, während die mittlere Klasse aufgrund häufigerer Extremwerte bzw. Streuung innerhalb der Dichtefunktion flacher ausfällt. Für die Sharpe Ratio sind die Wölbungen der Klassen 'jung' und 'alt' fast identisch, in der Verteilung der Information Ratio besitzt die Klasse der jungen Fonds eine klar höhere Kurtosis.
 
 ```{r, echo=FALSE, warning=FALSE,fig.cap = "Dichteverteilung für Ratios des Alters-Datensatzes"}
 #density für ratios bei alter
@@ -558,8 +558,7 @@ grid.arrange(plot_sr_a,plot_ir_a, ncol=1, nrow=2,heights=c(12, 12))
 
 
 ```
-
-Abbildung 4 zeigt hinsichtlich der Verteilungen für die Größe ein völlig anderes Bild. Hier ist die Verteilung der Klasse Q5, also der 20% größten Fonds, die mit Abstand flachste Verteilung (ausgenommen Q2 für die IR). Generell befinden sich sehr viel mehr Werte in den Extremen der Dichtefunktionen, die Wölbung ist daher allgemein geringer, was wiederum eine höhere Streuung und Volatilität impliziert. Dies zeigte sich auch schon in der Darstellung der Kennziffern in Tabelle XYXY.
+In Abbildung 5 stellt die Verteilung der Klasse Q5 die mit Abstand flachste Verteilung dar. Generell befinden sich sehr viel mehr Werte in den Extremen der Dichtefunktionen, die Wölbung ist daher allgemein geringer, was wiederum eine höhere Streuung und Volatilität impliziert.
 
 ```{r, echo=FALSE, warning=FALSE,fig.cap = "Dichteverteilung für Ratios des 'Größe'-Datensatzes"}
 #density für sharpe ratios bei size mit 5 Klassen
