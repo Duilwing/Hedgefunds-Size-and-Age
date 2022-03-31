@@ -228,7 +228,7 @@ geom_density(aes(color="Alter/Größenverteilung"),size=0.7)+ scale_colour_manua
 ncol = 2, label.y = "Dichte", common.legend = TRUE)
 ```
 
-Abbildung 1 zeigt die Histogramme der Renditen beider Datensätze sowie in gelb die Normalverteilung und türkis die Verteilung. Beide Abbildungen bestätigen das Ergebnis der Tests. Es liegt bei beiden Abbildungen eine zu hohe Kurtosis vor, die Renditen sind leptokurtisch verteilt. Beide Histogramme zeigen eine leptokurtische Verteilung der Renditen und bestätigen somit das Ergebnis des Jarque-Bera Tests.
+Abbildung 1 zeigt die Histogramme der Renditen beider Datensätze sowie in gelb die Normalverteilung und türkis die Verteilung. Beide Verteilungen weisen eine zu hohe Kurtosis sowie eine leptokurtische Verteilung der Renditen auf. Somit wird das Ergebnis des Jarque-Bera Testes bestätigt.
 
 <!--Mergen von tidy_data und factor_data-->
 ```{r,echo=FALSE, include=FALSE, warning= FALSE}
@@ -332,7 +332,7 @@ ncol = 2, label.y = "density", common.legend = TRUE)
 
 Auch wenn alte Fonds mit einer Anzahl von 194 ca. 50% der Verteilung stellen, ist die Anzahl für junge (79) und mittlere (132) Fonds ausreichend groß für eine weitere Analyse, sodass hier der Einteilung nach @Jones.2007 gefolgt wird. Hinsichtlich des Datensatzes für 'Größe' zeigt die Verteilung eine klare Verzerrung hin zu kleinen Fonds (80%), während große Fonds (4,5%) unterrepräsentiert sind. Daher erfolgt im weiteren Verlauf der Arbeit die Einteilung nach Größe in Quintile, ähnlich dem Ansatz von @Howell.2001.
 
-Abbildung 3 stellt die Zusammenhänge von Volatilität und arithmetischer Rendite (Returns) für die gesamte Alters-Stichprobe und die drei Klassen dar. Zusätzlich ist eine Regression eingefügt, die den positiven Zusammenhang von Rendite und Volatilität aufzeigt. Die Farbskala ist der jeweiligen Spannweite der Sharp Ratio angepasst und zeigt dadurch deutliche Unterschiede innerhalb der Sharp Ratios für die einzelnen Klassen auf. Auf diese und andere Kennziffern wird im späteren Verlauf der Arbeit genauer eingegangen. Eine ähnliche Abbildung zur Größe-Stichprobe ist im Anhang zu finden.
+Abbildung 3 stellt die Zusammenhänge von Volatilität und arithmetischer Rendite (Returns) für die gesamte Alters-Stichprobe und die drei Klassen dar. Zusätzlich ist eine Regression eingefügt, die den positiven Zusammenhang von Rendite und Volatilität aufzeigt. Die Farbskala ist der jeweiligen Spannweite der Sharp Ratio angepasst und zeigt dadurch deutliche Unterschiede innerhalb der Sharp Ratios für die einzelnen Klassen auf. Auf diese und andere Kennziffern wird im späteren Verlauf der Arbeit genauer eingegangen. Eine ähnliche Abbildung zur Größe-Stichprobe ist im Anhang Abschnitt C zu finden.
 
 ```{r, echo=FALSE, warning=FALSE,fig.cap = "Zusammenhang von Volatilität und durchschn. Rendite innerhalb der Alters-Stichprobe"}
 
