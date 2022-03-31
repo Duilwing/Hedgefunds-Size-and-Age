@@ -1,7 +1,7 @@
 
 Um die Validität der vorgestellten Ergebnisse einordnen zu können, werden durchgeführte Robustness Checks nachfolgend vorgestellt. Anschließend werden die Grenzen der Studie thematisiert.
 
-## Robustness checks
+## Robustness Checks
 
 Als erster Check wurden Alphas nicht nur nach dem CAPM, sondern auch mit dem Multi-Faktoren-Modell von @Carhart.1997 auf Basis des Modells von @Fama.1993 berechnet. Hierfür wurde der bekannte Datensatz von @French.2022 verwendet. Anschließend wurden die Regressionen aus Kapitel 4 mit Carhart's Alpha durchgeführt - die SR-Regressionen ausgenommen, da sich hier nichts verändert. Die Ergebnisse stimmen mit denen der CAPM-Alpha-Regressionen überein. Hinsichtlich der Rangfolge ist festzustellen, dass sich für die besten Fonds nach Information Ratio keine Änderungen ergeben, außer, dass deren Alpha-Rang sich um 3-8 Plätze verbessern. Auch die besten Fonds nach Alpha sind dieselben, wenn auch in ggf. anderer Reihenfolge. Somit bestätigt eine Analyse unter Verwendung des Carhart's Alpha die Ergebnisse in Kapitel 4.
 
