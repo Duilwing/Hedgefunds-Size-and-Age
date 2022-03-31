@@ -82,16 +82,16 @@ model3 <- lm(alpha~small + big) # 'medium' als Referenzkategorie
 
 
 summary_final_size <- summary_final_size %>%
-  mutate(Q_1 = case_when(`Quantile_Class` == "1" ~ 1,
-                         `Quantile_Class` != "1" ~ 0),
-         Q_2 = case_when(`Quantile_Class` == "2" ~ 1,
-                         `Quantile_Class` != "2" ~ 0),
-         Q_3 = case_when(`Quantile_Class` == "3" ~ 1,
-                         `Quantile_Class` != "3" ~ 0),
-         Q_4 = case_when(`Quantile_Class` == "4" ~ 1,
-                         `Quantile_Class` != "4" ~ 0),
-         Q_5 = case_when(`Quantile_Class` == "5" ~ 1,
-                         `Quantile_Class` != "5" ~ 0))
+  mutate(Q_1 = case_when(`Quintil_Klassen` == "1" ~ 1,
+                         `Quintil_Klassen` != "1" ~ 0),
+         Q_2 = case_when(`Quintil_Klassen` == "2" ~ 1,
+                         `Quintil_Klassen` != "2" ~ 0),
+         Q_3 = case_when(`Quintil_Klassen` == "3" ~ 1,
+                         `Quintil_Klassen` != "3" ~ 0),
+         Q_4 = case_when(`Quintil_Klassen` == "4" ~ 1,
+                         `Quintil_Klassen` != "4" ~ 0),
+         Q_5 = case_when(`Quintil_Klassen` == "5" ~ 1,
+                         `Quintil_Klassen` != "5" ~ 0))
 
 
 # 2. Durchführen der Regression
@@ -236,8 +236,8 @@ Ranking_age <- summary_final_age %>%
                                TRUE ~ "NA")) %>%
   filter(coherence == "top") %>%
   arrange(sr_rank) %>%
-  select(name,age_class, sr_rank, ir_rank, alpha_rank) %>%
-  rename(Name = name,Class=age_class, `SR Rank` = sr_rank, `IR Rank` = ir_rank, `Alpha Rank` = alpha_rank)
+  select(name,Altersklassen, sr_rank, ir_rank, alpha_rank) %>%
+  rename(Name = name,Class=Altersklassen, `SR Rank` = sr_rank, `IR Rank` = ir_rank, `Alpha Rank` = alpha_rank)
 
 
 kable(Ranking_age, col.names = c("Name","Age Class","SR Rank","IR Rank","Alpha Rank"), caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Alter, 2005-2015)")
@@ -264,7 +264,7 @@ Ranking_size <- summary_final_size %>%
                                TRUE ~ "NA")) %>%
   filter(coherence == "top") %>%
   arrange(sr_rank) %>%
-  select(name,Quantile_Class, sr_rank, ir_rank, alpha_rank) %>%
+  select(name,Quintil_Klassen, sr_rank, ir_rank, alpha_rank) %>%
   rename(Name = name, `SR Rank` = sr_rank, `IR Rank` = ir_rank, `Alpha Rank` = alpha_rank)
 
 kable(Ranking_size, col.names = c("Name","Quintile Class","SR Rank","IR Rank","Alpha Rank"),caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Größe, 2010-2020)")
