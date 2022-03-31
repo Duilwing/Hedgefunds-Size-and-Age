@@ -68,7 +68,7 @@ library(tinytex)
 
 # Datensatz und Methodik
 
-```{r child='03_Datensatz_und_Methodik_Pi.Rmd'}
+```{r child='03_Datensatz_und_Methodik.Rmd'}
 ```
 
 # Ergebnisse
@@ -76,9 +76,9 @@ library(tinytex)
 ```{r child='04_Ergebnisse.Rmd'}
 ```
 
-# Robustheit und Grenzen der Studie
+# Robustness und Grenzen
 
-```{r child='05_Robustheit_und_Grenzen_der_Studie.Rmd'}
+```{r child='05_Robustness_und_Grenzen.Rmd'}
 ```
 
 # Schlussfolgerung
