@@ -266,8 +266,9 @@ Ranking_age <- summary_final_age %>%
   rename(Name = name,Class=age_class, `SR Rank` = sr_rank, `IR Rank` = ir_rank, `Alpha Rank` = alpha_rank)
 
 
-kable(Ranking_age, col.names = c("Name","Age Class","SR Rank","IR Rank","Alpha Rank"), caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Alter, 2005-2015)")%>%
-    kable_styling(latex_options = c("striped", "hover"))
+kable(Ranking_age, col.names = c("Name","Age Class","SR Rank","IR Rank","Alpha Rank"), caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Alter, 2005-2015)")
+#%>%
+ #   kable_styling(latex_options = c("striped", "hover"))
 
 
 
@@ -293,8 +294,9 @@ Ranking_size <- summary_final_size %>%
   select(name,Quantile_Class, sr_rank, ir_rank, alpha_rank) %>%
   rename(Name = name, `SR Rank` = sr_rank, `IR Rank` = ir_rank, `Alpha Rank` = alpha_rank)
 
-kable(Ranking_size, col.names = c("Name","Quintile Class","SR Rank","IR Rank","Alpha Rank"),caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Größe, 2010-2020)")%>%
-    kable_styling(latex_options = c("striped", "hover"))
+kable(Ranking_size, col.names = c("Name","Quintile Class","SR Rank","IR Rank","Alpha Rank"),caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Größe, 2010-2020)")
+#%>%
+ #   kable_styling(latex_options = c("striped", "hover"))
 
 
 ```
