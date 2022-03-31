@@ -104,6 +104,13 @@ library(tinytex)
 ```{r child='A2_Tabellen.Rmd'}
 ```
 
+\newpage
+
+# Abbildungen
+
+```{r child='A3_Abbildungen.Rmd'}
+```
+
 
 <!-- Makes sure to have a new page for your literature -->
 

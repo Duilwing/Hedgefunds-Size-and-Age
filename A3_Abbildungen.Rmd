@@ -6,12 +6,12 @@
 
 grid.arrange(
   ggplot(summary_final_size,
-  aes(x=volatility, y=mean, color=Quantile_Class)) +
+  aes(x=volatility, y=mean, color=Quintil_Klassen)) +
   geom_point(size=1.75, alpha=0.8)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal(),
-ggplot(data=summary_final_size[summary_final_size$Quantile_Class==1,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE),
-ggplot(data=summary_final_size[summary_final_size$Quantile_Class==2,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE),
-ggplot(data=summary_final_size[summary_final_size$Quantile_Class==3,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE),
-ggplot(data=summary_final_size[summary_final_size$Quantile_Class==4,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE),
-ggplot(data=summary_final_size[summary_final_size$Quantile_Class==5,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE),
+ggplot(data=summary_final_size[summary_final_size$Quintil_Klassen==1,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE),
+ggplot(data=summary_final_size[summary_final_size$Quintil_Klassen==2,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE),
+ggplot(data=summary_final_size[summary_final_size$Quintil_Klassen==3,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE),
+ggplot(data=summary_final_size[summary_final_size$Quintil_Klassen==4,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE),
+ggplot(data=summary_final_size[summary_final_size$Quintil_Klassen==5,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE),
 nrow=3,ncol = 2)
 ```

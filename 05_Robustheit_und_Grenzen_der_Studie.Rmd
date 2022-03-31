@@ -215,7 +215,7 @@ behalten <- list("model1_c", "model1_c_IR",
              "model2_c", "model2_c_IR",
              "model3_c", "model3_c_IR",
              "model4_c", "model4_c_IR",
-             "c_ranking_age", "c_ranking_size")
+             "c_ranking_age", "c_ranking_size", "summary_final_size")
 rm(list = setdiff(ls(), behalten))
 
 
