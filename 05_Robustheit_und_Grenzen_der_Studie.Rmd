@@ -296,13 +296,19 @@ tidy_return <- tidy_return %>%
 ```
 
 <!--Durchführen des Jarque-Bera Tests auf Normalverteilung der Returns für Alter
-```{r, include=FALSE, warning=FALSE}
+```{r, echo=FALSE, include=FALSE, message=FALSE, warning=FALSE}
 
-DescTools::JarqueBeraTest(x = tidy_return$ret,
-                          robust = TRUE,
-                          method = c("chisq", "mc"),
-                          N = 0,
-                          na.rm = TRUE)
+#JB <- DescTools::JarqueBeraTest(x = tidy_return$ret,
+#                          robust = TRUE,
+#                          method = c("chisq", "mc"),
+#                          N = 0,
+#                          na.rm = TRUE)
+#tidy()
+#
+#knitr::kable(JB,col.names = c("Datensatz","Methode","Test Statistik", "p-value","df"),
+#  digits = 4,caption="Jarque-Bera Test beider Datensätze")%>%
+#  kable_styling(latex_options = c("striped", "hover"))
+
 
 ```  
 -->
