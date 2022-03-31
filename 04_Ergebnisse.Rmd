@@ -214,7 +214,7 @@ Die Regression der Information Ratio liefert für die Variable 'Alter in Jahren'
 
 ## Coherence
 
-Um die Bewertung der Hedgefonds-Performance über die gewählten Performance-Maße hinweg vergleichen zu können, wurde ein Ranking der jeweils besten drei Hedgefonds für Alpha, Sharpe Ratio und Information Ratio erstellt. Daraus ist ersichtlich, inwieweit eine Beständigkeit über die Performance-Maße hinweg gegeben ist. Tabelle 8 stellt die sieben am höchsten gerankten Fonds innerhalb der Alters-Stichprobe dar. Generell ist ein negativer Zusammenhang zwischen Ratios und Alpha zu beobachten. So weisen die drei nach Alpha sortiert besten Fonds die schlechtesten Rangnummern hinsichtlich der Ratios auf. 
+Um die Bewertung der Hedgefonds-Performance über die gewählten Performance-Maße hinweg vergleichen zu können, wurde ein Ranking der jeweils besten drei Hedgefonds für Alpha, Sharpe Ratio und Information Ratio erstellt. Dies zeigt, inwieweit eine Beständigkeit über die Performance-Maße hinweg gegeben ist. Tabelle 8 stellt die sieben am höchsten gerankten Fonds innerhalb der Alters-Stichprobe dar. Es ist eine negative Beziehung zwischen den Ratios und Alpha zu beobachten. So weisen die drei nach Alpha sortiert besten Fonds die schlechtesten Rangnummern hinsichtlich der Ratios auf. Des Weiteren enthält die Top-5 nach Ratios keine jungen Fonds, wohingegen in den Top-3 nach Alpha alle Klassen vertreten sind. Insofern werden einerseits die Ergebnisse der Regressionen nicht bestätigt, andererseits weisen gute Fonds nach Sharpe Ratio auch ein hohes Ranking nach Information Ratio auf. Die Darstellung der Rankings für die Größe-Stichprobe in Tabelle 9 zeigt jedoch ein anderes Bild. Ein hohes Ratio-Ranking geht mit einem vergleichsweise guten Alpha-Ranking einher - anders herum gilt dies jedoch nicht. Bemerkenswert ist überdies, dass alle Top-Fonds nach Ratios aus den größeren Quintilen entstammen, während Fonds kleinerer Quintile ein gutes Alpha-Ranking jedoch ein schlechtes Ratio-Ranking aufweisen. Hinsichtlich Größe und Ratios werden somit die Erkenntnisse der Regressionen bestätigt: große Fonds outperformen kleine Fonds.
 
 <!--Vergleichendes Ranking nach Risk adjusted Returns Age-->
 ```{r Ranking-Table Age, echo=FALSE, warning=FALSE}
@@ -257,8 +257,6 @@ kable(Ranking_size, col.names = c("Name","Quintil Klasse","SR Rang","IR Rang","A
 
 
 ```
-
-Auch die Darstellung der Rankings für Größe in Tabelle 9 kommt zu ähnlichen Schlussfolgerungen. Allerdings ist die negative Beziehung zwischen Ratios und Alpha innerhalb der zweiten Stichprobe geringer ausgeprägt. So befinden sich alle Werte für Alpha zwischen 1 und 27, im Gegensatz zu 1 bis 102 für die Rankings der Altersvariablen. Für Coherence kann aus beiden Tabellen ein ähnliches Fazit gezogen werden. Fonds sind entweder über beide Ratios beständig und erreichen für diese ähnlich bis gleich hohe Werte bei gleichzeitig geringen Werten für Alpha, oder sie zeichnen sich durch ein hohes Alpha und niedrige Ratios aus. Die Auswirkungen dieser Eigenschaften auf die Performance werden im Folgenden analysiert.
 
 ## Persistence
 
