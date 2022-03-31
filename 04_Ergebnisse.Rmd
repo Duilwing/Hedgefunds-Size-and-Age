@@ -4,14 +4,14 @@ output:
   html_document: default
 ---
 
-Im folgenden Kapitel Ergebnisse werden zuerst Regressionen für Alpha, Sharpe-Ratio und Information-Ratio durchgeführt. Diese werden auf die vier Modelle der beiden Stichproben regressiert und im Anschluss die Ergebnisse auf ihre statistische Signifikanz untersucht und die daraus folgenden Implikationen erläutert. 
+Im folgenden Kapitel werden eingangs Regressionen mittels dreier Modelle für Alpha, Sharpe-Ratio und Information-Ratio durchgeführt, auf ihre statistische Signifikanz untersucht und die daraus folgenden Implikationen erläutert. 
 Im Unterkapitel Coherence wird dargestellt inwieweit identifizierte "Top-Fonds" Beständigkeit über mehrere Performance-Maße hinweg aufweisen. Hierfür werden Rankings erstellt und besprochen. 
-Zuletzt wird im Abschnitt Persistence mittels einer graphischen Analyse die stetige Performance der gerankten Fonds und der Einfluss der Kennzahlen auf diese kritisch hinterfragt.
+Zuletzt wird im Abschnitt Persistence mittels einer graphischen Analyse die stetige Performance der gerankten Fonds und der Einfluss der enzelnen Kennzahlen auf diese kritisch hinterfragt.
 
 
 ## Regressionen
 
-In diesem Abschnitt werden Regressionen für die Parameter Alpha, Sharpe-Ratio und Information-Ratio durchgeführt. Alle drei Parameter werden regressiert auf vier Modelle. Der Einfluss von Alter definiert als Alter zu Beginn der Stichprobe und aufgeteilt in Klassen, die mittlere Klasse dient als Referenzkategorie. Für Größe wird der Einfluss von Size in den Klasseneinteilungen von @Jones.2007 und in den gebildeten Quintilen gemessen. Für die Regression mit den Quintilen wird die Quintil-Klasse Q1 als Referenz verwendet. Die Regressionsübersichten werden mittels des Stargazer-Package erstellt, für weitere Informationen siehe @Hlavac.2022
+In diesem Abschnitt werden Regressionen für die Parameter Alpha, Sharpe-Ratio und Information-Ratio durchgeführt. Für die Alters-Stichprobe wird der Einfluss von Alter definiert als Alter zu Beginn der Stichprobe und  als zweites Modell aufgeteilt in Klassen untersucht. Für die zweite Stichprobe wird der Einfluss von Größe in den gebildeten Quintilen gemessen. Die Regressionsübersichten werden mittels des Stargazer-Package erstellt, für weitere Informationen siehe @Hlavac.2022. Die Regressionen für die Größeneinteilung nach @Jones.2007 werden aufgrund des festgestellten Bias nicht diskutiert.
 
 ### Alpha
 
@@ -53,7 +53,7 @@ model2 <- lm(alpha~young + old) # 'medium' als Referenzkategorie
 ```{r Alpha-Regression Größe in Klassen nach Jones, echo=FALSE, warning= FALSE}
 
 # 1. Erstellen von Dummy-Variablen für die Altersklassen
-
+#Nicht in Regressionsübersicht übernommen
 summary_final_size <- summary_final_size %>%
   mutate(small = case_when(`size` <= 100000000 ~ 1,
                            `size` > 100000000 ~ 0),
@@ -107,27 +107,17 @@ model4 <- lm(alpha~Q_2 + Q_3 + Q_4 + Q_5) # 'Q_1' als Referenzkategorie
 ```{r, echo=FALSE,message=FALSE, warning=FALSE, results='asis'}
 library(stargazer)
 
-stargazer(model1,model2, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Alpha Part 1",  column.labels = c("Age", "Age Classes"),omit.stat = c("rsq", "f")
+stargazer(model1,model2,model4, header=FALSE, type='latex', model.numbers= FALSE, title = "Regressionsmodelle zum Einfluss von Alter und Größe auf Alpha",  column.labels = c("Alter allgemein", "Alter nach Klassen", "Größe nach Quintilen"),omit.stat = c("rsq", "f")
 )
 ```
 
 
-Tabelle 8 zeigt die Ergebnisse der Regression für die Age-Stichprobe. Für Alter festgelegt am Anfang der Stichprobe ergibt sich ein zum 5%-Niveau statistisch signifikanter Wert. Für das Modell 2 weist die Klasse der alten Fonds einen negativen Einfluss auf das Alter zum 10%-Niveau auf. Daraus lässt sich ein genereller Effekt des Alters auf Alpha, sowie ein negative Beziehung zwischen Alter und Alpha ableiten. Dies wurde im dritten Kapitel bereits festgestellt und wird nun durch die Regression noch weiter bestätigt.
-
-\\
-
-
-```{r,echo=FALSE, results='asis'} 
-
-stargazer(model3,model4, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Alpha Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
-)
-```
-
-Tabelle 9 zeigt die Ergebnisse der Regressionen für die Größe. Diese bestätigen die Ergebnisse der deskriptiven Analyse. Größe ist negativ statistisch signifikant, alle Quintile weisen einen positiven Effekt auf, der wie vermutet einen höheres Signifikanz-Niveau von mindestens 5% ausweist. Für Alpha ergeben die vier Modelle identische Implikationen wie die vorherigen Analysen. Jüngere Fonds outperformen ältere, die Größe wirkt sich hingegen positiv auf Alpha aus.
+Tabelle 5 zeigt die Ergebnisse der Regression für Alpha. Für Alter festgelegt am Anfang der Stichprobe ergibt sich ein zum 5%-Niveau statistisch signifikanter Wert. In Modell 2 weist die Klasse der alten Fonds einen negativen Einfluss auf das Alter zum 10%-Niveau auf. Daraus lässt sich ein genereller Effekt des Alters auf Alpha, sowie ein negative Beziehung zwischen Alter und Alpha ableiten. Dies wurde im dritten Kapitel bereits festgestellt und wird nun durch die Regression noch weiter bestätigt.
+Modell 3 zeigt die Ergebnisse der Regressionen für die Größe. Diese bestätigen die Ergebnisse der deskriptiven Analyse. Größe ist negativ statistisch signifikant, alle Quintile weisen einen positiven Effekt auf, der wie vermutet einen höheres Signifikanz-Niveau von mindestens 5% ausweist. Für Alpha ergeben alle Modelle identische Implikationen wie die vorherigen Analysen. Jüngere Fonds outperformen ältere, die Größe wirkt sich hingegen positiv auf Alpha aus.
 
 ## Sharpe Ratio und Information Ratio
 
-Da die Ergebnisse und Berechnungen der beiden Ratios sich ähneln, werde diese in einem Unterkapitel erläutert. Da alle drei regressierten Kennziffern sich in ihrem Aufbau ähneln bzw. sich einander bedingen, sind die im folgenden dargestellten Ergebnisse denen des Kapitels zu Alpha ähnlich.
+Die Ergebnisse und Berechnungen der beiden Ratios werden aufgrund ihrer Ähnlichkeiten in einem Unterkapitel erläutert. Da alle drei regressierten Kennziffern sich in ihrem Aufbau ähneln bzw. sich einander bedingen, sind die im folgenden dargestellten Ergebnisse denen der Regressionen für Alpha ähnlich.
 
 <!--SR-Regression Alter in Jahren-->
 ```{r SR-Regression Alter in Jahren, echo=FALSE, warning= FALSE}
@@ -153,6 +143,7 @@ model2_SR <- lm(sr~young + old) # 'medium' als Referenzkategorie
 ```{r SR-Regression Größe in Klassen nach Jones, echo=FALSE, warning= FALSE}
 
 #model_sr_size_c_summary <- summary_final_size %>%lm(sr~small + big, data = .) %>%               # Klasse 'medium' als Referenz-Kategorietidy()
+#Nicht in Regressionsübersicht übernommen
 
 attach(summary_final_size)
 model3_SR <- lm(sr~small + big) # 'medium' als Referenzkategorie
@@ -171,18 +162,12 @@ model4_SR <- lm(sr~Q_2 + Q_3 + Q_4 + Q_5) # 'Q_1' als Referenzkategorie
 
 ```{r,echo=FALSE, results='asis'} 
 
-stargazer(model1_SR,model2_SR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Sharpe Ratio Part 1",  column.labels = c("Age", "Age Classes"),omit.stat = c("rsq", "f")
+stargazer(model1_SR,model2_SR,model4_SR, header=FALSE, type='latex', model.numbers= FALSE, title = "Regressionsmodelle zum Einfluss von Alter und Größe auf die Sharpe Ratio",  column.labels = c("Alter allgemein", "Alter nach Klassen", "Größe nach Quintilen"),omit.stat = c("rsq", "f")
 )
 ```
 
-Tabelle 10 zeigt im Gegensatz zur Regression mit Alpha keinen statistisch signifikanten Wert für Alter allgemein, bestätigt aber den negativen Zusammenhang zwischen alten Funds und Performance. Niedrigere Werte der SR für ältere Fonds weisen auf niedrigere Returns und höhere Volatilitäten im Vergleich zu jüngeren Fonds hin. 
-```{r,echo=FALSE, results='asis'} 
-
-stargazer(model3_SR,model4_SR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Sharp Ratio Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
-)
-```
-
-Tabelle 11 unterstreicht mit durchgehend statistisch signifikanten Werten für beide Modelle den positiven Zusammenhang zwischen Größe und Performance. Alle Werte des Quintil-Ansatzes sind zum 1%-Niveau statistisch signifikant, der gemessene Effekt ist für die oberen 20% am stärksten.
+Tabelle 6 zeigt im Gegensatz zur Regression mit Alpha keinen statistisch signifikanten Wert für Alter allgemein, bestätigt aber den negativen Zusammenhang zwischen alten Funds und Performance. Niedrigere Werte der SR für ältere Fonds weisen auf niedrigere Returns und höhere Volatilitäten im Vergleich zu jüngeren Fonds hin. 
+Modell 3 unterstreicht den positiven Zusammenhang zwischen Größe und Performance. Alle Werte des Quintil-Ansatzes sind zum 1%-Niveau statistisch signifikant, der gemessene Effekt ist für die oberen 20% am stärksten.
 
 
 <!--IR-Regression Alter in Jahren-->
@@ -209,6 +194,7 @@ model2_IR <- lm(ir~young + old) # 'medium' als Referenzkategorie
 ```{r IR-Regression Größe in Klassen nach Jones, echo=FALSE, warning= FALSE}
 
 #model_ir_size_c_summary <- summary_final_size %>%lm(ir~small + big, data = .) %>%               # Klasse 'medium' als Referenz-Kategorietidy()
+#Nicht in Regressionsübersicht übernommen
 
 attach(summary_final_size)
 model3_IR <- lm(ir~small + big) # 'medium' als Referenzkategorie
@@ -225,31 +211,19 @@ model4_IR <- lm(ir~Q_2 + Q_3 + Q_4 + Q_5) # 'Q_1' als Referenzkategorie
 
 ```
 
-
-
-
+<!--Übersicht aller Reegressionen für IR-->
 ```{r,echo=FALSE, results='asis'} 
 
-stargazer(model1_IR,model2_IR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Information Ratio Part 1",  column.labels = c("Age", "Age Classes"),omit.stat = c("rsq", "f")
+stargazer(model1_IR,model2_IR,model4_IR, header=FALSE, type='latex', model.numbers= FALSE, title = "Regressionsmodelle zum Einfluss von Alter und Größe auf die Information Ratio",  column.labels = c("Alter allgemein", "Alter nach Klassen", "Größe nach Quintilen"),omit.stat = c("rsq", "f")
 )
 ```
-Die Regression der Information-Ratio liefert für die allgemeine Variable Alter und für die Klasse der alten Fonds statistsich signifikante negative Werte. Dies stimmt mit den Beobachtungen für Alpha überein, was aufgrund der Abhängigkeit von IR als Verhältnis von Returns und Alpha nicht verwundert. Auch zur Größe werden Effekte analog zu den vorherigen Regressionen beobachtet. Big und Q_5 als jeweils höchste Klassen wirken sich positiv aus. 
-Für alle Regressionen kann daher der Eindruck der Analyse in Kapitel 3 bestätigt werden. Kleine Fonds erzielen höhere Returns bei gleichzeitig niedriger Volatilität als ältere Fonds. Size matters, so erzielen nur die größten Fonds ein positives Alpha bzw. hohe Werte für die berechneten Ratios.
-\newline
+Die Regression der Information Ratio liefert für die allgemeine Variable Alter und für die Klasse der alten Fonds statistsich signifikant negative Werte. Dies stimmt mit den Beobachtungen für Alpha überein, was aufgrund der Abhängigkeit von IR als Verhältnis von Returns und Alpha nicht verwundert. Auch zur Größe werden Effekte analog zu den vorherigen Regressionen beobachtet.
 
-```{r,echo=FALSE, results='asis'} 
-
-stargazer(model3_IR,model4_IR, header=FALSE, type='latex', model.numbers= FALSE, title = "Four Regression Models Predicting Influence on Information Ratio Part 2",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
-)
-```
-
-\newpage
-
-
+Für alle Modelle der einzelnen Kennziffern kann daher der Eindruck der Analyse in Kapitel 3 bestätigt werden. Kleine Fonds erzielen höhere Returns bei gleichzeitig niedriger Volatilität als ältere Fonds. Size matters, so erzielen nur die größten Fonds ein positives Alpha bzw. hohe Werte für die berechneten Ratios.
 
 ## Coherence
 
-Um die Bewertung der Hedgefonds-Performance über die gewählten Performance-Maße hinweg vergleichen zu können, wurde ein Ranking der jeweils besten drei Hedgefonds für Alpha, Sharpe Ratio und Information Ratio erstellt. Daraus ist ersichtlich, inwieweit eine Beständigkeit über die Performance-Maße hinweg gegeben ist:
+Um die Bewertung der Hedgefonds-Performance über die gewählten Performance-Maße hinweg vergleichen zu können, wurde ein Ranking der jeweils besten drei Hedgefonds für Alpha, Sharpe Ratio und Information Ratio erstellt. Daraus ist ersichtlich, inwieweit eine Beständigkeit über die Performance-Maße hinweg gegeben ist.
 
 <!--Vergleichendes Ranking nach Risk adjusted Returns Age-->
 ```{r Ranking-Table Age, echo=FALSE, warning=FALSE}
@@ -277,8 +251,7 @@ kable(Ranking_age, col.names = c("Name","Age Class","SR Rank","IR Rank","Alpha R
 ```
 
 
-Tabelle stellt die sieben am höchsten gerankten Funds innerhalb der Age-Stichprobe dar. Wie erwähnt weisen Fonds wie "Gladwyne Capital, L.P." den dritt besten Wert für Sharp-Ratio auf, dieser Fond gehört mit einem Alpha-Rank von 102 nur zu den oberen 25% der Stichprobe. Generell ist ein negativer Zusammenhang zwischen Ratios und Alpha zu beobachten. So weisen die drei nach alpha sortiert besten Fonds die schlechtesten Rangnummern für die Ratios auf, was wiederum durch den Zusammenhang von idiosynchratischen Risiko und der Bildung der Kennziffern bzw. Alpha geschuldet ist. 
-
+Tabelle 8 stellt die sieben am höchsten gerankten Funds innerhalb der Alters-Stichprobe dar. Fonds wie "Gladwyne Capital, L.P." weisen den dritt besten Wert für Sharp-Ratio auf, dieser Fond gehört allerdings mit einem Alpha-Rank von 102 nur zu den oberen 25% der Stichprobe. Generell ist ein negativer Zusammenhang zwischen Ratios und Alpha zu beobachten. So weisen die drei nach alpha sortiert besten Fonds die schlechtesten Rangnummern für die Ratios auf, was wiederum dem Zusammenhang von idiosynchratischen Risiko und der Bildung der Kennziffern bzw. Alpha geschuldet ist. 
 
 <!--Vergleichendes Ranking nach Risk adjusted Returns Size-->
 ```{r Ranking-Table Size, echo=FALSE, warning=FALSE}
@@ -301,12 +274,12 @@ kable(Ranking_size, col.names = c("Name","Quintile Class","SR Rank","IR Rank","A
 
 ```
 
-Auch die Darstellung der Rankings für Size in Tabelle kommt zu ähnlichen Schlussfolgerungen. Allerdings ist die negative Beziehung zwischen Ratios und Alpha innerhalb der zweiten Stichprobe geringer ausgeprägt. So sind alle Werte für Alpha zwischen 1 und 27, im Gegensatz zu 1 bis 102 für die Rankings der Altersverteilung. 
-Für die Beständigkeit kann aus beiden Tabellen ein ähnliches Fazit gezogen werden. Fonds sind entweder über beide Ratios beständig und erreichen ähnlich bis gleich hohe Werte bei gleichzeitig geringen Werten für Alpha, oder zeichnen sich durch ein hohes Alpha und niedrige Ratios aus. Die Auswirkungen dieser Eigenschaften auf die Performance werden im nun folgenden Kapitel analysiert.
+Auch die Darstellung der Rankings für Size in Tabelle 9 kommt zu ähnlichen Schlussfolgerungen. Allerdings ist die negative Beziehung zwischen Ratios und Alpha innerhalb der zweiten Stichprobe geringer ausgeprägt. So befinden sich alle Werte für Alpha zwischen 1 und 27, im Gegensatz zu 1 bis 102 für die Rankings der Altersverteilung. 
+Für Coherence kann aus beiden Tabellen ein ähnliches Fazit gezogen werden. Fonds sind entweder über beide Ratios beständig und erreichen für diese ähnlich bis gleich hohe Werte bei gleichzeitig geringen Werten für Alpha, oder sie zeichnen sich durch ein hohes Alpha und niedrige Ratios aus. Die Auswirkungen dieser Eigenschaften auf die Performance werden im Folgenden analysiert.
 
 ## Persistence
 
-Ob eine gute Position im Ranking auch mit einer durchgehend guten Performance einhergeht, erfolgt durch die Betrachtung der sogenannten 'Performance Persistence'. Diese beschreibt, wie stetig die Performance eines Hedgefonds ist - also wie konstant ein Hedgefonds im Zeitverlauf performt [@Stafylas.2016, p. 15]. Hierfür werden für die Hedgefonds im Ranking die kumulierten Renditen berechnet, im Zeitverlauf dargestellt und verglichen. Als Referenz gilt die Entwicklung des Marktportfolios. Für die erste Abbildung werden die Fonds "Gladwyne Capital, L.P." und "Loch Capital I LP" nicht abgebildet, da diese für die Aussagekraft der Zeitreihe irrelevant sind.
+Ob eine gute Position im Ranking auch mit einer durchgehend guten Performance einhergeht, erfolgt durch die Betrachtung der sogenannten 'Performance Persistence'. Diese beschreibt, wie stetig die Performance eines Hedgefonds ist - also wie konstant ein Hedgefonds im Zeitverlauf performt [@Stafylas.2016, p. 15]. Hierfür werden für die gerankten Hedgefonds die kumulierten Renditen berechnet und als Zeitreihenanalyse dargestellt. Als Referenz gilt die Entwicklung des Marktportfolios. Für die erste Abbildung werden die Fonds "Gladwyne Capital, L.P." und "Loch Capital I LP" nicht berücksichtigt, da diese für die Aussagekraft der Abbildung irrelevant sind.
 
 ```{r, echo=FALSE, warning=FALSE}
 
@@ -357,7 +330,7 @@ final_data_age_sub[,2][final_data_age_sub[,2] == "FHUSA04BAI"] <- "LIM China Ind
 ```
 
 
-```{r, echo=FALSE, warning=FALSE}
+```{r, echo=FALSE, warning=FALSE,fig.cap = "Kumulierte Returns der gerankten Fonds aus der Größen-Stichprobe"}
 #plot der returns, reihenfolge nach alpha für Age
 
 final_data_age_sub$Name <- factor(final_data_age_sub$Name, levels = c("LIM China Index Limited B", "Strand US Fund","CCM S&P 500 Long Short","AJW Partners II LLC Class B","Artorius Partners II", "Market Rate"))
@@ -368,7 +341,7 @@ ggplot(data=final_data_age_sub) + aes(x=date, y = cum_ret, color = Name) + geom_
 
 ```
 
-Abbildung zeigt die kumulierten Returns des Marktportfolio und fünf der sieben Fonds aus Tabelle . Diese sind farblich nach ihrem Alpha-Rang sortiert mit dem Marktportfolio als letzten Wert. Es zeigt sich ein klarer Unterschied zwischen den drei besten Fonds nach Alpha und den zwei besten Fonds der beiden Ratios. Fonds mit einem hohen Alpha outperformen Fonds mit hohen Ratios über den gesamten Verlauf der Stichprobe.
+Abbildung 6 zeigt die kumulierten Returns des Marktportfolio und fünf der sieben Fonds aus Tabelle XY . Diese sind farblich nach ihrem Alpha-Rang sortiert. Es zeigt sich ein klarer Unterschied zwischen den drei besten Fonds nach Alpha und den zwei besten Fonds nach Ratios. Fonds mit einem hohen Alpha outperformen Fonds mit hohen Ratios über den gesamten Verlauf der Stichprobe.
 
 ```{r, echo=FALSE, warning=FALSE}
 
@@ -417,7 +390,7 @@ final_data_size_sub[,2][final_data_size_sub[,2] == "FOUSA06A67"] <- "PharmaInves
 ```
 
 
-```{r, echo=FALSE, warning=FALSE}
+```{r, echo=FALSE, warning=FALSE, fig.cap = "Kumulierte Returns der gerankten Fonds aus der Größen-Stichprobe"}
 #plot der returns, reihenfolge nach alpha für Size
 
 final_data_size_sub$Name <- factor(final_data_size_sub$Name, levels = c("Dendrich Fund","SYW LP","PharmaInvest Fund","Echo Street Capital Partners LP","Aristides Fund LP","Artorius Partners II", "Market Rate"))
@@ -427,6 +400,6 @@ final_data_size_sub$Name <- factor(final_data_size_sub$Name, levels = c("Dendric
 ggplot(data=final_data_size_sub) + aes(x=date, y = cum_ret, color = Name) + geom_line(size=0.8)+scale_color_viridis(discrete = TRUE)+ theme_minimal()
 ```
 
-Abbildung kommt zu ähnlichen Ergebnissen für die Size-Stichprobe. Während vorher alle Fonds zumindest konsistent das Marktportfolio outperformen konnten, gelingt dies nun nur drei Fonds mit geringerer Abweichung von den kumulierten Returns des Marktportfolio. Die drei Fonds mit den höchsten Werten für Sharpe- oder Information-Ratio performen ähnlich, oder wie im Fall des Fonds "Artorius Partners II" deutlich schlechter.
+Abbildung 7 kommt zu ähnlichen Ergebnissen für die Size-Stichprobe. Während vorher alle Fonds zumindest konsistent das Marktportfolio outperformen konnten, gelingt dies nun nur drei Fonds mit geringerer Abweichung von den kumulierten Returns des Marktportfolio. Die drei Fonds mit den höchsten Werten für Sharpe- oder Information-Ratio performen ähnlich dem Marktportfolio, oder wie im Fall des Fonds "Artorius Partners II" deutlich schlechter.
 
 Generell lässt sich aus der graphischen Analyse erkennen, dass der Einfluss von Alpha für die durchgehende Performance entscheidend ist. Fonds mit hohem Alpha dominieren in beiden Stichproben gegenüber Funds mit kohärent stabilen Ratios.
