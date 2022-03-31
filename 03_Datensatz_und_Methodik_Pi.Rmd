@@ -224,7 +224,7 @@ ggplot(data = tidy_return_size, aes(x=ret)) +
   geom_histogram(aes(y =..density..),fill="#440154FF",alpha=0.95,binwidth = 0.001)+theme_minimal()+
 scale_x_continuous(limits =c(-0.4,0.4))+ 
 stat_function(fun = dnorm,args = list(mean = mean(tidy_return_size$ret, na.rm = TRUE), sd = sd(tidy_return_size$ret, na.rm = TRUE)),aes(colour = "Normalverteilung"), size=0.7)+
-geom_density(aes(color="Alter/Größenverteilung"),size=0.7)+ scale_colour_manual("", values = c("#287D8EFF","#FDE725FF"))+labs(x="Returns", y="Dichte"),
+geom_density(aes(color="Alter/Größenverteilung"),size=0.7)+ scale_colour_manual("", values = c("#287D8EFF","#FDE725FF"))+labs(x="Returns", y=""),
 ncol = 2, label.y = "Dichte", common.legend = TRUE)
 ```
 
@@ -324,7 +324,7 @@ summary_final_size$Class_Jones <- factor(summary_final_size$Class_Jones, levels 
 
 ggarrange(
   ggplot(summary_final_age)+geom_bar(aes(x=Altersklassen,y = ..prop.., group = 1), stat = "count", fill=(values=viridis(3)))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()+labs(x="Altersklassen", y="Anteil in Prozent"),
-ggplot(summary_final_size)+geom_bar(aes(x=Class_Jones,y = ..prop.., group = 1), stat = "count", fill=(values=viridis(3)))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()+labs(x="Größe nach Jones", y="Anteil in Prozent"),
+ggplot(summary_final_size)+geom_bar(aes(x=Class_Jones,y = ..prop.., group = 1), stat = "count", fill=(values=viridis(3)))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()+labs(x="Größe nach Jones", y=""),
 ncol = 2, label.y = "density", common.legend = TRUE)
 
 
@@ -334,16 +334,16 @@ Auch wenn alte Fonds mit einer Anzahl von 194 ca. 50% der Verteilung stellen, is
 
 Abbildung 2 stellt die Zusammenhänge von Volatilität und Arithmetischer Rendite (Returns) für die gesamte Age-Stichprobe und die drei Klassen dar. Zusätzlich ist eine Regression eingefügt, die den positiven Zusammenhang von Returns und Volatilität aufzeigt. Die Farbgebungsskala ist der jeweiligen Spannweite der Sharp-Ratio angepasst und zeigt dadurch deutliche Unterschiede innerhalb der Sharp-Ratios für die einzelnen Klassen auf. Auf diese und andere Kennziffern wird im späteren Verlauf der Arbeit genauer eingegangen. Eine ähnliche Abbildung zur Size-Stichprobe ist im Anhang zu finden.
 
-```{r, echo=FALSE, warning=FALSE,fig.cap = "Zusammenhang von Volatilität und Mean innerhalb der Age-Stichprobe"}
+```{r, echo=FALSE, warning=FALSE,fig.cap = "Zusammenhang von Volatilität und durchschn. Rendite innerhalb der Alters-Stichprobe"}
 
 #plots von mean und vola und sr für Alter
 
 ggarrange(ggplot(summary_final_age,
   aes(x=volatility, y=mean, color=Altersklassen)) +
   geom_point(size=1.75, alpha=0.8)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()+labs(x="Volatilität", y="Durchschnitt"),
-ggplot(data=summary_final_age[summary_final_age$age_y < 2,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)+labs(x="Volatilität", y="Durchschnitt"),
-ggplot(data=summary_final_age[summary_final_age$age_y <= 2 & summary_final_age$age_y <= 4,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)+labs(x="Volatilität", y="Durchschnitt"),
-ggplot(data=summary_final_age[summary_final_age$age_y > 4 ,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)+labs(x="Volatilität", y="Durchschnitt"),
+ggplot(data=summary_final_age[summary_final_age$age_y < 2,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)+labs(x="Volatilität_jung", y=""),
+ggplot(data=summary_final_age[summary_final_age$age_y <= 2 & summary_final_age$age_y <= 4,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)+labs(x="Volatilität_mittel", y="Durchschnitt"),
+ggplot(data=summary_final_age[summary_final_age$age_y > 4 ,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)+labs(x="Volatilität_alt", y=""),
 ncol = 2,nrow=2)
 ```
 
