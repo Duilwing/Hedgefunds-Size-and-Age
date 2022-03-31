@@ -1,0 +1,70 @@
+<!-- Regressionen auf Carhart's Alpha-->
+```{r, echo=FALSE, warning=FALSE, results='asis'}
+
+library(stargazer)
+
+stargazer(model1_c,model2_c,model4_c, header=FALSE, type='latex', model.numbers= FALSE, title = "Regressionsmodelle zum Einfluss von Alter und Größe auf Carhart's Alpha",  column.labels = c("Alter in Jahren", "Alter nach Klassen", "Größe nach Quintilen"),omit.stat = c("rsq", "f")
+)
+```
+
+\newpage
+
+<!-- Regressionen auf IR (Carhart's Alpha)-->
+```{r,echo=FALSE, results='asis'} 
+
+stargazer(model1_c_IR,model2_c_IR,model4_c_IR, header=FALSE, type='latex', model.numbers= FALSE, title = "Regressionsmodelle zum Einfluss von Alter und Größe auf IR (Carhart's Alpha)",  column.labels = c("Alter in Jahren", "Alter nach Klassen", "Größe nach Quintilen"),omit.stat = c("rsq", "f")
+)
+```
+
+\newpage
+
+<!--Vergleichendes Ranking nach Risk adjusted Returns mit Carhart's Alpha-->
+```{r, echo=FALSE, warning=FALSE}
+
+kable(c_ranking_age, booktabs = TRUE,
+        caption = "Top 3 Hedge Fonds nach Carhart's Alpha und IR (Alter, 2005-2015)")
+
+kable(c_ranking_size, booktabs = TRUE,
+        caption = "Top 3 Hedge Fonds nach Carhart's Alpha und IR (Größe, 2010-2020)")
+
+
+```
+
+\newpage
+
+<!-- Regressionen auf Jensen's Alpha (2005-2020)-->
+```{r, echo=FALSE, warning=FALSE, results='asis'}
+
+stargazer(compl_model1, compl_model2, compl_model4, header=FALSE, type='latex', model.numbers= FALSE, title = "Regressionsmodelle zum Einfluss von Alter und Größe auf Jensen's Alpha (2005-2020)",  column.labels = c("Alter in Jahren", "Alter nach Klassen", "Größe nach Quintilen"),omit.stat = c("rsq", "f")
+)
+```
+
+\newpage
+
+<!-- Regressionen auf SR (2005-2020)-->
+```{r, echo=FALSE, results='asis'} 
+
+stargazer(compl_model1_SR, compl_model2_SR, compl_model4_SR, header=FALSE, type='latex', model.numbers= FALSE, title = "Regressionsmodelle zum Einfluss von Alter und Größe auf SR (2005-2020)",  column.labels = c("Alter in Jahren", "Alter nach Klassen", "Größe nach Quintilen"),omit.stat = c("rsq", "f")
+)
+```
+
+\newpage
+
+<!-- Regressionen auf IR (2005-2020)-->
+```{r, echo=FALSE, results='asis'} 
+
+stargazer(compl_model1_IR, compl_model2_IR, compl_model4_IR, header=FALSE, type='latex', model.numbers= FALSE, title = "Regressionsmodelle zum Einfluss von Alter und Größe auf IR (2005-2020)",  column.labels = c("Size Classes", "Size Quantiles"),omit.stat = c("rsq", "f")
+)
+```
+
+\newpage
+
+<!--Vergleichendes Ranking nach Risk adjusted Returns (2005-2020)-->
+```{r, echo=FALSE, results='asis'}
+
+kable(Ranking, booktabs = TRUE,
+        caption = "Top 3 Hedge Fonds nach Alpha, SR und IR")
+
+```
+
+\newpage

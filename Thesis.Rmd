@@ -99,9 +99,9 @@ library(tinytex)
 
 \newpage
 
-# Tabellen
+# Tabellen (Robustness Checks)
 
-```{r child='A2_Tabellen.Rmd'}
+```{r child='A2_Tabellen_Robustness_Checks.Rmd'}
 ```
 
 \newpage
