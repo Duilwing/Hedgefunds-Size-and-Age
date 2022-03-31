@@ -1,0 +1,687 @@
+
+## Selektion des Datensatzes
+
+Die zur Verfügung stehenden Datensätze enthielten Daten von 979 Fonds für den Zeitraum 01/1990-08/2020. Der Datensatz basedata enthielt eine Darstellung aller Fonds mit Merkmalen wie Name, Secid und weiteren für die vorliegende Analyse verwendete Analyse wie Inception/Obsolete Date, also Gründung und Einstellung des Fonds. Der Datensatz factordata enthielt die für die spätere Analyse wichtigen Faktordaten wie die monatlichen Returns des Marktportfolio. Der dritte Datensatz enthielt die monatlichen Return-Indizes aller Fonds. Zuerst wurden die Daten des Datensatzes basedata geladen und auf die benötigten Merkmale selektiert. Hinsichtlich der weiteren Bereinigung des Datensatzes haben beispielsweise @Jones.2007, @Ammann.2005 sogenannte 'Funds of Funds (FoF)' aus der Analyse ausgeschlossen. Um eine potentielle Verzerrung der Ergebnisse zu vermeiden, folgt die vorliegende Studie diesem Ansatz und berücksichtigt daher ebenfalls in der Analyse keine FoF. Im Anschluss wurde ein Zeitintervall für die Analyse bestimmt. Aufgrund der speziellen Situation des Datensatzes, der zwar eine Analyse des Einflusses von Alter auf Performance wie bei @Jones.2007 zulässt, allerdings keine kontinuierlichen daten über die Größe enthält, wurden die vorliegenden Daten in zwei getrennte Stichproben mit unterschiedlichen Zeiträumen separiert. So wird der Einfluss von Alter in einer Stichprobe zwischen 01/2005-01/2015 untersucht, während der Einfluss der Größe eines Funds auf die Performance für die Stichprobe 01/2010-08/2020 analysiert wird. Um Altersvergleiche zu bestimmen, müssen das Alter bzw. die vorherige Lebensspanne der Fonds bestimmt werden. Daher werden nur Fonds behalten, die ab Januar 2005 aktiv waren, um Alter als das Alter zum Beginn des Intervalls zu definieren. Liegt dieses nicht vor, werden diese Funds nicht berücksichtigt. In der weiteren Analyse für Größe werden die Werte für Size verwendet. Da diese bei einigen Fonds nicht vorliegen, wird in diesem Fall der Wert für Net Asset Value verwendet. Um Größenvergleiche durchzuführen,werden aus dem Set alle Funds mit einem Wert für Größe(Size) oder Net Asset Value von unter einer Million USD gefiltert, da der vorliegende Datensatz bspw. Fonds mit einer Größe von 0 USD, oder einem Net Asset Value von 2009 USD enthält, was unsere Analyse in Richtung kleine Fonds verzerren könnte.
+
+Im Anschluss wurden die weiteren Datensätze eingearbeitet und benannt. So werden auch die beiden Datensätze mri und factordata in Stichproben für die untersuchten Intervalle aufgeteilt und gefiltert. Im Einklang mit den Studien von @Koh.2003, @Agarwal.2004 sowie @Ammann.2005 enthalten die in dieser Studie analysierten Datensätze sowohl durchgängig laufende Fonds, als auch solche die im betrachteten Zeitraum die Geschäftstätigkeit eingestellt haben. Dadurch kann der survivorship bias verhindert werden, also eine Überschätzung der Rendite aufgrund der fehlenden Berücksichtigung eingestellter Fonds.^[zum survivorship bias siehe u.a. @Brown.1992 oder @Elton.1996]Als Kriterium wird eine Laufzeit von mindestens 50% der Monate innerhalb der gebildeten Stichproben festgelegt. Nach Abgleich mit den in factordata selektierten Fonds kann für beide Stichproben ein Datensatz aller monatlichen Return-Indizes der aktiven Fonds erstellt werden.
+
+<!--Laden der benötigten Packages-->
+```{r loading packages, include=FALSE, warning= FALSE}
+
+library(tidyverse)
+library(tinytex)
+library(broom)
+library(viridis) # für color-schemes
+library(DescTools) # Zum Durchführen des Jarque-Bera Tests auf Normalverteilung der Returns
+library(knitr)
+library(kableExtra)
+library(gridExtra) #Darstellung von mehreren plots in einer Abbildung
+library(stargazer) #Darstellung Tests/Regressionen
+
+
+```
+
+
+<!--Laden der Informationen zu den einzelnen Hedgefunds-->
+```{r base_data, include=FALSE, warning= FALSE}
+
+base_data <- read_csv("./DATA/basedata.csv") %>%
+  filter(`Morningstar Category` != "HF Fund of Funds - Equity") %>%
+  select(`name`, `secid`, `Inception Date`, `Obsolete Date`, `Status`, `Net Assets Date`,
+         `Net Assets - Share Class USD`, `Fund Size Date`, `Fund Size USD`)
+
+base_data_age <- base_data %>%
+  filter(`Inception Date` <= "2005-01-01") %>% #Nur Fonds die vor/am 2005-01-01 gegründet wurden
+  mutate(age_y = as.numeric(round((as.Date("2005-01-01") - `Inception Date`)/365))) %>% #Berechnung Alter
+  mutate(age_class = case_when(                # Erstellung der Altersklassen
+    age_y < 2 ~ "young",
+    age_y >= 2 & age_y <=4 ~ "medium",
+    age_y > 4 ~ "old")) %>%
+  arrange(secid, .by_group = FALSE) %>%
+  select(`name`, `secid`, `age_y`, `age_class`)
+
+base_data_size <- base_data %>%
+  mutate(`size` = coalesce(`Fund Size USD`, `Net Assets - Share Class USD`)) %>% # Gemergte Variable 'size'
+  mutate(`size_date` = coalesce(`Fund Size Date`, `Net Assets Date`)) %>% # Gemergte Variable 'size date'
+  filter(`size` >= 1000000 & `size_date` >= "2010-01-01") %>% # Nur Fonds mit Mindestgröße & akt. Size-Date
+  arrange(secid, .by_group = FALSE) %>%
+  select(`name`, `secid`, `size`)
+
+
+```
+
+
+<!--Laden der Faktor-Daten-->
+```{r factor_data, include=FALSE, warning= FALSE}
+
+factor_data <- read_csv("./DATA/factordata.csv",
+    col_types = cols(
+    date = col_date(format = "%d%.%m%.%Y"))) %>%
+    select(date, mktrf, smb, hml, umd, rf)
+
+factor_data_age <- factor_data %>%
+  filter(date >= "2005-01-01" & date < "2015-01-01") # Einschränken auf den Zeitraum 01/2005-01/2015
+
+factor_data_size <- factor_data %>%
+  filter(date >= "2010-01-01") # Einschränken auf den Zeitraum 01/2010-08/2020
+
+
+# mktrf = market reference
+# smb = Size factor; small-minus-big
+# hml = Value factor; high-minus-low
+# rmw = robust-minus-weak
+# cma = conservative-minus-aggressive
+# rf = risk free rate
+# umd = Momentum factor; up-minus-down
+
+```
+
+
+<!--Laden des raw_data Datensatzes-->
+```{r raw_data, include=FALSE, warning= FALSE}
+
+raw_data <- read_csv("./DATA/mri.csv",
+                    col_types = cols(
+                    date = col_date(format = "%d%.%m%.%Y")))
+
+raw_data_age <- raw_data %>%
+  filter(date >= "2005-01-01" & date <= "2015-01-01") %>%# Einschränken auf den Zeitraum 01/2005-12/2015
+  keep(~ (sum(. >= 0) / length(.)) >= 0.5)
+
+raw_data_age[,2:715][raw_data_age[,2:715] == "-NA"] <- NA
+
+
+raw_data_size <- raw_data %>%
+  filter(date >= "2010-01-01") %>% # Einschränken auf den Zeitraum 01/2010-08/2020
+  keep(~ (sum(. >= 0) / length(.)) >= 0.5)               
+
+raw_data_size[,2:309][raw_data_size[,2:309] == "-NA"] <- NA
+
+
+```
+
+
+<!--Eingrenzen von raw_data entsprechend der Selektion in base_data-->
+```{r, include=FALSE, warning= FALSE}
+
+# Für Age:
+
+list_age <- base_data_age$secid %>%    # Liste mit Fonds, die für die Stichprobe "Age" aus dem base_data
+  c(., "date")                         # Datensatz gefiltert wurden
+
+raw_data_age_funds <- raw_data_age %>% # Erstellen eines Subsets von raw_data, welches nur die Fonds aus
+  select(any_of(list_age)) %>%         # der zuvor erstellten Age-Liste enthält
+  relocate(date)
+
+
+# Für Size:
+
+list_size <- base_data_size$secid %>%    # Liste mit Fonds, die für die Stichprobe "Size" aus dem base_data
+  c(., "date")                           # Datensatz gefiltert wurden
+
+raw_data_size_funds <- raw_data_size %>% # Erstellen eines Subsets von raw_data, welches nur die Fonds aus
+  select(any_of(list_size)) %>%          # der zuvor erstellten Size-Liste enthält
+  relocate(date)
+
+```
+
+
+<!--Aufräumen (tidy) und Return-Berechnung von beiden raw_data Datensätzen-->
+```{r, include=FALSE, warning= FALSE}
+
+# Für Age:
+
+raw_data_age_funds$FHUSA04B6U <- as.character(raw_data_age_funds$FHUSA04B6U)
+raw_data_age_funds$F00000GUU3 <- as.character(raw_data_age_funds$F00000GUU3)
+
+tidy_return_age <- raw_data_age_funds %>%
+      pivot_longer(cols = !date,
+      names_to = "secid",
+      values_to = "prc")
+
+tidy_return_age$prc <- as.numeric(tidy_return_age$prc)
+
+tidy_return_age <- tidy_return_age %>%
+      group_by(secid) %>%
+      mutate(ret = prc/lag(prc, n = 1)-1) %>%
+      ungroup() %>%
+      arrange(secid, date) %>%
+      filter(!is.na(prc))
+
+
+# Für Size:
+
+raw_data_size_funds$FHUSA04B6U <- as.character(raw_data_size_funds$FHUSA04B6U)
+raw_data_size_funds$F00000GUU3 <- as.character(raw_data_size_funds$F00000GUU3)
+
+tidy_return_size <- raw_data_size_funds %>%
+      pivot_longer(cols = !date,
+      names_to = "secid",
+      values_to = "prc")
+
+tidy_return_size$prc <- as.numeric(tidy_return_size$prc)
+
+tidy_return_size <- tidy_return_size %>%
+      group_by(secid) %>%
+      mutate(ret = prc/lag(prc, n = 1)-1) %>%
+      ungroup() %>%
+      arrange(secid, date) %>%
+      filter(!is.na(prc))
+
+
+```
+
+Um das Testen von Hypothesen betreffend der Modell-Parameter durchführen zu können, muss zunächst die Annahme der Normalverteilung geprüft werden [@Brooks.2019, S. 209]. Hierfür eignet sich beispielsweise der bekannte Jarque-Bera-Test.^[@Jarque.1980, @Jarque.1987] 
+
+<!--Durchführen des Jarque-Bera Tests auf Normalverteilung der Returns für Alter-->
+```{r,echo=FALSE, include=FALSE,message = FALSE, warning=FALSE}
+#getrennt durchführen, da zuviel Leistung, RStudio hängt sich auf!
+#Für Age:
+JB_age <- DescTools::JarqueBeraTest(x = tidy_return_age$ret,
+                          robust = TRUE,
+                          method = c("chisq", "mc"),
+                          N = 0,
+                          na.rm = TRUE)%>%
+  tidy()
+
+
+#Ergebis: X-squared = 940909, df = 2, p-value < 2.2e-16
+```  
+
+<!--Durchführen des Jarque-Bera Tests auf Normalverteilung der Returns für Größe-->
+```{r, echo=FALSE,include=FALSE,message = FALSE, warning= FALSE}
+
+# Für Size:
+JB_size <- DescTools::JarqueBeraTest(x = tidy_return_size$ret,
+                          robust = FALSE,
+                          method = c("chisq", "mc"),
+                          N = 0,
+                          na.rm = TRUE)%>%
+  tidy()
+
+#Ergebis:X-squared = 1918619, df = 2, p-value < 2.2e-16
+
+```
+
+```{r,echo=FALSE}
+#beide tests in einem
+JB_summary <- bind_rows(JB_age,JB_size)%>%
+  mutate(rowname = c("Age", "Size"))%>%
+  relocate(method,statistic)%>%
+  relocate(rowname,method)
+
+#darstellung mit kableExtra
+  knitr::kable(JB_summary,col.names = c("Distribution","Method","Test Statistic", "p-value","DF"),
+  digits = 4,caption="JB-Test für Age und Size")%>%
+    kable_styling(latex_options = c("striped", "hover"))
+
+```
+
+Dieser wurde daher auf beide Datensätze angewandt und kommt zu dem Ergebnis, dass hinsichtlich der betrachteten Renditen die Verteilung statistisch signifikant von der Normalverteilung abweicht. Allerdings haben analytische Tests auf Normalverteilung, wie bspw. auch der Kolmogorov-Smirnov Test oder der Shapiro-Wilk Test, die Eigenschaft, bei sehr kleinen Stichproben eine geringe Power und bei sehr großen Stichproben einen automatisch signifikanten p-Wert aufzuweisen.^[siehe bspw. @AldorNoiman.2013, @Field.2018] Aufgrunddessen wird ein weiterer, optischer Test auf Normalverteilung anhand von Histogrammen vorgenommen, die die Verteilung der Renditen beider Stichproben darstellen.
+
+<!--Histogramm zur Prüfung auf Normalverteilung der Returns für Alter-->
+```{r, echo=FALSE, warning=FALSE,fig.cap = "Histogramm für Returns der Size-Stichprobe"}
+
+# Für Age:
+
+ggplot(data = tidy_return_age, aes(x=ret)) +
+  geom_histogram(aes(y =..density..),fill="#440154FF",alpha=0.95,binwidth = 0.001)+theme_minimal()+
+scale_x_continuous(limits =c(-0.4,0.4))+ 
+stat_function(fun = dnorm,args = list(mean = mean(tidy_return_age$ret, na.rm = TRUE), sd = sd(tidy_return_age$ret, na.rm = TRUE)),aes(colour = "normal distribution"), size=0.7)+
+geom_density(aes(color="distribution for age"),size=0.7)+ scale_colour_manual("distributions", values = c("#287D8EFF","#FDE725FF"))
+
+
+
+
+```  
+Abbildungen 1 und 2 zeigen die Histogramme der Returns für beide Stichproben. Zusätzlich sind Dichtefunktionen für die Stichprobe und für die Normalverteilung eingezeichnet. Beide Abbildungen unterstreichen das Ergebnis der Tests. In beiden Stichproben liegt eine gegenüber der Normalverteilung höhere Kurtosis vor, die Returns sind leptokurtisch verteilt.
+
+<!--Histogramm zur Prüfung auf Normalverteilung der Returns für Größe-->
+```{r, echo=FALSE, warning=FALSE,fig.cap = "Histogramm für Returns der Size-Stichprobe"}
+
+# Für Size:
+
+ggplot(data = tidy_return_size, aes(x=ret)) +
+  geom_histogram(aes(y =..density..),fill="#440154FF",alpha=0.95,binwidth = 0.001)+theme_minimal()+
+scale_x_continuous(limits =c(-0.4,0.4))+ 
+stat_function(fun = dnorm,args = list(mean = mean(tidy_return_size$ret, na.rm = TRUE), sd = sd(tidy_return_size$ret, na.rm = TRUE)),aes(colour = "normal distribution"), size=0.7)+
+geom_density(aes(color="distribution for size"),size=0.7)+ scale_colour_manual("distributions", values = c("#287D8EFF","#FDE725FF"))
+
+```
+
+## Deskriptive Statistik
+
+Eine einfache Darstellung und Analyse der Renditen ist nicht hilfreich, erst nach Klassifizierung und Bearbeitung der Daten ergeben sich interpretierbare Zusammenhänge.
+<!--
+```{r,echo=FALSE, warning= FALSE,fig.cap = "Returns der Age-Stichprobe"}
+
+#kleine darstellung für alle Funds bei Age, white noise
+
+ggplot(data=tidy_return_age) + aes(x=date, y = ret) + geom_line()
+
+```
+-->
+
+<!--Mergen von tidy_data und factor_data-->
+```{r,echo=FALSE, include=FALSE, warning= FALSE}
+
+# Für Age:
+final_data_age <- left_join(tidy_return_age, factor_data_age, by = "date") %>%
+      mutate(retrf = ret - rf)
+
+# Für Size:
+final_data_size <- left_join(tidy_return_size, factor_data_size, by = "date") %>%
+      mutate(retrf = ret - rf)
+
+
+```
+
+
+<!--IR und SR in einem Schritt für Age-->
+```{r, include=FALSE, warning= FALSE}
+
+alphas_final_age <- final_data_age %>%
+  group_by(secid) %>%
+  do(tidy(lm(retrf~mktrf, data = .)))  %>% 
+  filter(term == "(Intercept)") %>% 
+  select(secid, estimate) %>% 
+  rename(alpha = estimate)
+
+
+summary_final_age <- final_data_age %>%
+  group_by(secid) %>%
+  do(augment(lm(retrf~mktrf, data = .)))  %>% 
+  summarise(idiosyncratic_risk = sd(.resid, na.rm = TRUE), #.resid sind die Residuale
+            mean = 12*mean(retrf, na.rm = TRUE),
+            volatility = sqrt(12)*sd(retrf, na.rm = TRUE),
+            sr = mean/volatility) %>%
+  left_join(alphas_final_age, by = "secid") %>% # Hinzufügen der Alphas zum Datensatz
+  mutate(ir = sqrt(12)*alpha/idiosyncratic_risk,
+         alpha = 12*alpha) %>% 
+  left_join(base_data_age, by = "secid") %>%  # Hinzufügen der Variablen Name, Alter und Alters-Klasse
+  select(name, secid, mean, volatility, sr, alpha, ir, age_y, age_class)
+
+
+```
+
+
+<!--IR und SR in einem Schritt für Size-->
+```{r, include=FALSE, warning= FALSE}
+
+alphas_final_size <- final_data_size %>%
+  group_by(secid) %>%
+  do(tidy(lm(retrf~mktrf, data = .)))  %>% 
+  filter(term == "(Intercept)") %>% 
+  select(secid, estimate) %>% 
+  rename(alpha = estimate)
+
+
+summary_final_size <- final_data_size %>%
+  group_by(secid) %>%
+  do(augment(lm(retrf~mktrf, data = .)))  %>% 
+  summarise(idiosyncratic_risk = sd(.resid, na.rm = TRUE), #.resid sind die Residuale
+            mean = 12*mean(retrf, na.rm = TRUE),
+            volatility = sqrt(12)*sd(retrf, na.rm = TRUE),
+            sr = mean/volatility) %>% 
+  left_join(alphas_final_size, by = "secid") %>% # Hinzufügen der Alphas zum Datensatz
+  mutate(ir = sqrt(12)*alpha/idiosyncratic_risk,
+         alpha = 12*alpha) %>%
+  left_join(base_data_size, by = "secid") %>%  # Hinzufügen der Variablen Name, Alter und Alters-Klasse
+  mutate(Quantile_Class = ntile(`size`, 5)) %>%
+  mutate(Class_Jones= case_when(`size`
+ <= 100000000 ~ "small", `size` > 100000000  & `size` <= 500000000 ~ "medium", `size` > 500000000 ~ "big"))%>%              # Einstufung nach Klassen nach Jones
+  select(name, secid, mean, volatility, sr, alpha, ir, size, Quantile_Class, Class_Jones)
+
+```
+
+Daher werden werden alle Kennziffern für Klassen zu Alters-und Größenverteilung bestimmt. Nach Bestimmen der Klassen mit den Größen jung als unter zwei Jahre, medium als zwischen zwei und vier und alt als alle Fonds über vier Jahre ergibt sich die in Abbildung 3 dargestellte Verteilung. Insgesamt werden 405 Fonds berücksichtigt. Auch wenn alte Funds mit einer Anzahl von 194 ca. 50% der Verteilung stellen, ist die Anzahl für junge (79) und mittlere (132) Fonds ausreichend groß für eine weitere Analyse. Hier folgt die Arbeit der Einteilung von @Jones.2007.
+
+```{r, echo=FALSE, warning=FALSE,fig.cap = "Klassenverteilung innerhalb der Age-Stichprobe"}
+
+#sortieren nach Klassen
+summary_final_age <- summary_final_age%>%
+  arrange(match(age_class, c("young", "medium", "old")))
+
+#Festlegung Reihenfolge für plots
+summary_final_age$age_class <- factor(summary_final_age$age_class, levels = c("young", "medium", "old"))
+
+#plot mit viridis
+ggplot(summary_final_age)+geom_bar(aes(x=age_class,y = ..prop.., group = 1), stat = "count", fill=(values=viridis(3)))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()
+
+```
+
+Für die Size-Stichprobe zeigt die Darstellung der Verteilung mit Klassenbildung nach Jones eine klare Verzerrung hin zu kleinen Funds. So bilden die kleinen Funds mit 175 Vertretern fast 80% der Verteilung, während große Funds mit 10 Vetretern (4,5%) unterrepräsentiert sind. Somit ist keine Analyse für Funds ausserhalb der Kategorie klein gegeben. Um diesem Umstand gerecht zu werden, wird ein anderer Ansatz, die Einteilung in Quintile ähnlich der Analyse von @Howell.2001 vorgenommen.
+
+```{r,echo=FALSE, warning= FALSE, fig.cap = "Klassenverteilung innerhalb der Size-Stichprobe"}
+
+#sortieren nach Klassen
+summary_final_size <- summary_final_size%>%
+  arrange(match(Class_Jones, c("small", "medium", "big")))
+
+#Festlegung Reihenfolge für plots
+summary_final_size$Class_Jones <- factor(summary_final_size$Class_Jones, levels = c("small", "medium", "big"))
+
+#plot mit viridis
+ggplot(summary_final_size)+geom_bar(aes(x=Class_Jones,y = ..prop.., group = 1), stat = "count", fill=(values=viridis(3)))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()
+
+```
+
+Abbildung 5 stellt die Zusammenhänge von Volatilität und Arithmetischer Rendite (Returns) für die gesamte Age-Stichprobe und die drei Klassen dar. Zusätzlich ist eine Regression eingefügt, die den positiven Zusammenhang von Returns und Volatilität aufzeigt. Die Farbgebungsskala ist der jeweiligen Spannweite der Sharp-Ratio angepasst und zeigt dadurch deutliche Unterschiede innerhalb der Sharp-Ratios für die einzelnen Klassen auf. Auf diese und andere Kennziffern wird im späteren Verlauf der Arbeit genauer eingegangen.
+
+```{r, echo=FALSE, warning=FALSE,fig.cap = "Zusammenhang von Volatilität und Mean innerhalb der Age-Stichprobe"}
+
+#plots von mean und vola und sr nach altersgruppen young, medium, old
+
+plot_age_y <- ggplot(data=summary_final_age[summary_final_age$age_y < 2,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)
+
+plot_age_m <- ggplot(data=summary_final_age[summary_final_age$age_y <= 2 & summary_final_age$age_y <= 4,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)
+  
+plot_age_o <- ggplot(data=summary_final_age[summary_final_age$age_y > 4 ,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)
+
+# plot aller funds mit mean und volatility, sortiert nach Klassen für Alter mit summary_final_age
+plot_age_all <- ggplot(summary_final_age,
+  aes(x=volatility, y=mean, color=age_class)) +
+  geom_point(size=1.75, alpha=0.8)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
+
+
+grid.arrange(plot_age_all,plot_age_y,plot_age_m,plot_age_o, ncol=2, nrow=2,widths=c(6, 6), heights=c(6, 6))
+```
+
+Abbildung 7 stellt die gleichen Zusammenhänge von Volatilität und durchschnittlichen Returns für die gesamte Size-Stichprobe und die einzelnen Quintile dar. Aufgrund der besseren Darstellbarkeit und ähnlicher Ergebnisse in den Quintilen werden die Quintile 2 und 4 nicht dargestellt. Diese sind im Anhang separat dargestellt. Anders als in der Age-Stichprobe zeigt sich für das kleinste Quintil ein negativer Zusammenhang zwischen Rendite und Volatilität. Auch zeigt sich für dieses Quintil die geringste Spannbreite der Sharp-Ratio. 
+
+```{r,echo=FALSE,fig.cap = "Zusammenhang von Volatilität und Mean innerhalb der Size-Stichprobe"}
+#plots für die einzelen Quintile
+summary_final_size$Quantile_Class <- factor(summary_final_size$Quantile_Class, levels = c("1", "2", "3","4","5"))
+
+
+plot_size_Q1 <- ggplot(data=summary_final_size[summary_final_size$Quantile_Class==1,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)
+
+plot_size_Q2 <- ggplot(data=summary_final_size[summary_final_size$Quantile_Class==2,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)
+
+plot_size_Q3 <- ggplot(data=summary_final_size[summary_final_size$Quantile_Class==3,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)
+
+plot_size_Q4 <- ggplot(data=summary_final_size[summary_final_size$Quantile_Class==4,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)
+
+plot_size_Q5 <- ggplot(data=summary_final_size[summary_final_size$Quantile_Class==5,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)
+  
+
+# plot aller funds mit mean und volatility, sortiert nach Klassen für Size
+
+plot_size_all <- ggplot(summary_final_size,
+  aes(x=volatility, y=mean, color=Quantile_Class)) +
+  geom_point(size=1.75, alpha=0.8)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
+
+grid.arrange(plot_size_all,plot_size_Q1,plot_size_Q3,plot_size_Q5, ncol=2, nrow=2,widths=c(6, 6), heights=c(6, 6))
+
+```
+
+Nach Erstellung einer Gesamtübersicht aller verwendeten Kennziffern für beide Stichproben werden die einzelnen Ergebnisse für Rendite und Volatilität in den drei folgenden Tabellen präsentiert.
+
+```{r, echo=FALSE}
+
+#Summary für alles nach Klassen für Alter
+#Erstellen der einzelnen Zusammenfassungen für die Klassen
+class_young <- summary_final_age%>%
+  filter(age_class=="young")%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
+  mutate(class="young")%>%
+  relocate(class, .before = mean_c)
+
+class_medium_age <- summary_final_age%>%
+  filter(age_class=="medium")%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
+  mutate(class="medium")%>%
+  relocate(class, .before = mean_c)
+
+class_old <- summary_final_age%>%
+  filter(age_class=="old")%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
+  mutate(class="old")%>%
+  relocate(class, .before = mean_c)
+
+#Zusammenfassen in einer summary
+
+class_summary_final_age <- bind_rows(class_young,class_medium_age,class_old, .id = "age_class")%>%
+  mutate(class= c("young","medium","old"))%>%
+  select(2:7)
+
+#darstellung mit kableExtra
+  knitr::kable(class_summary_final_age[1:3],col.names = c("Class","Mean of Returns","Volatility of Returns"),
+  digits = 4,caption="Zusammenfassung der durchschnittlichen Returns und Volatility nach Klassen für Age-Stichprobe")%>%
+    kable_styling(latex_options = c("striped", "hover"))
+
+```
+
+Tabelle zeigt die durchschnittlichen Renditen und Volatilitäten der Age-Stichprobe. Fonds der Klasse young, also zu Beginn der Untersuchung jünger als zwei Jahre, weisen die höchste Rendite bei gleichzeitig niedrigster Volatilität auf. Für alle Klassen ist ein negativer Zusammenhang zwischen Alter und Performance zu erkennen. Jüngere Fonds zeichnen sich durch höhere Renditen bei gleichzeitig geringeren Schwankungen gegenüber älteren Fonds aus. Diese Analyse deckt sich mit den findings von @Jones.2007.
+
+```{r, echo=FALSE}
+
+#Erstellen der einzelnen Zusammenfassungen für die Klassen bei Size mit Quantilen
+
+class_01 <- summary_final_size%>%
+  filter(Quantile_Class=="1")%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
+  mutate(class="1")%>%
+  relocate(class, .before = mean_c)
+
+class_02 <- summary_final_size%>%
+  filter(Quantile_Class=="2")%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
+  mutate(class="2")%>%
+  relocate(class, .before = mean_c)
+
+class_03 <- summary_final_size%>%
+  filter(Quantile_Class=="3")%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
+  mutate(class="3")%>%
+  relocate(class, .before = mean_c)
+
+class_04 <- summary_final_size%>%
+  filter(Quantile_Class=="4")%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
+  mutate(class="4")%>%
+  relocate(class, .before = mean_c)
+
+class_05 <- summary_final_size%>%
+  filter(Quantile_Class=="5")%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
+  mutate(class="5")%>%
+  relocate(class, .before = mean_c)
+
+
+#Zusammenfassen in einer summary
+
+class_summary_final_size <- bind_rows(class_01,class_02,class_03,class_04,class_05, .id = "age_class")%>%
+  mutate(class= c("1","2","3","4","5"))%>%
+  select(2:7)
+
+#darstellung mit kableExtra
+  knitr::kable(class_summary_final_size[1:3],col.names = c("Class","Mean of Returns","Volatility of Returns"),
+  digits = 4,caption="Zusammenfassung der durchschnittlichen Returns und Volatility nach Quintilen für Size-Stichprobe")%>%
+    kable_styling(latex_options = c("striped", "hover"))
+
+```
+
+Tabelle zeigt die durchschnittlichen Renditen und Volatilitäten der Size-Stichprobe aufgeteilt in Quintile. Auch hier ist bis auf Quintil-Klasse 4 ein negativer Zusammenhang zwischen Returns und Volatilität zu erkennen. Anders als für die erste Stichprobe zeichnen sich größere Fonds gegenüber kleinen Fonds in ihrer Performance aus. Konträr zu @Jones.2007 performen in diesem Setting größere Fonds mit höherer Rendite bei gleichzeitig geringerer Schwankung. Am schlechtesten stehen kleine Fonds da, dies konnte auch schon aus der visuellen Darstellung in Abbildung 7 geschlussfolgert werden. 
+
+```{r, echo=FALSE}
+
+#Summary für alles nach Klassen für Size nach Jones
+#Erstellen der einzelnen Zusammenfassungen für die Klassen
+
+class_small <- summary_final_size%>%
+  filter(Class_Jones=="small")%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
+  mutate(class="small")%>%
+  relocate(class, .before = mean_c)
+
+class_medium_size <- summary_final_size%>%
+  filter(Class_Jones=="medium")%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
+  mutate(class="medium")%>%
+  relocate(class, .before = mean_c)
+
+
+class_big <- summary_final_size%>%
+  filter(Class_Jones=="big")%>%
+  summarise(mean_c = mean(mean),
+            volatility_c = mean(volatility),
+            sr_c = mean(sr),
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
+  mutate(class="big")%>%
+  relocate(class, .before = mean_c)
+
+#Zusammenfassen in einer summary
+
+class_summary_final_size_jones <- bind_rows(class_small,class_medium_size,class_big, .id = "age_class")%>%
+  mutate(class= c("small","medium","big"))%>%
+  select(2:7)
+
+#darstellung mit kableExtra
+  knitr::kable(class_summary_final_size_jones[1:3],col.names = c("Class","Mean of Returns","Volatility of Returns"),
+  digits = 4,caption="Zusammenfassung der durchschnittlichen Returns und Volatility nach Klassen für Size-Stichprobe")%>%
+    kable_styling(latex_options = c("striped", "hover"))
+
+```
+
+Tabelle liefert ähnliche Ergebnisse wie die vorherige Tabelle zur Quintil-Einteilung. Auch für die Klassenbestimmung nach @Jones.2007 kann trotz der Verzerrung in Richtung kleine Fonds der schon beobachtete Effekt untermauert werden. Auch hier performen größere Fonds besser mit gleichzeitig geringerer Volatilität. Dies deckt sich mit den eingangs vorgestellten Erkenntnissen von @Gregoriou.2002 und @Liang.1999.
+
+## Performancemaße
+
+Die vorgestellten Datensätze wurden nun dazu genutzt, die bekannten Performance-Maße Jensen's Alpha, Sharpe Ratio (SR) und Information Ratio (IR) zu berechnen. Hierbei ist das Alpha nach @Jensen.1968 eines der bekanntesten Maße,^[siehe @Pedersen.2019, S. 28: "It is the Holy Grail all active managers seek."] und stellt die Konstante einer CAPM-Regression dar:
+\begin{equation}
+  \label{CAPM_Regression}
+  r_t^e = \alpha + \beta r_{M,t}^e + \epsilon_t,
+\end{equation}
+wobei $r_t^e$ die Rendite des Assets und $r_{M,t}^e$ die Marktrendite abzgl. des risikofreien Zinssatzes darstellen, sowie $\alpha$ die marktneutrale Rendite-Komponente und $\beta$ das Markt-Exposure der Rendite. Da das Alpha durch Leverage skaliert werden kann, wurde darüber hinaus die Sharpe Ratio berechnet, welche die erwartete Überschussrendite ins Verhältnis zur Volatilität setzt und damit immun gegenüber Leverage ist [@Sharpe.1966]:
+\begin{equation} 
+  \label{Sharpe_Ratio}
+  SR = \frac{E(r - r_f)}{\sigma(r - r_f)} := \frac{\overline{r}^e}{\sigma(r^e)},
+\end{equation}
+wobei $\overline{r}^e$ das arithmetische Mittel und $\sigma(r^e)$ die Standardabweichung der Überschussrendite darstellen. Letztlich wurde auch die Information Ratio in die Untersuchung mit einbezogen, welche das Alpha eines Hedgefonds ins Verhältnis zu dessen idiosynkratischem Risiko setzt:
+\begin{equation}
+  \label{Information_Ratio_1}
+  IR = \frac{\alpha}{\sigma(\epsilon)},
+\end{equation}
+wobei $\epsilon$ in der vorliegenden Arbeit dem Residuum einer CAPM-Regression entspricht und somit dem Tracking-Error. Die Ergebnisse der vorliegenden Arbeit bezüglich der Ratios und Alpha werden in den nachfolgenden Tabellen dargestellt.
+
+```{r,echo=FALSE}
+#darstellung mit kableExtra
+class_summary_final_age <- class_summary_final_age%>%
+  select(class,sr_c,ir_c,alpha_c)
+
+  knitr::kable(class_summary_final_age,col.names = c("Class","Sharp-Ratio","Information-Ratio","Alpha"),
+  digits = 4,caption="Zusammenfassung der Sharp-Ratio, Information-Ratio und Alpha nach Klassen für die Age-Stichprobe")%>%
+    kable_styling(latex_options = c("striped", "hover"))
+
+```
+
+Für die Klassen der Age-Stichprobe lassen sich bei Sharpe- und Information-Ratio keine allgemeinen Trends ablesen. Beide Ratios sind für mittelalte Fonds zwischen zwei und vier Jahren am höchsten. Allerdings sind beide Ratios für jüngere Fonds höher. Dies ergibt sich aus dem bereits dargestellten negativen Zusammenhang von Returns und Volatilität, da eine höhere Sharp-Ratio durch eine geringere Volatilität bedingt sein kann. Da die Information-Ratio das Verhältnis von alpha zu Volatilität darstellt, ist auch hier der kleinste Wert mit dem geringsten Alpha verbunden. Alpha verstanden als Erfolgsmesser der Fonds erzielt den höchsten wert für junge Fonds. Die Analyse der Ratios und Alpha untermauert somit für die Age-Stichprobe den negativen Zusammenhang zwischen Alter und Performance.
+
+```{r,echo=FALSE}
+#darstellung mit kableExtra
+class_summary_final_size <- class_summary_final_size%>%
+  select(class,sr_c,ir_c,alpha_c)
+
+  knitr::kable(class_summary_final_size,col.names = c("Class","Sharp-Ratio","Information-Ratio","Alpha"),
+  digits = 4,caption="Zusammenfassung der Sharp-Ratio, Information-Ratio und Alpha nach Quintilen für die Size-Stichprobe")%>%
+    kable_styling(latex_options = c("striped", "hover"))
+
+```
+
+Tabelle und Tabelle zur Size-Stichprobe untermauern ebenfalls die schon erläuterten Erkenntnisse eines positiven Zusammenhangs zwischen Größe und Performance. Für beide Klassifizierungen werden die besten Werte für alle drei Kennziffern von den größten Fonds erzielt.
+
+```{r,echo=FALSE}
+#darstellung mit kableExtra
+class_summary_final_size_jones <- class_summary_final_size_jones%>%
+  select(class,sr_c,ir_c,alpha_c)
+
+  knitr::kable(class_summary_final_size_jones,col.names = c("Class","Sharp-Ratio","Information-Ratio","Alpha"),
+  digits = 4,caption="Zusammenfassung der Sharp-Ratio, Information-Ratio und Alpha nach Klassen für die Size-Stichprobe")%>%
+    kable_styling(latex_options = c("striped", "hover"))
+
+```
+
+Sowohl für Sharpe- als auch für Information-Ratio liefern die folgenden Abbildungen für beide Stichproben die Verteilungen der einzelnen durchschnittlichen Ratios nach Klassen als Dichtefunktionen.
+
+```{r, echo=FALSE, warning=FALSE,fig.cap = "Densitiy für Ratios der Age-Stichprobe"}
+#density für ratios bei alter
+
+plot_sr_a <- ggplot(data=summary_final_age, aes(x=sr, group=age_class, fill=age_class)) +
+    geom_density(adjust=0.8, alpha=0.75) + scale_fill_viridis(discrete=TRUE) +
+    scale_color_viridis(discrete=TRUE) +
+    theme_minimal()
+
+plot_ir_a <- ggplot(data=summary_final_age, aes(x=ir, group=age_class, fill=age_class)) +
+    geom_density(adjust=0.8, alpha=0.75) + scale_fill_viridis(discrete=TRUE) +
+    scale_color_viridis(discrete=TRUE) +
+    theme_minimal()
+
+
+grid.arrange(plot_sr_a,plot_ir_a, ncol=1, nrow=2,heights=c(12, 12))
+
+
+```
+
+Aus den Dichtefunktionen der Klassen für Alter in Abbildung lassen sich sowohl für Sharpe-, als auch Information-Ratio eine höhere Konzentration der Werte um das Zentrum für junge und alte Fonds erkennen, während die mittlere Klasse aufgrund häufigerer Extremwerte bzw. Streeung innerhalb der Dichtefunktion flacher ausfällt. Für die Sharpe-Ratio sind die Wölbungen der Klassen jung und alt fast identisch, in der Verteilung der Information-Ratio besitzt die Klasse der jungen Fonds ein klar höhere Kurtosis.
+
+```{r, echo=FALSE, warning=FALSE,fig.cap = "Densitiy für Ratios der Size-Stichprobe"}
+#density für sharpe ratios bei size mit 5 Klassen
+
+plot_sr_s <- ggplot(data=summary_final_size, aes(x=sr, group=Quantile_Class, fill=Quantile_Class)) +
+    geom_density(adjust=0.8, alpha=0.75) + scale_fill_viridis(discrete=TRUE) +
+    scale_color_viridis(discrete=TRUE) +
+    theme_minimal()
+
+plot_ir_s <- ggplot(data=summary_final_size, aes(x=ir, group=Quantile_Class, fill=Quantile_Class)) +
+    geom_density(adjust=0.8, alpha=0.75) + scale_fill_viridis(discrete=TRUE) +
+    scale_color_viridis(discrete=TRUE) +
+    theme_minimal()
+
+grid.arrange(plot_sr_s,plot_ir_s, ncol=1, nrow=2, heights=c(12, 12))
+
+```
+
+Abbildung zeigt für die Größe ein völlig anderes Bild. Hier ist die Verteilung der Klasse Q5, also der 20% größten Fonds, die mit Abstand flachste verteilung (Ausgenommen Q2 für die IR). Generell befinden sich sehr viel mehr Werte in den Extremen der Dichtefunktionen, die Wölbung ist daher allgemein geringer, was wiederum eine höhere Streuung und Volatilität impliziert. Dies zeigte sich auch schon in der Darstellung der Kennziffern in Tabelle 6. Bis auf eine Ausnahme (Q5) kleine negative Werte könnten eine hohe Volatilität und damit idiosynchratisches Risiko in der zweiten Stichprobe widerspiegeln.
+\newpage
