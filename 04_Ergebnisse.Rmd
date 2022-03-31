@@ -240,7 +240,7 @@ Ranking_age <- summary_final_age %>%
   rename(Name = name,Class=Altersklassen, `SR Rank` = sr_rank, `IR Rank` = ir_rank, `Alpha Rank` = alpha_rank)
 
 
-kable(Ranking_age, col.names = c("Name","Age Class","SR Rank","IR Rank","Alpha Rank"), caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Alter, 2005-2015)")
+kable(Ranking_age, col.names = c("Name","Altersklasse","SR Rang","IR Rang","Alpha Rang"), caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Alter, 2005-2015)")
 #%>%
  #   kable_styling(latex_options = c("striped", "hover"))
 
@@ -267,7 +267,7 @@ Ranking_size <- summary_final_size %>%
   select(name,Quintil_Klassen, sr_rank, ir_rank, alpha_rank) %>%
   rename(Name = name, `SR Rank` = sr_rank, `IR Rank` = ir_rank, `Alpha Rank` = alpha_rank)
 
-kable(Ranking_size, col.names = c("Name","Quintile Class","SR Rank","IR Rank","Alpha Rank"),caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Größe, 2010-2020)")
+kable(Ranking_size, col.names = c("Name","Quintil Klasse","SR Rang","IR Rang","Alpha Rang"),caption = "Top 3 Hedge Fonds nach Alpha, SR und IR (Größe, 2010-2020)")
 #%>%
  #   kable_styling(latex_options = c("striped", "hover"))
 
@@ -337,7 +337,7 @@ final_data_age_sub$Name <- factor(final_data_age_sub$Name, levels = c("LIM China
 
 
 
-ggplot(data=final_data_age_sub) + aes(x=date, y = cum_ret, color = Name) + geom_line(size=0.8)+scale_color_viridis(discrete = TRUE)+ theme_minimal()
+ggplot(data=final_data_age_sub) + aes(x=date, y = cum_ret, color = Name) + geom_line(size=0.8)+scale_color_viridis(discrete = TRUE)+labs(x="Jahre", y="Kumulierte Returns")+ theme_minimal()
 
 ```
 
@@ -397,7 +397,7 @@ final_data_size_sub$Name <- factor(final_data_size_sub$Name, levels = c("Dendric
 
 
 
-ggplot(data=final_data_size_sub) + aes(x=date, y = cum_ret, color = Name) + geom_line(size=0.8)+scale_color_viridis(discrete = TRUE)+ theme_minimal()
+ggplot(data=final_data_size_sub) + aes(x=date, y = cum_ret, color = Name) + geom_line(size=0.8)+scale_color_viridis(discrete = TRUE)+labs(x="Jahre", y="Kumulierte Returns")+ theme_minimal()
 ```
 
 Abbildung 7 kommt zu ähnlichen Ergebnissen für die Size-Stichprobe. Während vorher alle Fonds zumindest konsistent das Marktportfolio outperformen konnten, gelingt dies nun nur drei Fonds mit geringerer Abweichung von den kumulierten Returns des Marktportfolio. Die drei Fonds mit den höchsten Werten für Sharpe- oder Information-Ratio performen ähnlich dem Marktportfolio, oder wie im Fall des Fonds "Artorius Partners II" deutlich schlechter.
