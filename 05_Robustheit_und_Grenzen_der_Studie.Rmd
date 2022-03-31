@@ -296,13 +296,19 @@ tidy_return <- tidy_return %>%
 ```
 
 <!--Durchführen des Jarque-Bera Tests auf Normalverteilung der Returns für Alter
-```{r, include=FALSE, warning=FALSE}
+```{r, echo=FALSE, include=FALSE, message=FALSE, warning=FALSE}
 
-DescTools::JarqueBeraTest(x = tidy_return$ret,
-                          robust = TRUE,
-                          method = c("chisq", "mc"),
-                          N = 0,
-                          na.rm = TRUE)
+#JB <- DescTools::JarqueBeraTest(x = tidy_return$ret,
+#                          robust = TRUE,
+#                          method = c("chisq", "mc"),
+#                          N = 0,
+#                          na.rm = TRUE)
+#tidy()
+#
+#knitr::kable(JB,col.names = c("Datensatz","Methode","Test Statistik", "p-value","df"),
+#  digits = 4,caption="Jarque-Bera Test beider Datensätze")%>%
+#  kable_styling(latex_options = c("striped", "hover"))
+
 
 ```  
 -->
@@ -528,5 +534,3 @@ Ranking <- summary_final %>%
 ## Grenzen der Studie
 
 Die Ergebnisse der vorliegenden Arbeit unterliegen Grenzen und Kritikpunkten. Zum einen enthielt der zur Verfügung stehende Datensatz die Größe der Hedgefonds zu lediglich einem Zeitpunkt und nicht fortwährend für jeden Monat. Diesen Ansatz verfolgten auch @Liang.1999 sowie @Gregoriou.2002b, was jedoch von @Ammann.2005 kritisiert wurde. Demnach könnte eine hohe Fondsgröße am Periodenende eher das Resultat guter vergangener Performance sein, sodass bei einem solchen Ansatz eher die Auswirkung der Performance auf die Größe und weniger die Auswirkung der Größe auf die Performance untersucht wird.^[siehe @Ammann.2005, S. 221] Des Weiteren wurde vorliegend ein vergleichsweise kleiner Datensatz analysiert, sowie die Aufteilung der Fonds in lediglich drei bzw. fünf Klassen vorgenommen. Diese Aufteilung kritisieren @Ammann.2005 als nicht ausreichend, um valide Ergebnisse zu erhalten.^[siehe @Ammann.2005, S. 221] Da Hedgefonds auch Optionen sowie dynamische Trading-Strategien nutzen, führt dies weiterhin zu einem eher nicht-linearen Exposure gegenüber üblichen Asset-Klassen [z.B. @Fung.1997], wodurch die Anwendung des CAPM zur Schätzung des Alpha zu verzerrten Ergebnissen führen kann.^[siehe @Amenc.2003, S. 11] Da dies auch für die vorliegende Studie zutrifft, schränkt dies die externe Validität der Ergebnisse entsprechend ein. Stattdessen könnte das Alpha nach dem Multi-Faktor-Modell von @Fung.2004 berechnet werden [bspw. @Joenvaara.2012]. Als letzten Punkt bezweifeln @Stafylas.2016 in ihrer Studie die Aussagekraft von Vergleichen zwischen Hedgefonds mit Unterschieden hinsichtlich Track-record und der Marktumgebung, in der sie ihre Tätigkeit begonnen haben. Die Ergebnisse solcher Vergleiche spiegeln wahrscheinlich nicht die wahre Performance wider.^[siehe @Stafylas.2016, S. 58] Um daraus resultierende "vintage effects" zu umgehen, haben beispielsweise @Schneeweis.2002 in ihrer Studie die Information Ratio nur für solche Hedgefonds berechnet, welche die gleiche Strategie haben sowie im selben Monat gestartet sind.^[siehe @Schneeweis.2002, S. 19] Dieser Ansatz wurde in der vorliegenden Studie nicht verfolgt, weshalb auch aus dieser Perspektive die externe Validität nur eingeschränkt gegeben ist.
-
-\newpage
