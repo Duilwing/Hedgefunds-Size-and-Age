@@ -15,25 +15,3 @@ ggplot(data=summary_final_size[summary_final_size$Quantile_Class==4,]) + aes(x=v
 ggplot(data=summary_final_size[summary_final_size$Quantile_Class==5,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE),
 nrow=3,ncol = 2)
 ```
-
-
-
-```{r, echo=FALSE, warning=FALSE,fig.cap = "Dichteverteilung für Ratios des 'Größe'-Datensatzes"}
-
-#density für sharpe ratios bei size mit 5 Klassen
-
-p1 <- ggplot(data=summary_final_size, aes(x=sr, group=Quantile_Class, fill=Quantile_Class)) +
-    geom_density(adjust=0.8, alpha=0.75) + scale_fill_viridis(discrete=TRUE) +
-    scale_color_viridis(discrete=TRUE) +
-    theme_minimal()
-
-p2 <- ggplot(data=summary_final_size, aes(x=ir, group=Quantile_Class, fill=Quantile_Class)) +
-    geom_density(adjust=0.8, alpha=0.75) + scale_fill_viridis(discrete=TRUE) +
-    scale_color_viridis(discrete=TRUE) +
-    theme_minimal()
-
-grid.arrange(p1,p2,
-ncol=1, nrow=2, heights=c(12, 12))
-
-```
-

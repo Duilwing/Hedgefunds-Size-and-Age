@@ -30,9 +30,9 @@ base_data_age <- base_data %>%
   filter(`Inception Date` <= "2005-01-01") %>% #Nur Fonds die vor/am 2005-01-01 gegründet wurden
   mutate(age_y = as.numeric(round((as.Date("2005-01-01") - `Inception Date`)/365))) %>% #Berechnung Alter
   mutate(age_class = case_when(                # Erstellung der Altersklassen
-    age_y < 2 ~ "young",
-    age_y >= 2 & age_y <=4 ~ "medium",
-    age_y > 4 ~ "old")) %>%
+    age_y < 2 ~ "jung",
+    age_y >= 2 & age_y <=4 ~ "mittel",
+    age_y > 4 ~ "alt")) %>%
   arrange(secid, .by_group = FALSE) %>%
   select(`name`, `secid`, `age_y`, `age_class`)
 
@@ -218,14 +218,14 @@ Die Ergebnisse zeigen, dass sich die Verteilung der betrachteten Renditen beider
 ggarrange(ggplot(data = tidy_return_age, aes(x=ret)) +
   geom_histogram(aes(y =..density..),fill="#440154FF",alpha=0.95,binwidth = 0.001)+theme_minimal()+
 scale_x_continuous(limits =c(-0.4,0.4))+ 
-stat_function(fun = dnorm,args = list(mean = mean(tidy_return_age$ret, na.rm = TRUE), sd = sd(tidy_return_age$ret, na.rm = TRUE)),aes(colour = "normal distribution"), size=0.7)+
-geom_density(aes(color="distribution"),size=0.7)+ scale_colour_manual("", values = c("#287D8EFF","#FDE725FF")),
+stat_function(fun = dnorm,args = list(mean = mean(tidy_return_age$ret, na.rm = TRUE), sd = sd(tidy_return_age$ret, na.rm = TRUE)),aes(colour = "Normalverteilung"), size=0.7)+
+geom_density(aes(color="Alter/Größenverteilung"),size=0.7)+ scale_colour_manual("", values = c("#287D8EFF","#FDE725FF"))+labs(x="Returns", y="Dichte"),
 ggplot(data = tidy_return_size, aes(x=ret)) +
   geom_histogram(aes(y =..density..),fill="#440154FF",alpha=0.95,binwidth = 0.001)+theme_minimal()+
 scale_x_continuous(limits =c(-0.4,0.4))+ 
-stat_function(fun = dnorm,args = list(mean = mean(tidy_return_size$ret, na.rm = TRUE), sd = sd(tidy_return_size$ret, na.rm = TRUE)),aes(colour = "normal distribution"), size=0.7)+
-geom_density(aes(color="distribution"),size=0.7)+ scale_colour_manual("", values = c("#287D8EFF","#FDE725FF")),
-ncol = 2, label.y = "density", common.legend = TRUE)
+stat_function(fun = dnorm,args = list(mean = mean(tidy_return_size$ret, na.rm = TRUE), sd = sd(tidy_return_size$ret, na.rm = TRUE)),aes(colour = "Normalverteilung"), size=0.7)+
+geom_density(aes(color="Alter/Größenverteilung"),size=0.7)+ scale_colour_manual("", values = c("#287D8EFF","#FDE725FF"))+labs(x="Returns", y="Dichte"),
+ncol = 2, label.y = "Dichte", common.legend = TRUE)
 ```
 
 Abbildung 1 zeigt die Histogramme der Renditen beider Datensätze sowie in gelb die Normalverteilung und türkis die Verteilung der Datensätze. Beide Abbildungen bestätigen das Ergebnis der Tests. Es liegt bei beiden Abbildungen eine zu hohe Kurtosis vor, die Renditen sind leptokurtisch verteilt.
@@ -265,7 +265,8 @@ summary_final_age <- final_data_age %>%
   mutate(ir = sqrt(12)*alpha/idiosyncratic_risk,
          alpha = 12*alpha) %>% 
   left_join(base_data_age, by = "secid") %>%  # Hinzufügen der Variablen Name, Alter und Alters-Klasse
-  select(name, secid, mean, volatility, sr, alpha, ir, age_y, age_class)
+  rename(Altersklassen=age_class)%>%
+  select(name, secid, mean, volatility, sr, alpha, ir, age_y, Altersklassen)
 
 
 ```
@@ -292,10 +293,10 @@ summary_final_size <- final_data_size %>%
   mutate(ir = sqrt(12)*alpha/idiosyncratic_risk,
          alpha = 12*alpha) %>%
   left_join(base_data_size, by = "secid") %>%  # Hinzufügen der Variablen Name, Alter und Alters-Klasse
-  mutate(Quantile_Class = ntile(`size`, 5)) %>%
+  mutate(Quintil_Klassen = ntile(`size`, 5)) %>%
   mutate(Class_Jones= case_when(`size`
- <= 100000000 ~ "small", `size` > 100000000  & `size` <= 500000000 ~ "medium", `size` > 500000000 ~ "big"))%>%              # Einstufung nach Klassen nach Jones
-  select(name, secid, mean, volatility, sr, alpha, ir, size, Quantile_Class, Class_Jones)
+ <= 100000000 ~ "klein", `size` > 100000000  & `size` <= 500000000 ~ "mittel", `size` > 500000000 ~ "groß"))%>%              # Einstufung nach Klassen nach Jones
+  select(name, secid, mean, volatility, sr, alpha, ir, size, Quintil_Klassen, Class_Jones)
 
 ```
 
@@ -306,24 +307,24 @@ Im Anschluss werden die Fonds ihrer Größe und Alter entsprechend in Klassen na
 #Age:
 #sortieren nach Klassen
 summary_final_age <- summary_final_age%>%
-  arrange(match(age_class, c("young", "medium", "old")))
+  arrange(match(Altersklassen, c("jung", "mittel", "alt")))
 
 #sortieren nach Klassen
 summary_final_size <- summary_final_size%>%
-  arrange(match(Class_Jones, c("small", "medium", "big")))
+  arrange(match(Class_Jones, c("klein", "mittel", "groß")))
 
 #Size:
 #Festlegung Reihenfolge für plots
-summary_final_age$age_class <- factor(summary_final_age$age_class, levels = c("young", "medium", "old"))
+summary_final_age$Altersklassen <- factor(summary_final_age$Altersklassen, levels = c("jung", "mittel", "alt"))
 
 #Festlegung Reihenfolge für plots 
-summary_final_size$Class_Jones <- factor(summary_final_size$Class_Jones, levels = c("small", "medium", "big"))
+summary_final_size$Class_Jones <- factor(summary_final_size$Class_Jones, levels = c("klein", "mittel", "groß"))
 
 
 
 ggarrange(
-  ggplot(summary_final_age)+geom_bar(aes(x=age_class,y = ..prop.., group = 1), stat = "count", fill=(values=viridis(3)))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal(),
-ggplot(summary_final_size)+geom_bar(aes(x=Class_Jones,y = ..prop.., group = 1), stat = "count", fill=(values=viridis(3)))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal(),
+  ggplot(summary_final_age)+geom_bar(aes(x=Altersklassen,y = ..prop.., group = 1), stat = "count", fill=(values=viridis(3)))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()+labs(x="Altersklassen", y="Anteil in Prozent"),
+ggplot(summary_final_size)+geom_bar(aes(x=Class_Jones,y = ..prop.., group = 1), stat = "count", fill=(values=viridis(3)))+ scale_y_continuous(labels = scales::percent_format()) + theme_minimal()+labs(x="Größe nach Jones", y="Anteil in Prozent"),
 ncol = 2, label.y = "density", common.legend = TRUE)
 
 
@@ -338,40 +339,12 @@ Abbildung 2 stellt die Zusammenhänge von Volatilität und Arithmetischer Rendit
 #plots von mean und vola und sr für Alter
 
 ggarrange(ggplot(summary_final_age,
-  aes(x=volatility, y=mean, color=age_class)) +
-  geom_point(size=1.75, alpha=0.8)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal(),
-ggplot(data=summary_final_age[summary_final_age$age_y < 2,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE),
-ggplot(data=summary_final_age[summary_final_age$age_y <= 2 & summary_final_age$age_y <= 4,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE),
-ggplot(data=summary_final_age[summary_final_age$age_y > 4 ,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE),
+  aes(x=volatility, y=mean, color=Altersklassen)) +
+  geom_point(size=1.75, alpha=0.8)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()+labs(x="Volatilität", y="Durchschnitt"),
+ggplot(data=summary_final_age[summary_final_age$age_y < 2,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)+labs(x="Volatilität", y="Durchschnitt"),
+ggplot(data=summary_final_age[summary_final_age$age_y <= 2 & summary_final_age$age_y <= 4,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)+labs(x="Volatilität", y="Durchschnitt"),
+ggplot(data=summary_final_age[summary_final_age$age_y > 4 ,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)+labs(x="Volatilität", y="Durchschnitt"),
 ncol = 2,nrow=2)
-```
-
-<!--Abbildung 3 stellt die gleichen Zusammenhänge von Volatilität und durchschnittlichen Returns für die gesamte Size-Stichprobe und die einzelnen Quintile dar. Aufgrund der besseren Darstellbarkeit und ähnlicher Ergebnisse in den Quintilen werden die Quintile 2 und 4 nicht dargestellt. Diese sind im Anhang separat dargestellt. Anders als in der Age-Stichprobe zeigt sich für das kleinste Quintil ein negativer Zusammenhang zwischen Rendite und Volatilität. Auch zeigt sich für dieses Quintil die geringste Spannbreite der Sharp-Ratio.-->
-
-```{r, include=FALSE,fig.cap = "Zusammenhang von Volatilität und Mean innerhalb der Size-Stichprobe"}
-#plots für die einzelen Quintile
-summary_final_size$Quantile_Class <- factor(summary_final_size$Quantile_Class, levels = c("1", "2", "3","4","5"))
-
-
-plot_size_Q1 <- ggplot(data=summary_final_size[summary_final_size$Quantile_Class==1,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)
-
-plot_size_Q2 <- ggplot(data=summary_final_size[summary_final_size$Quantile_Class==2,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)
-
-plot_size_Q3 <- ggplot(data=summary_final_size[summary_final_size$Quantile_Class==3,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)
-
-plot_size_Q4 <- ggplot(data=summary_final_size[summary_final_size$Quantile_Class==4,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)
-
-plot_size_Q5 <- ggplot(data=summary_final_size[summary_final_size$Quantile_Class==5,]) + aes(x=volatility, y = mean, color=sr)+ geom_point(size=1.75, alpha=0.8) +scale_color_viridis(discrete=FALSE, option="viridis")+ theme_minimal()+ geom_smooth(method=lm , color="#440154FF", se=FALSE)
-  
-
-# plot aller funds mit mean und volatility, sortiert nach Klassen für Size
-
-plot_size_all <- ggplot(summary_final_size,
-  aes(x=volatility, y=mean, color=Quantile_Class)) +
-  geom_point(size=1.75, alpha=0.8)+scale_color_viridis(discrete=TRUE, option="viridis")+ theme_minimal()
-
-grid.arrange(plot_size_all,plot_size_Q1,plot_size_Q3,plot_size_Q5, ncol=2, nrow=2,widths=c(6, 6), heights=c(6, 6))
-
 ```
 
 ## Performancemaße
@@ -398,43 +371,43 @@ wobei $\epsilon$ in der vorliegenden Arbeit dem Residuum einer CAPM-Regression e
 #Summary für alles nach Klassen für Alter
 #Erstellen der einzelnen Zusammenfassungen für die Klassen
 class_young <- summary_final_age%>%
-  filter(age_class=="young")%>%
+  filter(Altersklassen=="jung")%>%
   summarise(mean_c = mean(mean),
             volatility_c = mean(volatility),
             alpha_c=mean(alpha),
             sr_c = mean(sr),
             ir_c=mean(ir))%>%
-  mutate(class="young")%>%
-  relocate(class, .before = mean_c)
+  mutate(Klasse="jung")%>%
+  relocate(Klasse, .before = mean_c)
 
 class_medium_age <- summary_final_age%>%
-  filter(age_class=="medium")%>%
+  filter(Altersklassen=="mittel")%>%
   summarise(mean_c = mean(mean),
             volatility_c = mean(volatility),
             alpha_c=mean(alpha),
             sr_c = mean(sr),
             ir_c=mean(ir))%>%
-  mutate(class="medium")%>%
-  relocate(class, .before = mean_c)
+  mutate(Klasse="mittel")%>%
+  relocate(Klasse, .before = mean_c)
 
 class_old <- summary_final_age%>%
-  filter(age_class=="old")%>%
+  filter(Altersklassen=="alt")%>%
   summarise(mean_c = mean(mean),
             volatility_c = mean(volatility),
             alpha_c=mean(alpha),
             sr_c = mean(sr),
             ir_c=mean(ir))%>%
-  mutate(class="old")%>%
-  relocate(class, .before = mean_c)
+  mutate(Klasse="alt")%>%
+  relocate(Klasse, .before = mean_c)
 
 #Zusammenfassen in einer summary
 
-class_summary_final_age <- bind_rows(class_young,class_medium_age,class_old, .id = "age_class")%>%
-  mutate(class= c("young","medium","old"))%>%
+class_summary_final_age <- bind_rows(class_young,class_medium_age,class_old, .id = "Altersklassen")%>%
+  mutate(Klasse= c("jung","mittel","alt"))%>%
   select(2:7)
 
 #darstellung mit kableExtra
-  knitr::kable(class_summary_final_age[1:6],col.names = c("Class","Mean of Returns","Volatility of Returns","Alpha","SR","IR"),
+  knitr::kable(class_summary_final_age[1:6],col.names = c("Klasse","Durchschn. Returns","Volatilität","Alpha","SR","IR"),
   digits = 4,caption="Zusammenfassung der Performance-Maße für Alters-Klassen")%>%
     kable_styling(latex_options = c("striped", "hover"))
 
@@ -448,7 +421,7 @@ Tabelle 3 zeigt die durchschnittlichen Performance-Maße für den Größe-Datens
 #Erstellen der einzelnen Zusammenfassungen für die Klassen bei Size mit Quantilen
 
 class_01 <- summary_final_size%>%
-  filter(Quantile_Class=="1")%>%
+  filter(Quintil_Klassen=="1")%>%
   summarise(mean_c = mean(mean),
             volatility_c = mean(volatility),
             alpha_c=mean(alpha),
@@ -458,7 +431,7 @@ class_01 <- summary_final_size%>%
   relocate(class, .before = mean_c)
 
 class_02 <- summary_final_size%>%
-  filter(Quantile_Class=="2")%>%
+  filter(Quintil_Klassen=="2")%>%
   summarise(mean_c = mean(mean),
             volatility_c = mean(volatility),
             alpha_c=mean(alpha),
@@ -468,7 +441,7 @@ class_02 <- summary_final_size%>%
   relocate(class, .before = mean_c)
 
 class_03 <- summary_final_size%>%
-  filter(Quantile_Class=="3")%>%
+  filter(Quintil_Klassen=="3")%>%
   summarise(mean_c = mean(mean),
             volatility_c = mean(volatility),
             alpha_c=mean(alpha),
@@ -478,7 +451,7 @@ class_03 <- summary_final_size%>%
   relocate(class, .before = mean_c)
 
 class_04 <- summary_final_size%>%
-  filter(Quantile_Class=="4")%>%
+  filter(Quintil_Klassen=="4")%>%
   summarise(mean_c = mean(mean),
             volatility_c = mean(volatility),
             alpha_c=mean(alpha),
@@ -488,7 +461,7 @@ class_04 <- summary_final_size%>%
   relocate(class, .before = mean_c)
 
 class_05 <- summary_final_size%>%
-  filter(Quantile_Class=="5")%>%
+  filter(Quintil_Klassen=="5")%>%
   summarise(mean_c = mean(mean),
             volatility_c = mean(volatility),
             alpha_c=mean(alpha),
@@ -500,12 +473,12 @@ class_05 <- summary_final_size%>%
 
 #Zusammenfassen in einer summary
 
-class_summary_final_size <- bind_rows(class_01,class_02,class_03,class_04,class_05, .id = "age_class")%>%
+class_summary_final_size <- bind_rows(class_01,class_02,class_03,class_04,class_05, .id = "Quintil_Klassen")%>%
   mutate(class= c("1","2","3","4","5"))%>%
   select(2:7)
 
 #darstellung mit kableExtra
-  knitr::kable(class_summary_final_size[1:6],col.names = c("Class","Mean of Returns","Volatility of Returns", "Alpha", "SR", "IR"),
+  knitr::kable(class_summary_final_size[1:6],col.names = c("Klasse","Durchschn. Returns","Volatilität","Alpha","SR","IR"),
   digits = 4,caption="Zusammenfassung der Performance-Maße für Größe-Klassen")%>%
   kable_styling(latex_options = c("striped", "hover"))
 
@@ -515,46 +488,51 @@ Tabelle 4 zeigt die durchschnittlichen Performance-Maße für den 'Größe'-Date
 
 ```{r, echo=FALSE}
 
-#Summary für alles nach Klassen für Alter
+
+#Summary für alles nach Klassen für Size nach Jones
 #Erstellen der einzelnen Zusammenfassungen für die Klassen
-class_young <- summary_final_age%>%
-  filter(age_class=="young")%>%
+
+class_small <- summary_final_size%>%
+  filter(Class_Jones=="klein")%>%
   summarise(mean_c = mean(mean),
             volatility_c = mean(volatility),
-            alpha_c=mean(alpha),
             sr_c = mean(sr),
-            ir_c=mean(ir))%>%
-  mutate(class="young")%>%
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
+  mutate(class="klein")%>%
   relocate(class, .before = mean_c)
 
-class_medium_age <- summary_final_age%>%
-  filter(age_class=="medium")%>%
+class_medium_size <- summary_final_size%>%
+  filter(Class_Jones=="mittel")%>%
   summarise(mean_c = mean(mean),
             volatility_c = mean(volatility),
-            alpha_c=mean(alpha),
             sr_c = mean(sr),
-            ir_c=mean(ir))%>%
-  mutate(class="medium")%>%
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
+  mutate(class="mittel")%>%
   relocate(class, .before = mean_c)
 
-class_old <- summary_final_age%>%
-  filter(age_class=="old")%>%
+
+class_big <- summary_final_size%>%
+  filter(Class_Jones=="groß")%>%
   summarise(mean_c = mean(mean),
             volatility_c = mean(volatility),
-            alpha_c=mean(alpha),
             sr_c = mean(sr),
-            ir_c=mean(ir))%>%
-  mutate(class="old")%>%
+            ir_c=mean(ir),
+            alpha_c=mean(alpha))%>%
+  mutate(class="groß")%>%
   relocate(class, .before = mean_c)
 
 #Zusammenfassen in einer summary
 
-class_summary_final_age <- bind_rows(class_young,class_medium_age,class_old, .id = "age_class")%>%
-  mutate(class= c("young","medium","old"))%>%
+class_summary_final_size_jones <- bind_rows(class_small,class_medium_size,class_big, .id = "Class_Jones")%>%
+  mutate(class= c("klein","mittel","groß"))%>%
   select(2:7)
 
+
+
 #darstellung mit kableExtra
-  knitr::kable(class_summary_final_age[1:6],col.names = c("Class","Mean of Returns","Volatility of Returns", "Alpha", "SR", "IR"),
+  knitr::kable(class_summary_final_size_jones[1:6],col.names = c("Klasse","Durchschn. Returns","Volatilität","Alpha","SR","IR"),
   digits = 4,caption="Zusammenfassung der Performance-Maße für Größe-Klassen nach Jones")%>%
     kable_styling(latex_options = c("striped", "hover"))
 
@@ -565,14 +543,14 @@ Die folgenden Abbildungen stellen für beide Datensätze die Verteilungen der je
 ```{r, echo=FALSE, warning=FALSE,fig.cap = "Dichteverteilung für Ratios des Alters-Datensatzes"}
 #density für ratios bei alter
 
-plot_sr_a <- ggplot(data=summary_final_age, aes(x=sr, group=age_class, fill=age_class)) +
+plot_sr_a <- ggplot(data=summary_final_age, aes(x=sr, group=Altersklassen, fill=Altersklassen)) +
     geom_density(adjust=0.8, alpha=0.75) + scale_fill_viridis(discrete=TRUE) +
-    scale_color_viridis(discrete=TRUE) +
+    scale_color_viridis(discrete=TRUE) +labs(x="SR",y="Dichte")+
     theme_minimal()
 
-plot_ir_a <- ggplot(data=summary_final_age, aes(x=ir, group=age_class, fill=age_class)) +
+plot_ir_a <- ggplot(data=summary_final_age, aes(x=ir, group=Altersklassen, fill=Altersklassen)) +
     geom_density(adjust=0.8, alpha=0.75) + scale_fill_viridis(discrete=TRUE) +
-    scale_color_viridis(discrete=TRUE) +
+    scale_color_viridis(discrete=TRUE) +labs(x="IR",y="Dichte")+
     theme_minimal()
 
 
@@ -586,14 +564,17 @@ Abbildung 4 zeigt hinsichtlich der Verteilungen für die Größe ein völlig and
 ```{r, echo=FALSE, warning=FALSE,fig.cap = "Dichteverteilung für Ratios des 'Größe'-Datensatzes"}
 #density für sharpe ratios bei size mit 5 Klassen
 
-plot_sr_s <- ggplot(data=summary_final_size, aes(x=sr, group=Quantile_Class, fill=Quantile_Class)) +
+#Reihenfolge für die einzelen Quintile
+summary_final_size$Quintil_Klassen <- factor(summary_final_size$Quintil_Klassen, levels = c("1", "2", "3","4","5"))
+
+plot_sr_s <- ggplot(data=summary_final_size, aes(x=sr, group=Quintil_Klassen, fill=Quintil_Klassen)) +
     geom_density(adjust=0.8, alpha=0.75) + scale_fill_viridis(discrete=TRUE) +
-    scale_color_viridis(discrete=TRUE) +
+    scale_color_viridis(discrete=TRUE) + labs(x="SR",y="Dichte")+
     theme_minimal()
 
-plot_ir_s <- ggplot(data=summary_final_size, aes(x=ir, group=Quantile_Class, fill=Quantile_Class)) +
+plot_ir_s <- ggplot(data=summary_final_size, aes(x=ir, group=Quintil_Klassen, fill=Quintil_Klassen)) +
     geom_density(adjust=0.8, alpha=0.75) + scale_fill_viridis(discrete=TRUE) +
-    scale_color_viridis(discrete=TRUE) +
+    scale_color_viridis(discrete=TRUE) +labs(x="IR",y="Dichte")+
     theme_minimal()
 
 grid.arrange(plot_sr_s,plot_ir_s, ncol=1, nrow=2, heights=c(12, 12))
