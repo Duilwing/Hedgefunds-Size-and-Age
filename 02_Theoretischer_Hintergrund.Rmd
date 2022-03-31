@@ -16,8 +16,4 @@ Weiterhin zeichnet sich, trotz der Uneinigkeit in der Literatur, eine Tendenz in
 \begin{itemize}
   \item \(H_2:\) Kleine Hedgefonds outperformen große Hedgefonds.
 \end{itemize}
-Ob nun das Alter oder die Größe einen größeren Einfluss auf die Performance von Hedgefonds haben, wurde nach dem Wissen der Autoren in der Literatur bislang wenig untersucht. Da die Literatur zum Einfluss des Alters jedoch sehr eindeutig ausfällt, wird in der vorliegenden Arbeit die folgende dritte Hypothese untersucht:
-\begin{itemize}
-  \item \(H_3:\) Das Alter hat einen größeren Einfluss auf die Performance von Hedgefonds als deren Größe.
-\end{itemize}
 Nachdem nun die Hypothesen dargestellt wurden, erfolgt nachfolgend die Vorstellung des Datensatzes sowie die darauf angewendeten Methoden.
