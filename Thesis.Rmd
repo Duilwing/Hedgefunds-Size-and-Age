@@ -68,7 +68,7 @@ library(tinytex)
 
 # Datensatz und Methodik
 
-```{r child='03_Datensatz_und_Methodik.Rmd'}
+```{r child='03_Datensatz_und_Methodik_Pi.Rmd'}
 ```
 
 # Ergebnisse
