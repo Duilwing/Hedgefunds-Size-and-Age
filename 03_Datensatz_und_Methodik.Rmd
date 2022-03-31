@@ -244,7 +244,7 @@ Abbildungen 1 und 2 zeigen die Histogramme der Returns für beide Stichproben. Z
 ggplot(data = tidy_return_size, aes(x=ret)) +
   geom_histogram(aes(y =..density..),fill="#440154FF",alpha=0.95,binwidth = 0.001)+theme_minimal()+
 scale_x_continuous(limits =c(-0.4,0.4))+ 
-stat_function(fun = dnorm,args = list(mean = mean(tidy_return_age$ret, na.rm = TRUE), sd = sd(tidy_return_age$ret, na.rm = TRUE)),aes(colour = "normal distribution"), size=0.7)+
+stat_function(fun = dnorm,args = list(mean = mean(tidy_return_size$ret, na.rm = TRUE), sd = sd(tidy_return_size$ret, na.rm = TRUE)),aes(colour = "normal distribution"), size=0.7)+
 geom_density(aes(color="distribution for size"),size=0.7)+ scale_colour_manual("distributions", values = c("#287D8EFF","#FDE725FF"))
 
 ```
