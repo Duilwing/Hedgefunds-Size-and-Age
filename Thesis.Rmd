@@ -92,6 +92,7 @@ library(tinytex)
 \appendix
 \newpage
 ```
+
 # Mitwirkung
 
 ```{r child='A1_Mitwirkung.Rmd'}
@@ -113,7 +114,6 @@ library(tinytex)
 
 
 <!-- Makes sure to have a new page for your literature -->
-
 
 \newpage
 
